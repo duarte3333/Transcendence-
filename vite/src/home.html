@@ -30,7 +30,7 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <!-- Navbar links -->
-          <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="collapse navbar-collapse" id="navbarNav" style="justify-content: flex-end;">
             <ul class="navbar-nav">
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -50,11 +50,28 @@
       </nav>
       <!-- Navbar end -->
 
+
+
+
+      <div class="div-game">
+
       <!-- Pong Game Canvas -->
       <canvas id="pongCanvas" width="800" height="400" class="bg-dark my-4"></canvas>
+    </div>
       <!-- Pong Game Canvas -->
       <script type="module" src="./js/game.js"></script>
       
       <script type="module" src="./js/main.js"></script>
+
+      <footer class="py-3 my-4">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Pricing</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">FAQs</a></li>
+          <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li>
+        </ul>
+        <p class="text-center text-body-secondary">© 2024 Company, Inc</p>
+      </footer>
   </body>
 </html>
