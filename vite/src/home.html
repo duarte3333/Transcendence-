@@ -63,6 +63,36 @@
       
       <script type="module" src="./js/main.js"></script>
 
+      <!-- Live Chat  -->
+      <div id="chat-container" class="border p-3" style="position: fixed; bottom: 60px; right: 10px; width: 300px; height: 400px;">
+        <h5 class="text-center">Live Chat</h5>
+        <div id="chat-messages" style="overflow-y: scroll; height: 80%;">
+          <!-- Messages will be displayed here -->
+        </div>
+        <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." onkeypress="if(event.keyCode == 13) sendMessage()">
+      </div>
+      <script>
+        function sendMessage() {
+          var input = document.getElementById('chat-input');
+          var messageContainer = document.getElementById('chat-messages');
+          var newMessage = document.createElement('p');
+          newMessage.textContent = input.value;
+          messageContainer.appendChild(newMessage);
+          input.value = '';
+        }
+      </script>
+
+      <!-- Live Chat  -->   
+      <div class="profile-section">
+        <img src="path_to_avatar_image" alt="Avatar" style="width: 50px; height: 50px;">
+        <div>
+          <strong>Nickname:</strong> <span id="nickname">Player1</span><br>
+          <strong>Achievements:</strong> <span id="achievements">100 Wins</span>
+        </div>
+      </div>
+      <!-- Live Chat  -->   
+
+      <!-- Footer -->
       <footer class="py-3 my-4">
         <ul class="nav justify-content-center border-bottom pb-3 mb-3">
           <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
@@ -73,5 +103,6 @@
         </ul>
         <p class="text-center text-body-secondary">© 2024 Company, Inc</p>
       </footer>
+      <!-- Footer -->
   </body>
 </html>
