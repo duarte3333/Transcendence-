@@ -4,7 +4,7 @@ export class Score {
   }
 
   addScore() {
-    this.score += 10;
+    this.score += 1;
   }
 
   getScore() {

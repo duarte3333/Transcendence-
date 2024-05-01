@@ -104,3 +104,38 @@ footer {
   width: 100%;
   height: 50px; /* Footer height */
 }
+
+/* Custom styling for smaller cards */
+.feature-card {
+  background-color: #81b1d3;
+  color: #8a3a3a;
+  margin: 5px; /* Ensures space between cards */
+  //all cards need to be together 
+}
+
+.card-cover {
+  height: 150px; /* Reduced height for smaller display */
+  font-size: 0.8rem; /* Smaller text within the card */
+  padding: 10px; /* Less padding to fit the smaller area */
+  background-size: cover; /* Ensures background image covers the entire card */
+}
+
+.card h3 {
+  font-size: 1.2rem; /* Smaller heading size */
+}
+
+.card ul {
+  padding: 0;
+  list-style-type: none; /* Removes bullet points from lists */
+  margin-top: 10px; /* Positions list closer to the bottom of the card */
+}
+
+.card img {
+  width: 24px; /* Smaller image size */
+  height: 24px;
+}
+
+.card svg {
+  width: 16px; /* Smaller icon size */
+  height: 16px;
+}

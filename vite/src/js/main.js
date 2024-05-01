@@ -37,3 +37,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
   }
 });
+
+export function sendMessage() {
+  var input = document.getElementById('chat-input');
+  var messageContainer = document.getElementById('chat-messages');
+  var newMessage = document.createElement('p');
+  newMessage.textContent = input.value;
+  messageContainer.appendChild(newMessage);
+  input.value = '';
+}
