@@ -19,6 +19,9 @@ const playerPaddle = {
   y: 0,
   name: "player_1",
   color: "white",
+  moveUp: false,
+  moveDown: false,
+  speed: 3,
   score: new Score(),
 };
 
@@ -29,12 +32,14 @@ const aiPaddle = {
   y: 0,
   name: "player_2",
   color: "white",
+  speed: 3,
   score: new Score(),
 };
 
 class Game {
   objects = new Map();
   pause = false;
+  speed = 2.5;
 
   constructor() {
     this.canvas = document.getElementById("pongCanvas");
@@ -54,8 +59,10 @@ class Game {
     else paddle.x = this.canvas.width - paddle.width;
 
     paddle.y = this.canvas.height / 2 - 50;
+    paddle.speed *= this.speed;
     this.objects.set(paddle.name, paddle);
   }
+
 
   addBall(ball) {
     ball.x = this.canvas.width / 2;
@@ -67,6 +74,8 @@ class Game {
       this.context.closePath();
       this.context.fill();
     };
+    ball.speedY *= this.speed;
+    ball.speedX *= this.speed;
     this.objects.set(ball.name, ball);
   }
 
@@ -89,16 +98,28 @@ class Game {
     const playerPaddle = this.objects.get("player_1");
     const aiPaddle = this.objects.get("player_2");
 
+
+    //update players paddle
+    if (playerPaddle.moveUp) {
+      this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
+    } else if (playerPaddle.moveDown) {
+      this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
+    }
+
     // Update the ball's position
     ball.x += ball.speedX;
     ball.y += ball.speedY;
 
     // Check for collision with the top and bottom walls
     if (
-      ball.y - ball.radius <= 0 ||
-      ball.y + ball.radius >= this.canvas.height
+      ball.y - ball.radius <= 0
     ) {
       ball.speedY = -ball.speedY;
+      ball.y += 1;
+    }
+    if (ball.y + ball.radius >= this.canvas.height) {
+      ball.speedY = -ball.speedY;
+      ball.y -= 1;
     }
 
     // Check for collision with the player's paddle
@@ -113,7 +134,7 @@ class Game {
         (playerPaddle.height / 2);
 
       // Modify speed based on where it hit the paddle
-      ball.speedY = impactPoint * 5; // The '5' factor controls the influence
+      ball.speedY = impactPoint * (5 * this.speed); // The '5' factor controls the influence
       ball.speedX = -ball.speedX; // Reverse the horizontal direction
     }
 
@@ -126,28 +147,31 @@ class Game {
       let impactPoint =
         (ball.y - (aiPaddle.y + aiPaddle.height / 2)) / (aiPaddle.height / 2);
 
-      ball.speedY = impactPoint * 5; // Adjust '5' as needed
+      ball.speedY = impactPoint * (5 * this.speed); // Adjust '5' as needed
       ball.speedX = -ball.speedX;
     }
     this.collisionDetection();
   }
 
   updateAI() { 
-      if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
-          aiPaddle.y -= 3; // Move paddle up
-      } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
-          aiPaddle.y += 3; // Move paddle down
-      }
+      // if (this.canvas.height - ball.y > 50 && this.canvas.width - ball.x > 50)
+      // {
+        if (ball.y < aiPaddle.y + aiPaddle.height / 2 - 10) {
+          this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed); // Move paddle up
+        } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 + 10) {
+          this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed); // Move paddle down
+        }
+      // }
 
       // Introduce error sometimes
-      if (Math.random() < 0.10) { // 10% chance to make a mistake
-          // Mistake is moving in the opposite direction
-          if (Math.random() < 0.5) {
-              aiPaddle.y += 5; // Move incorrectly down
-          } else {
-              aiPaddle.y -= 5; // Move incorrectly up
-          }
-      }
+      // if (Math.random() < 0.10) { // 10% chance to make a mistake
+      //     // Mistake is moving in the opposite direction
+      //     if (Math.random() < 0.5) {
+      //         aiPaddle.y += 5; // Move incorrectly down
+      //     } else {
+      //         aiPaddle.y -= 5; // Move incorrectly up
+      //     }
+      // }
 
       // Ensure AI paddle doesn't move out of canvas bounds
       if (aiPaddle.y < 0) {
@@ -211,8 +235,8 @@ class Game {
     const ball = this.objects.get("ball");
     ball.x = this.canvas.width / 2;
     ball.y = this.canvas.height / 2;
-    ball.speedX = 4;
-    ball.speedY = 4;
+    ball.speedX = 4 * this.speed;
+    ball.speedY = 4 * this.speed;
   }
 
   draw() {
@@ -239,19 +263,34 @@ class Game {
 const game = new Game();
 
 document.addEventListener("keydown", (event) => {
+  const playerPaddle = game.objects.get("player_1");
   console.log(event.key);
   if (event.key === "ArrowUp") {
     event.preventDefault();
-    game.move("player_1", playerPaddle.x, playerPaddle.y - 10);
+    playerPaddle.moveUp = true;
   }
   if (event.key === "ArrowDown") {
     event.preventDefault();
-    game.move("player_1", playerPaddle.x, playerPaddle.y + 10);
+    playerPaddle.moveDown = true;
   }
   if (event.key === " ") {
     event.preventDefault();
     console.log("Space");
     game.tooglePause();
+  }
+});
+
+document.addEventListener("keyup", (event) => {
+  const playerPaddle = game.objects.get("player_1");
+  console.log(event.key);
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    playerPaddle.moveUp = false;
+  }
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    playerPaddle.moveDown = false;
+
   }
 });
 
