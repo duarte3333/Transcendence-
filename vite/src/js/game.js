@@ -209,6 +209,7 @@ class Game {
     }
 
     if (ball.x - ball.radius < 0) {
+      console.log()
       player_2.score.addScore();
       this.resartBall();
       console.log("Player 2 wins");

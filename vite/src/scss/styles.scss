@@ -87,16 +87,26 @@ $success: #7952b3;
 // Custom styles
 //
 
+*{
+  
+}
+
 @import "icon-list";
 
 body {
-  padding: 1.5rem;
+  width: 90%; 
+  margin: 0 auto;
 }
 
 .div-game {
   align-items: center;
   display: flex;
   justify-content: center;
+}
+
+#pongCanvas {
+  width: 100%;
+  height: auto;
 }
 
 footer {
@@ -139,3 +149,23 @@ footer {
   width: 16px; /* Smaller icon size */
   height: 16px;
 }
+
+.game-settings {
+  #speedControl {
+    width: 90px;
+    align-self: left;
+  }
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 10px;
+  padding: 10px;
+}
+
+
+
+
+
