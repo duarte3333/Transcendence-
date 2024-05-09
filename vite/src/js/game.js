@@ -6,7 +6,7 @@ const ball = {
   y: 0,
   radius: 10,
   speedX: 4,
-  speedY: 4,
+  speedY: 0,
   color: "white",
   name: "ball",
 };
@@ -32,6 +32,8 @@ const aiPaddle = {
   y: 0,
   name: "player_2",
   color: "white",
+  moveUp: false,
+  moveDown: false,
   speed: 3,
   score: new Score(),
 };
@@ -62,7 +64,6 @@ class Game {
     paddle.speed *= this.speed;
     this.objects.set(paddle.name, paddle);
   }
-
 
   addBall(ball) {
     ball.x = this.canvas.width / 2;
@@ -98,12 +99,19 @@ class Game {
     const playerPaddle = this.objects.get("player_1");
     const aiPaddle = this.objects.get("player_2");
 
-
     //update players paddle
     if (playerPaddle.moveUp) {
-      this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
+      this.move(
+        "player_1",
+        playerPaddle.x,
+        playerPaddle.y - playerPaddle.speed
+      );
     } else if (playerPaddle.moveDown) {
-      this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
+      this.move(
+        "player_1",
+        playerPaddle.x,
+        playerPaddle.y + playerPaddle.speed
+      );
     }
 
     // Update the ball's position
@@ -111,9 +119,7 @@ class Game {
     ball.y += ball.speedY;
 
     // Check for collision with the top and bottom walls
-    if (
-      ball.y - ball.radius <= 0
-    ) {
+    if (ball.y - ball.radius <= 0) {
       ball.speedY = -ball.speedY;
       ball.y += 1;
     }
@@ -153,14 +159,16 @@ class Game {
     this.collisionDetection();
   }
 
-  updateAI() { 
-      // if (this.canvas.height - ball.y > 50 && this.canvas.width - ball.x > 50)
-      // {
-        if (ball.y < aiPaddle.y + aiPaddle.height / 2 - 10) {
-          this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed); // Move paddle up
-        } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 + 10) {
-          this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed); // Move paddle down
-        }
+  updateAI() {
+    // if (this.canvas.height - ball.y > 50 && this.canvas.width - ball.x > 50)
+    // {
+    const player_2 = this.objects.get("player_2") || this.objects.get("ai");
+    if (player_2.name === "ai") {
+      if (ball.y < aiPaddle.y + aiPaddle.height / 2 - 10) {
+        this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed); // Move paddle up
+      } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 + 10) {
+        this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed); // Move paddle down
+      }
       // }
 
       // Introduce error sometimes
@@ -175,10 +183,26 @@ class Game {
 
       // Ensure AI paddle doesn't move out of canvas bounds
       if (aiPaddle.y < 0) {
-          aiPaddle.y = 0;
+        aiPaddle.y = 0;
       } else if (aiPaddle.y + aiPaddle.height > this.canvas.height) {
-          aiPaddle.y = this.canvas.height - aiPaddle.height;
+        aiPaddle.y = this.canvas.height - aiPaddle.height;
       }
+    } else if (player_2.name === "player_2") {
+      //update players paddle
+      if (aiPaddle.moveUp) {
+        this.move(
+          "player_2",
+          aiPaddle.x,
+          aiPaddle.y - aiPaddle.speed
+        );
+      } else if (aiPaddle.moveDown) {
+        this.move(
+          "player_2",
+          aiPaddle.x,
+          aiPaddle.y + aiPaddle.speed
+        );
+      }
+    }
   }
 
   collisionDetection() {
@@ -209,12 +233,15 @@ class Game {
     }
 
     if (ball.x - ball.radius < 0) {
-      console.log()
+      console.log();
       player_2.score.addScore();
       this.resartBall();
+      ball.speedX *= -1;
       console.log("Player 2 wins");
     }
   }
+
+  
 
   showScore() {
     const player_1 = this.objects.get("player_1");
@@ -237,7 +264,7 @@ class Game {
     ball.x = this.canvas.width / 2;
     ball.y = this.canvas.height / 2;
     ball.speedX = 4 * this.speed;
-    ball.speedY = 4 * this.speed;
+    ball.speedY = 0 * this.speed;
   }
 
   draw() {
@@ -263,14 +290,14 @@ class Game {
 
 const game = new Game();
 
+//PLAYER 1 moves
 document.addEventListener("keydown", (event) => {
   const playerPaddle = game.objects.get("player_1");
-  console.log(event.key);
-  if (event.key === "ArrowUp") {
+  if (event.key === "w") {
     event.preventDefault();
     playerPaddle.moveUp = true;
   }
-  if (event.key === "ArrowDown") {
+  if (event.key === "s") {
     event.preventDefault();
     playerPaddle.moveDown = true;
   }
@@ -283,7 +310,31 @@ document.addEventListener("keydown", (event) => {
 
 document.addEventListener("keyup", (event) => {
   const playerPaddle = game.objects.get("player_1");
-  console.log(event.key);
+  if (event.key === "w") {
+    event.preventDefault();
+    playerPaddle.moveUp = false;
+  }
+  if (event.key === "s") {
+    event.preventDefault();
+    playerPaddle.moveDown = false;
+  }
+});
+
+//PLAYER 2 moves
+document.addEventListener("keydown", (event) => {
+  const playerPaddle_2 = game.objects.get("player_2");
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    playerPaddle_2.moveUp = true;
+  }
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    playerPaddle_2.moveDown = true;
+  }
+});
+
+document.addEventListener("keyup", (event) => {
+  const playerPaddle = game.objects.get("player_2");
   if (event.key === "ArrowUp") {
     event.preventDefault();
     playerPaddle.moveUp = false;
@@ -291,9 +342,29 @@ document.addEventListener("keyup", (event) => {
   if (event.key === "ArrowDown") {
     event.preventDefault();
     playerPaddle.moveDown = false;
-
   }
 });
+
+//MOUSE MOVE FT WITH HARDCODED height betweeen canvas 0 and screen 0 (y)
+// document.addEventListener("mousemove", (event) => {
+//   // event.preventDefault();
+//   const mouseY = event.clientY - 150;
+//   console.log(`${mouseY}`);
+//   const playerPaddle = game.objects.get("player_1");
+//   if (mouseY > playerPaddle.y + playerPaddle.height) {
+//     event.preventDefault();
+//     playerPaddle.moveDown = true;
+//   }
+//   else if (mouseY < playerPaddle.y) {
+//     event.preventDefault();
+//     playerPaddle.moveUp= true;
+
+//   }
+//   else {
+//     playerPaddle.moveUp = false;
+//     playerPaddle.moveDown = false;
+//   }
+// });
 
 document.addEventListener("DOMContentLoaded", (event) => {
   game.addPlayer(playerPaddle);
