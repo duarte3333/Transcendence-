@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="scss/styles.scss">
   </head>
   <body class="">
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-4 ">
       <!-- Navbar Section -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
         <a class="navbar-brand" href="#">Pong 42</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -43,7 +43,12 @@
             <option value="1.5">1.5x</option> <!-- Predefined selection -->
             <option value="2">2x</option>
         </select>
+        <div class="SelectPlayer" style="padding: 10px;">
+          <button id="AiButton" type="button" class="btn btn-light">AI</button>
+          <button id="PlayerButton" type="button" class="btn btn-dark">Player 2</button>
+        </div>
       </div>
+
 
 
       <!-- Game and Chat Section -->

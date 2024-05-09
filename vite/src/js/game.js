@@ -195,7 +195,7 @@ class Game {
   }
 
   updateAI() {
-    // if (this.canvas.height - ball.y > 50 && this.canvas.width - ball.x > 50)
+    // if (canvas.height - ball.y > 50 && canvas.width - ball.x > 50)
     // {
     const player_2 = this.objects.get("player_2") || this.objects.get("ai");
     if (player_2.name === "ai") {
@@ -219,8 +219,8 @@ class Game {
       // Ensure AI paddle doesn't move out of canvas bounds
       if (aiPaddle.y < 0) {
         aiPaddle.y = 0;
-      } else if (aiPaddle.y + aiPaddle.height > this.canvas.height) {
-        aiPaddle.y = this.canvas.height - aiPaddle.height;
+      } else if (aiPaddle.y + aiPaddle.height > canvas.height) {
+        aiPaddle.y = canvas.height - aiPaddle.height;
       }
     } else if (player_2.name === "player_2") {
       //update players paddle
@@ -269,6 +269,13 @@ class Game {
       player_1.score.addScore();
       this.resartBall();
       console.log("Player 1 wins");
+      ball.speedY /= 2;
+      ball.speedX /= 2;
+      setTimeout(function() {
+        ball.speedY *= 2;
+      ball.speedX *= 2;
+    }, 1400);
+    console.log("End");
     }
 
     if (ball.x - ball.radius < 0) {
@@ -277,6 +284,12 @@ class Game {
       this.resartBall();
       ball.speedX *= -1;
       console.log("Player 2 wins");
+      ball.speedY /= 2;
+      ball.speedX /= 2;
+      setTimeout(function() {
+        ball.speedY *= 2;
+      ball.speedX *= 2;
+    }, 1400);
     }
 
     if (candy.visible && candy.ballCollidesWithCandy(ball, candy)) {
@@ -285,11 +298,6 @@ class Game {
       if (player_2.lastHit) player_1.height *= 0.9; player_2.height *= 1.1;
       candy.visible = false;
       candy.reset(canvas.width, canvas.height, 50);
-      setTimeout(() => {
-        candy.visible = true; // Hide after 5 seconds
-        this.object.get("player1").height = 100;
-        this.object.get("player2").height = 100;
-      }, 5000);
     }
   }
 
@@ -445,6 +453,24 @@ document.addEventListener('DOMContentLoaded', function () {
       var newSpeed = this.value;
       console.log("Speed changed to: " + newSpeed);
       game.updateGameSpeed(newSpeed);
+  });
+});
+
+//Ai BUTTON
+document.addEventListener('DOMContentLoaded', function () {
+  var aiButton = document.getElementById('AiButton');
+  var playerButton = document.getElementById('PlayerButton');
+  const playerPaddle_2 = game.objects.get("player_2") || game.objects.get("ai");
+  aiButton.addEventListener('click', () => {
+    playerPaddle_2.name = "ai";
+    aiButton.className = "btn btn-dark";
+    console.log(aiButton);
+    playerButton.className = "btn btn-light";
+  });
+  playerButton.addEventListener('click', () =>{
+    playerPaddle_2.name = "player_2";
+    aiButton.className = "btn btn-light";
+    playerButton.className = "btn btn-dark";
   });
 });
 

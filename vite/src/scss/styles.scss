@@ -154,9 +154,20 @@ footer {
   #speedControl {
     width: 90px;
     align-self: left;
+    margin-top: 0 !important;
   }
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 10px;
+}
+
+.SelectPlayer {
+  display: flex;
+  align-items: right;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: flex-start;
