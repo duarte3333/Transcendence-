@@ -5,6 +5,8 @@ import { playerPaddle } from "./paddles.js";
 import { aiPaddle } from "./paddles.js";
 import { candy } from "./candy.js";
 import { events } from "./events.js";
+import { Score } from "./score.js";
+import { isRectCircleCollision } from "./aux.js";
 
 class Game {
   
@@ -12,6 +14,7 @@ class Game {
   pause = false;
   speed = 2.5;
   events = new events(this);  // Initialize events after setting up game
+  score = new Score()
 
   //INITIALIZE GAME
   constructor() {
@@ -28,8 +31,9 @@ class Game {
     this.addPlayer(aiPaddle);
     this.addBall(ball);
     this.addCandy(candy);
+    this.addCandy(candy);
     this.init();
-  }
+  } 
 
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
@@ -66,34 +70,16 @@ class Game {
     if (object.name === "player_1" || object.name === "player_2") {
       if (y < 0 || y + object.height > canvas.height) return;
       else {
-        object.x = x;
-        object.y = y;
+        object.x = x; object.y = y;
       }
     } 
     else {
-      object.x = x;
-      object.y = y;
+      object.x = x; object.y = y;
     }
   }
 
-  //UPDATE OBJECTS
-  update() {
+  check_ball_walls_collision() {
     const ball = this.objects.get("ball");
-    const playerPaddle = this.objects.get("player_1");
-    const aiPaddle = this.objects.get("player_2");
-
-    //update players paddle
-    if (playerPaddle.moveUp) {
-      this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
-    } else if (playerPaddle.moveDown) {
-      this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
-    }
-
-    // Update the ball's position
-    ball.x += ball.speedX;
-    ball.y += ball.speedY;
-
-    // Check for collision with the top and bottom walls
     if (ball.y - ball.radius <= 0) {
       ball.speedY = -ball.speedY;
       ball.y += 1;
@@ -102,43 +88,29 @@ class Game {
       ball.speedY = -ball.speedY;
       ball.y -= 1;
     }
+  }
 
-    // Check for collision with the player's paddle
-    if (
-      ball.x - ball.radius <= playerPaddle.x + playerPaddle.width &&
-      ball.y + ball.radius >= playerPaddle.y &&
-      ball.y - ball.radius <= playerPaddle.y + playerPaddle.height
-    ) {
-      // Calculate impact point -> a value between -1 and 1
-      let impactPoint =
-        (ball.y - (playerPaddle.y + playerPaddle.height / 2)) /
-        (playerPaddle.height / 2);
+  //UPDATE OBJECTS
+  update() {
+    const playerPaddle = this.objects.get("player_1");
+    const aiPaddle = this.objects.get("player_2");
 
-      // Modify speed based on where it hit the paddle
-      ball.speedY = impactPoint * (5 * this.speed); // The '5' factor controls the influence
-      ball.speedX = -ball.speedX; // Reverse the horizontal direction
+    //Update players paddle and ball
+    if (playerPaddle.moveUp) {
+      this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
+    } else if (playerPaddle.moveDown) {
+      this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
     }
+    this.move("ball", ball.x + ball.speedX, ball.y + ball.speedY);
 
-    // Check for collision with the AI's paddle similarly
-    if (
-      ball.x + ball.radius >= aiPaddle.x &&
-      ball.y + ball.radius >= aiPaddle.y &&
-      ball.y - ball.radius <= aiPaddle.y + aiPaddle.height
-    ) {
-      let impactPoint =
-        (ball.y - (aiPaddle.y + aiPaddle.height / 2)) / (aiPaddle.height / 2);
-
-      ball.speedY = impactPoint * (5 * this.speed); // Adjust '5' as needed
-      ball.speedX = -ball.speedX;
-    }
+    this.check_ball_walls_collision();
     this.collisionDetection();
   }
 
   updateAI() {
-    // if (canvas.height - ball.y > 50 && canvas.width - ball.x > 50)
-    // {
     const player_2 = this.objects.get("player_2") || this.objects.get("ai");
     if (player_2.name === "ai") {
+      // AI paddle follows the ball
       if (ball.y < aiPaddle.y + aiPaddle.height / 2 - 10) {
         this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed); // Move paddle up
       } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 + 10) {
@@ -151,20 +123,13 @@ class Game {
       } else if (aiPaddle.y + aiPaddle.height > canvas.height) {
         aiPaddle.y = canvas.height - aiPaddle.height;
       }
-    } else if (player_2.name === "player_2") {
-      //update players paddle
+    } 
+    //Manual player_2
+    else if (player_2.name === "player_2") {
       if (aiPaddle.moveUp) {
-        this.move(
-          "player_2",
-          aiPaddle.x,
-          aiPaddle.y - aiPaddle.speed
-        );
+        this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed);
       } else if (aiPaddle.moveDown) {
-        this.move(
-          "player_2",
-          aiPaddle.x,
-          aiPaddle.y + aiPaddle.speed
-        );
+        this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed);
       }
     }
   }
@@ -173,38 +138,39 @@ class Game {
     const ball = this.objects.get("ball");
     const player_1 = this.objects.get("player_1");
     const player_2 = this.objects.get("player_2");
-
-    if (
-      ball.x + ball.radius > player_2.x &&
-      ball.y > player_2.y &&
-      ball.y < player_2.y + player_2.height
-    ) {
+    if (isRectCircleCollision(ball, player_1)
+  ) {
+      ball.last_hit = player_1.name;
+      // Calculate impact point -> a value between -1 and 1
+      let impactPoint =
+      (ball.y - (playerPaddle.y + playerPaddle.height / 2)) /
+      (playerPaddle.height / 2);
+  
+      // Modify speed based on where it hit the paddle
+      ball.speedY = impactPoint * (5 * this.speed); // The '5' factor controls the influence
       ball.speedX = -ball.speedX;
-      player_2.lastHit = true;
-      player_1.lastHit = false;
     }
 
-    if (
-      ball.x - ball.radius < player_1.x + player_1.width &&
-      ball.y > player_1.y &&
-      ball.y < player_1.y + player_1.height
+    if (isRectCircleCollision(ball, player_2) 
     ) {
+      ball.last_hit = player_2.name;
+      let impactPoint =
+      (ball.y - (aiPaddle.y + aiPaddle.height / 2)) / (aiPaddle.height / 2);
+      ball.speedY = impactPoint * (5 * this.speed); // Adjust '5' as needed
       ball.speedX = -ball.speedX;
-      player_1.lastHit = true;
-      player_2.lastHit = false;
     }
+
 
     if (ball.x + ball.radius > canvas.width) {
       player_1.score.addScore();
       this.resartBall();
       console.log("Player 1 wins");
-      ball.speedY /= 2;
-      ball.speedX /= 2;
-      setTimeout(function() {
-        ball.speedY *= 2;
-      ball.speedX *= 2;
-    }, 1400);
-    console.log("End");
+      // ball.speedY /= 2;
+      // ball.speedX /= 2;
+      // setTimeout(function() {
+      //   ball.speedY *= 2;
+      //   ball.speedX *= 2;
+      // }, 1400);
     }
 
     if (ball.x - ball.radius < 0) {
@@ -213,36 +179,29 @@ class Game {
       this.resartBall();
       ball.speedX *= -1;
       console.log("Player 2 wins");
-      ball.speedY /= 2;
-      ball.speedX /= 2;
-      setTimeout(function() {
-        ball.speedY *= 2;
-      ball.speedX *= 2;
-    }, 1400);
+      // ball.speedY /= 2;
+      // ball.speedX /= 2;
+      // setTimeout(function() {
+      //   ball.speedY *= 2;
+      //   ball.speedX *= 2;
+      // }, 1400);
     }
 
-    if (candy.visible && candy.ballCollidesWithCandy(ball, candy)) {
+    if (candy.visible && isRectCircleCollision(ball, candy)) {
       console.log("Candy collected");
-      if (player_1.lastHit) player_2.height *= 0.9; player_1.height *= 1.1;
-      if (player_2.lastHit) player_1.height *= 0.9; player_2.height *= 1.1;
+      console.log(ball.last_hit);
+      console.log(player_1.name);
+      if (ball.last_hit == player_1.name) {
+        player_2.height *= 0.8;
+        player_1.height *= 1.2;
+      }
+      if (ball.last_hit == player_2.name) {
+        player_1.height *= 0.8;
+        player_2.height *= 1.2;
+      }
       candy.visible = false;
-      candy.reset(canvas.width, canvas.height, 50);
+      candy.reset(canvas.width, canvas.height, 50, player_1, player_2);
     }
-  }
-
-  
-
-  showScore() {
-    const player_1 = this.objects.get("player_1");
-    const player_2 = this.objects.get("player_2");
-    this.context.font = "25px Verdana, sans-serif";
-    this.context.colortext = "white";
-    this.context.fillText(player_1.score.getScore(), canvas.width / 4, 50);
-    this.context.fillText(
-      player_2.score.getScore(),
-      (canvas.width / 4) * 3,
-      50
-    );
   }
 
   tooglePause() {
@@ -265,15 +224,12 @@ class Game {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
-      this.showScore();
-    } else {
-      //Do that background more transparent when hit pause button
+      this.score.showScore(this.objects, this.context, canvas);
+    } 
+    else {
       this.context.font = "30px Verdana, sans-serif";
-      this.context.fillText(
-        "Paused",
-        canvas.width / 2 - 50,
-        canvas.height / 2
-      );
+      this.context.fillStyle = "white";
+      this.context.fillText("Paused", canvas.width / 2 - 50, canvas.height / 2);
     }
   }
 

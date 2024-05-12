@@ -8,19 +8,20 @@ export const candy = {
     visible: true, // Visibility controlled for spawn timing
     name: "candy",
     color: "blue",
-    reset: function(canvasWidth, canvasHeight, padding) {
+    reset: function(canvasWidth, canvasHeight, padding, player_1, player_2) {
       // Random position not too close to the walls
       this.x = Math.random() * (canvasWidth - 2 * padding) + padding;
       this.y = Math.random() * (canvasHeight - 2 * padding) + padding;
-    },
-    ballCollidesWithCandy: function(obj2, obj) {
-      return obj2.x + obj2.radius > obj.x &&
-        obj2.x - obj2.radius < obj.x + obj.width &&
-        obj2.y + obj2.radius > obj.y &&
-        obj2.y - obj2.radius < obj.y + obj.height;
+      //after 5 seconds, restore visibility of candy and height of bar
+        setTimeout(() => {
+            this.visible = true;
+            player_1.height = 100;
+            player_2.height = 100;
+        }, 5000);
     },
     draw: function(context) {
       if (this.visible) {
+        //context.fillStyle = this.color;
         context.fillStyle = this.color;
         context.fillRect(this.x, this.y, this.width, this.height);
       }

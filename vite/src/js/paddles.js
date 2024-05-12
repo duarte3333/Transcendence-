@@ -9,7 +9,6 @@ export const playerPaddle = {
     color: "white",
     moveUp: false,
     moveDown: false,
-    lastHit: false,
     speed: 3,
     score: new Score(),
 
@@ -27,7 +26,6 @@ export const aiPaddle = {
     y: 0,
     name: "player_2",
     color: "white",
-    lastHit: false,
     moveUp: false,
     moveDown: false,
     speed: 3,

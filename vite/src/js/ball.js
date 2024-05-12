@@ -6,7 +6,9 @@ export const ball = {
     speedX: 4,
     speedY: 0,
     color: "white",
-    name: "ball",
+    name: "ball", 
+    last_hit: "player_1",
+
 
     draw: function (context) {
         context.fillStyle = this.color;
