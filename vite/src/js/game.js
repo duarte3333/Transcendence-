@@ -7,6 +7,8 @@ import { candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
+import { drawPolygon } from "./drawWalls.js";
+
 
 class Game {
   
@@ -231,6 +233,7 @@ class Game {
       this.context.fillStyle = "white";
       this.context.fillText("Paused", canvas.width / 2 - 50, canvas.height / 2);
     }
+    drawPolygon(canvas, 300, 300, 8);
   }
 
   updateGameSpeed(speed) {
