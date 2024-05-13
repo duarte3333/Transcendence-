@@ -105,6 +105,7 @@ class Game {
 
     this.check_ball_walls_collision();
     this.collisionDetection();
+    this.updateAI();
   }
 
   updateAI() {
@@ -219,7 +220,6 @@ class Game {
   draw() {
     if (!this.pause) {
       this.update();
-      this.updateAI();
       this.context.clearRect(0, 0, canvas.width, canvas.height);
       this.objects.forEach((element) => {
         element.draw(this.context);
