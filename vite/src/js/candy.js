@@ -22,7 +22,7 @@ export const candy = {
     draw: function(context) {
       if (this.visible) {
         //context.fillStyle = this.color;
-        context.fillStyle = this.color;
+        context.fillStyle = this.color;  
         context.fillRect(this.x, this.y, this.width, this.height);
       }
     },

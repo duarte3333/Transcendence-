@@ -31,7 +31,6 @@ class Game {
     this.addPlayer(aiPaddle);
     this.addBall(ball);
     this.addCandy(candy);
-    this.addCandy(candy);
     this.init();
   } 
 
@@ -211,10 +210,11 @@ class Game {
 
   resartBall() {
     const ball = this.objects.get("ball");
-    ball.x = canvas.width / 2;
+    ball.x = canvas.width / 2; 
     ball.y = canvas.height / 2;
     ball.speedX = 4 * this.speed;
     ball.speedY = 0 * this.speed;
+    
   }
 
   draw() {
