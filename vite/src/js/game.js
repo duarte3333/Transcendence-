@@ -270,3 +270,20 @@ const game = new Game();
 //     playerPaddle.moveDown = false;
 //   }
 // });
+
+
+
+//Meter botao login e logout
+//Meter botao de registo
+//Meter selecao unica de display name e email
+//Meter botao de play 
+//Fazer cenario de resart do game
+//Meter upload de imagem para avatar e ter uma default option
+//Meter seccao dos gajos online e seccao para adicionar amigos
+//Local com as estatisticas
+//Meter match history
+//Multiplayers até n jogadores
+//Zona de customizacao: powerups, skins, attacks, different maps
+//Change theme
+//Interface for changing game parameters
+//Game Stats Dashboard
