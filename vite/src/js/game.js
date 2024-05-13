@@ -13,8 +13,8 @@ class Game {
   objects = new Map();
   pause = false;
   speed = 2.5;
-  events = new events(this);  // Initialize events after setting up game
   score = new Score()
+  events = new events(this);  // Initialize events after setting up game
 
   //INITIALIZE GAME
   constructor() {

@@ -62,24 +62,25 @@ export class events {
         }
 
         if (aiButton && playerButton) {
-            const playerPaddle_2 = this.game.objects.get("player_2") || this.game.objects.get("ai");
             aiButton.addEventListener('click', () => {
-                if (playerPaddle_2) {
-                    console.log(playerPaddle_2.name);
+                if (this.game.objects) {
+                    const playerPaddle_2 = this.game.objects.get("player_2") || this.game.objects.get("ai");
                     playerPaddle_2.name = "ai";
+                    console.log(playerPaddle_2.name);
                 }
                 aiButton.className = "btn btn-dark";
                 playerButton.className = "btn btn-light";
 
                 });
-                playerButton.addEventListener('click', () => {
-                    if (playerPaddle_2) {
-                        console.log(playerPaddle_2.name);
-                        playerPaddle_2.name = "player_2";
-                    }
-                    aiButton.className = "btn btn-light";
-                    playerButton.className = "btn btn-dark";
-                });
+            playerButton.addEventListener('click', () => {
+                if (this.game.objects) {
+                    const playerPaddle_2 = this.game.objects.get("player_2") || this.game.objects.get("ai");
+                    playerPaddle_2.name = "player_2";
+                    console.log(playerPaddle_2.name);
+                }
+                aiButton.className = "btn btn-light";
+                playerButton.className = "btn btn-dark";
+            });
         }
     }
 }
