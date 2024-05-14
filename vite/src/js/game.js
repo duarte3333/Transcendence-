@@ -39,6 +39,7 @@ class Game {
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
     console.log("Game initialized");
+    drawPolygon(canvas, 300, 300, 8);
   }
 
   //ADD OBJECTS TO GAME
@@ -233,7 +234,6 @@ class Game {
       this.context.fillStyle = "white";
       this.context.fillText("Paused", canvas.width / 2 - 50, canvas.height / 2);
     }
-    drawPolygon(canvas, 300, 300, 8);
   }
 
   updateGameSpeed(speed) {
