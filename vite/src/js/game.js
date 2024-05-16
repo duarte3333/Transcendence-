@@ -272,7 +272,7 @@ const game = new Game();
 // });
 
 
-
+//Adicionar mais candies e de differentes tipos
 //Meter botao login e logout
 //Meter botao de registo
 //Meter selecao unica de display name e email

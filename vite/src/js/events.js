@@ -53,6 +53,7 @@ export class events {
         const speedControl = document.getElementById('speedControl');
         const aiButton = document.getElementById('AiButton');
         const playerButton = document.getElementById('PlayerButton');
+        const pauseGame = document.querySelectorAll('.pauseGame');
 
         if (speedControl) {
             speedControl.addEventListener('change', () => {
@@ -82,5 +83,10 @@ export class events {
                 playerButton.className = "btn btn-dark";
             });
         }
+        pauseGame.forEach(button => {
+            button.addEventListener('click', () => {
+                this.game.pause = !this.game.pause;
+            });
+        });
     }
 }

@@ -21,35 +21,79 @@
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Features</a>
+              <a class="nav-link pauseGame mb-3 w-20" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">Settings</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Pricing</a>
+              <a class="nav-link" href="#">Profile</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
+              <a class="nav-link" href="#">Log Out</a>
             </li>
           </ul>
         </div>
       </nav>
       
-      <!-- Game Settings -->
-      <div class="game-settings">
-        <label for="speedControl" style="padding-right: 10px;">Speed:</label>
-        <select id="speedControl" class="form-select mt-2">
-            <option value="0.25" selected>0.25x</option>
-            <option value="0.5" selected>0.5x</option>
-            <option value="1" selected>1x</option>
-            <option value="1.5">1.5x</option> <!-- Predefined selection -->
-            <option value="2">2x</option>
-        </select>
-        <div class="SelectPlayer" style="padding: 10px;">
-          <button id="AiButton" type="button" class="btn btn-light">AI</button>
-          <button id="PlayerButton" type="button" class="btn btn-dark">Player 2</button>
+      <!-- Button to open the modal -->
+      <div>
+        <button type="button" class="btn btn-primary mb-3 w-20 pauseGame" data-bs-toggle="modal" data-bs-target="#settingsModal">
+          Settings
+        </button>
+      </div>
+   
+      <!-- Settings Modal -->
+      <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="settingsModalLabel">Dashboard Settings</h5>
+              <button type="button" class="pauseGame btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                
+                  <div class="game-settings">
+                      <!-- Speed Control -->
+                      <label for="speedControl" style="padding-right: 10px;">Speed:</label>
+                      <select id="speedControl" class="form-select mt-2">
+                          <option value="0.25" selected>0.25x</option>
+                          <option value="0.5" selected>0.5x</option>
+                          <option value="1" selected>1x</option>
+                          <option value="1.5">1.5x</option> <!-- Predefined selection -->
+                          <option value="2">2x</option>
+                      </select>
+                      <!-- AI selection -->
+                      <div class="SelectPlayer" style="padding: 10px;">
+                        <button id="AiButton" type="button" class="btn btn-light">AI</button>
+                        <button id="PlayerButton" type="button" class="btn btn-dark">Player 2</button>
+                      </div>
+                  </div>
+                <!-- Theme Selection -->
+                <div class="mb-3">
+                  <label for="themeSelector" class="form-label">Choose Game Theme:</label>
+                  <select class="form-select" id="themeSelector">
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                    <option value="colorful">Colorful</option>
+                  </select>
+                </div>
+                
+                <!-- Avatar Upload -->
+                <div class="mb-3">
+                  <label for="avatarUpload" class="form-label">Upload Avatar:</label>
+                  <input type="file" class="form-control" id="avatarUpload" onchange="previewAvatar()" accept="image/*">
+                  <img id="avatarPreview" src="path_to_default_avatar.jpg" alt="Avatar Preview" class="img-thumbnail mt-2" style="width: 100px; height: auto;">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save Settings</button>
+            </div>
+          </div>
         </div>
       </div>
-
-
+        
+      
 
       <!-- Game and Chat Section -->
       <div class="row align-items-start px">
@@ -58,7 +102,6 @@
                     <canvas id="pongCanvas" width="1000" height="600" class="bg-dark"></canvas>
                 </div>
             </div>
-          
             <div class="col-md-4">
                 <div class="chat-container p-3 border">
                     <h5 class="text-center">Live Chat</h5>
@@ -68,11 +111,12 @@
                     <input type="text" id="chat-input" class="form-control mt-3" placeholder="Type a message..." onkeypress="if(event.keyCode == 13) sendMessage()">
                 </div>
             </div>
+          
+          </div>
+          
         </div>
         
-      </div>
-
-      
+        
       <!-- Feature Cards -->
       <div class="row row-cols-1 row-cols-lg-3 align-items-stretch  py-5  w-full m-auto">
         <div class="col">

@@ -9,19 +9,6 @@ document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {
   new Popover(popover);
 });
 
-export function test2() {
-  console.log("aqui");
-}
-//create a botton for id="boas"
-document.addEventListener("DOMContentLoaded", (event) => {
-  const boasButton = document.getElementById("boas");
-  if (boasButton) {
-    boasButton.addEventListener("click", function () {
-      console.log("Boas");
-    });
-  }
-});
-
 document.addEventListener("DOMContentLoaded", (event) => {
   const loginButton = document.getElementById("loginButton");
   if (loginButton) {
@@ -38,12 +25,46 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 });
 
-export function sendMessage() {
-  var input = document.getElementById('chat-input');
-  var messageContainer = document.getElementById('chat-messages');
-  var newMessage = document.createElement('p');
-  newMessage.textContent = input.value;
-  messageContainer.appendChild(newMessage);
-  input.value = '';
-}
+document.getElementById('avatarUpload').addEventListener('change', function (event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = document.getElementById('avatarPreview');
+      img.src = e.target.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
+document.getElementById('saveSettings').addEventListener('click', function () {
+  const img = document.getElementById('avatarPreview');
+  if (img.src) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const avatar = new Image();
+    avatar.src = img.src;
+    avatar.onload = function () {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw the avatar on the canvas next to the player name
+      ctx.drawImage(avatar, 10, 10, 50, 50); // Adjust position and size as needed
+      ctx.fillStyle = 'white';
+      ctx.font = '20px Arial';
+      ctx.fillText('Player 1', 70, 40); // Adjust position as needed
+    };
+  }
+  //command to close the modal
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modal-content');
+  modal.style.display = 'none';
+  modalContent.style.display = 'none';
+
+});
+
+
+document.getElementById('modal-cotent').addEventListener('click', function (event) {
+  event.stopPropagation();
+});
