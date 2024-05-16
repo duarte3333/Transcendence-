@@ -8,11 +8,14 @@ import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
 import { drawPolygon } from "./drawWalls.js";
+import { getPixelColor } from "./drawWalls.js";
+
 
 
 class Game {
   
   objects = new Map();
+  numberOfPlayers = 3;
   pause = false;
   speed = 2.5;
   score = new Score()
@@ -39,7 +42,7 @@ class Game {
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
     console.log("Game initialized");
-    drawPolygon(canvas, 300, 300, 8);
+    drawPolygon(canvas.width / 2, this.numberOfPlayers * 2);
   }
 
   //ADD OBJECTS TO GAME
@@ -82,13 +85,17 @@ class Game {
 
   check_ball_walls_collision() {
     const ball = this.objects.get("ball");
-    if (ball.y - ball.radius <= 0) {
+    if ((ball.y - ball.radius <= 0)) {
       ball.speedY = -ball.speedY;
       ball.y += 1;
     }
     if (ball.y + ball.radius >= canvas.height) {
       ball.speedY = -ball.speedY;
       ball.y -= 1;
+    }
+    if (getPixelColor(ball.x, ball.y)) { //if the ball hits the wall canvas or is out of bounds
+      document.getElementById("wallsCanvas").style.backgroundColor = "green";
+      // bounce(ball);
     }
   }
 

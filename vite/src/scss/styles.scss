@@ -105,9 +105,16 @@ body {
 }
 
 // #pongCanvas {
-//   width: 100%;
-//   height: 100%;
+//   // width: 100%;
+//   // height: 100%;
 // }
+
+#wallsCanvas {
+  // width: 100%;
+  // height: 100%;
+  background-color: black;
+  // visibility: hidden;
+}
 
 footer {
   flex-shrink: 0;
