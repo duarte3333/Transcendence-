@@ -1,7 +1,26 @@
-export function drawPolygon(radius, sides) {
+import { ball } from "./ball.js";
+
+// Map object
+export const map = {
+    x: 0,
+    y: 0,
+    radius: 10,
+    color: "white",
+    sides: 4,
+    name: "map",
+
+    draw: function (context) {
+        drawPolygon("pongCanvas", this.radius, this.sides, this.color);
+    },
+};
+
+//ft that draws the polygon (map)
+export function drawPolygon(canvasName, radius, sides, color) {
+    const canvas = document.getElementById(canvasName);
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = color;
     if (sides < 4) //protect in case there is only one player and player * 2 is equal to 2
         sides = 4;
-    const canvas = document.getElementById("wallsCanvas");
     let sideLength = 2 * radius * Math.sin(Math.PI / sides);
     let centerToSideLength = Math.sqrt(Math.pow(radius, 2) - Math.pow(sideLength / 2, 2)); //Calculates with pythagorean theorem the length betweeen center and sides of polygon
     if (sides % 4 === 0) { // reajust size to full canvas if none of the vertix are touching canvas walls.
@@ -9,7 +28,6 @@ export function drawPolygon(radius, sides) {
         sideLength = 2 * radius * Math.sin(Math.PI / sides);
         centerToSideLength = Math.sqrt(Math.pow(radius, 2) - Math.pow(sideLength / 2, 2));
     }
-    let ctx = canvas.getContext('2d');
     ctx.beginPath();
     let x = canvas.width / 2 + sideLength / 2; //startging position x
     let y = canvas.height / 2 - centerToSideLength; //starting position y
@@ -22,8 +40,21 @@ export function drawPolygon(radius, sides) {
         ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.fillStyle = "white";
     ctx.fill();
+}
+
+export function bounce(ball, map) {
+    //horizontal walls
+    if ((ball.y - ball.radius <= 0)) {
+      ball.speedY = -ball.speedY;
+      ball.y += 1;
+    }
+    if (ball.y + ball.radius >= canvas.height) {
+      ball.speedY = -ball.speedY;
+      ball.y -= 1;
+    }
+    //diagonal walls
+    
 }
 
 export function getPixelColor(x, y) {

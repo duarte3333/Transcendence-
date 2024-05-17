@@ -7,18 +7,19 @@ import { candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
-import { drawPolygon } from "./drawWalls.js";
-import { getPixelColor } from "./drawWalls.js";
+import { drawPolygon } from "./map.js";
+import { getPixelColor } from "./map.js";
+import { map } from "./map.js";
 
 
 
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 3;
+  numberOfPlayers = 4;
   pause = false;
   speed = 2.5;
-  score = new Score()
+  score = new Score();
   events = new events(this);  // Initialize events after setting up game
 
   //INITIALIZE GAME
@@ -32,6 +33,7 @@ class Game {
   }
 
   setupGame() {
+    this.addMap(map);
     this.addPlayer(playerPaddle);
     this.addPlayer(aiPaddle);
     this.addBall(ball);
@@ -42,10 +44,19 @@ class Game {
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
     console.log("Game initialized");
-    drawPolygon(canvas.width / 2, this.numberOfPlayers * 2);
+    drawPolygon("wallsCanvas", canvas.width / 2, this.numberOfPlayers * 2, "white");
   }
 
   //ADD OBJECTS TO GAME
+  addMap(map) {
+    map.color = "teal";
+    map.radius = canvas.width / 2;
+    map.sides = this.numberOfPlayers * 2;
+    map.draw(this.context);
+    this.objects.set(map.name, map);
+  }
+
+
   addPlayer(paddle) {
     paddle.draw(this.context);
     if (paddle.name === "player_1") paddle.x = 0;
@@ -85,6 +96,7 @@ class Game {
 
   check_ball_walls_collision() {
     const ball = this.objects.get("ball");
+    const map = this.objects.get("map");
     if ((ball.y - ball.radius <= 0)) {
       ball.speedY = -ball.speedY;
       ball.y += 1;
@@ -94,8 +106,9 @@ class Game {
       ball.y -= 1;
     }
     if (getPixelColor(ball.x, ball.y)) { //if the ball hits the wall canvas or is out of bounds
-      document.getElementById("wallsCanvas").style.backgroundColor = "green";
-      // bounce(ball);
+      // document.getElementById("pongCanvas").style.backgroundColor = "green";
+      console.log("hit!");
+      // bounce(ball, map);
     }
   }
 
@@ -173,7 +186,7 @@ class Game {
 
     if (ball.x + ball.radius > canvas.width) {
       player_1.score.addScore();
-      this.resartBall();
+      this.restartBall();
       console.log("Player 1 wins");
       // ball.speedY /= 2;
       // ball.speedX /= 2;
@@ -186,7 +199,7 @@ class Game {
     if (ball.x - ball.radius < 0) {
       console.log();
       player_2.score.addScore();
-      this.resartBall();
+      this.restartBall();
       ball.speedX *= -1;
       console.log("Player 2 wins");
       // ball.speedY /= 2;
@@ -218,7 +231,7 @@ class Game {
     this.pause = !this.pause;
   }
 
-  resartBall() {
+  restartBall() {
     const ball = this.objects.get("ball");
     ball.x = canvas.width / 2; 
     ball.y = canvas.height / 2;
