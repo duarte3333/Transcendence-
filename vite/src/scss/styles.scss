@@ -109,6 +109,15 @@ body {
   height: auto;
 }
 
+#gameBackground {
+  width: 100%;
+  height: 100vh; /* or the desired height */
+  background-image: url('src/img/back2.png');
+  background-size: cover; /* or other options like contain */
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 footer {
   flex-shrink: 0;
   width: 100%;
@@ -176,7 +185,9 @@ footer {
   padding: 10px;
 }
 
-
-
-
+#playerAvatar {
+  width: 50px;
+  height: 50px;
+  background-image: url('src/img/back1.png');
+}
 

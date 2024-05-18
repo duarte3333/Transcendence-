@@ -33,25 +33,27 @@
         </div>
       </nav>
       
-      <!-- Player Info Card -->
-      <div class="card player-info-card">
-          <img id="playerAvatar" src="path_to_default_avatar.jpg" alt="Player Avatar">
-          <div>
-              <h5 id="playerName">Player Name</h5>
-          </div>
+      <!-- Player Info Card and Result-->
+      <div class="row justify-content-center">
+        <div class="col-7 d-flex justify-content-between">
+            <div class="text-center w-50 align-items-center">
+                <img class="imgAvatar" id="playerAvatar" src="img/p1.png" alt="Player Avatar">
+                <div>
+                    <h5 id="playerName">Player 1</h5>
+                </div>
+            </div>
+            <div class="text-center w-50 align-items-center">
+                <img class="imgAvatar" id="playerAvatar" src="img/p2.png" alt="Player Avatar">
+                <div>
+                    <h5 id="playerName">Player 2</h5>
+                </div>
+            </div>
+        </div>
       </div>
-
-      <!-- Button to open the modal -->
-      <div>
-        <button type="button" class="btn btn-primary mb-3 w-20 pauseGame" data-bs-toggle="modal" data-bs-target="#settingsModal">
-          Settings
-        </button>
-      </div>
-   
       <!-- Settings Modal -->
       <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
+          <div id="modal-content" class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="settingsModalLabel">Dashboard Settings</h5>
               <button type="button" class="pauseGame btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -91,40 +93,39 @@
                   <input type="file" class="form-control" id="avatarUpload" onchange="previewAvatar()" accept="image/*">
                   <img id="avatarPreview" src="path_to_default_avatar.jpg" alt="Avatar Preview" class="img-thumbnail mt-2" style="width: 100px; height: auto;">
                 </div>
+                <canvas id="avatarCanvas" width="200" height="200"></canvas>
               </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Save Settings</button>
+              <button type="submit" id="saveSettings" class="btn btn-primary">Save Settings</button>
             </div>
           </div>
         </div>
       </div>
         
-      
-
-      <!-- Game and Chat Section -->
-      <div class="row align-items-start px">
+      <!-- Game -->
+      <div class="row align-items-start px justify-content-center">
         <div class="col-md-8">
-                <div class="text-center">
-                    <canvas id="pongCanvas" width="1000" height="600" class="bg-dark"></canvas>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="chat-container p-3 border">
-                    <h5 class="text-center">Live Chat</h5>
-                    <div id="chat-messages" style="height: 480px; overflow-y: scroll;">
-                        <!-- Chat messages go here -->
-                    </div>
-                    <input type="text" id="chat-input" class="form-control mt-3" placeholder="Type a message..." onkeypress="if(event.keyCode == 13) sendMessage()">
-                </div>
-            </div>
-          
+          <div id="gameBackground" class="text-center" style="background-color: #f2f2f2;">
+          <canvas id="pongCanvas" class="bg-dark"></canvas>
           </div>
-          
         </div>
-        
-        
+      </div>
+
+      <!-- Chat -->
+      <div class="row align-items-start px justify-content-center">
+        <div class="col-md-8">
+          <div class="text-center">
+            <h5 class="text-center">Live Chat</h5>
+            <div id="chat-messages" style="width:100%; height: 400px; overflow-y: scroll;">
+                <!-- Chat messages go here -->
+            </div>
+            <input type="text" id="chat-input" class="form-control mt-3" placeholder="Type a message..." onkeypress="if(event.keyCode == 13) sendMessage()">
+          </div>
+        </div>
+      </div>
+
       <!-- Feature Cards -->
       <div class="row row-cols-1 row-cols-lg-3 align-items-stretch  py-5  w-full m-auto">
         <div class="col">

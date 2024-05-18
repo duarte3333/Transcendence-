@@ -41,9 +41,10 @@ document.getElementById('avatarUpload').addEventListener('change', function (eve
 document.getElementById('saveSettings').addEventListener('click', function () {
   const img = document.getElementById('avatarPreview');
   if (img.src) {
-    const canvas = document.getElementById('gameCanvas');
+    const canvas = document.getElementById('avatarCanvas');
     const ctx = canvas.getContext('2d');
     const avatar = new Image();
+    console.log(img.src);
     avatar.src = img.src;
     avatar.onload = function () {
       // Clear the canvas
@@ -56,15 +57,14 @@ document.getElementById('saveSettings').addEventListener('click', function () {
       ctx.fillText('Player 1', 70, 40); // Adjust position as needed
     };
   }
-  //command to close the modal
-  const modal = document.getElementById('modal');
-  const modalContent = document.getElementById('modal-content');
-  modal.style.display = 'none';
-  modalContent.style.display = 'none';
+  //change player info card with new avatar
+  const player = document.getElementById('playerAvatar');
+  player.style.display = 'none';
+  
 
 });
 
 
-document.getElementById('modal-cotent').addEventListener('click', function (event) {
+document.getElementById('modal-content').addEventListener('click', function (event) {
   event.stopPropagation();
 });
