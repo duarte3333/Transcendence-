@@ -3,7 +3,7 @@ const canvas = document.getElementById("pongCanvas");
 import { ball } from "./ball.js";
 import { playerPaddle } from "./paddles.js";
 import { aiPaddle } from "./paddles.js";
-import { candy } from "./candy.js";
+import { Candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
@@ -16,6 +16,7 @@ class Game {
   isScoring = false;
   score = new Score()
   events = new events(this);  // Initialize events after setting up game
+  candies = [];
 
   //INITIALIZE GAME
   constructor() {
@@ -39,8 +40,8 @@ class Game {
     this.addPlayer(playerPaddle);
     this.addPlayer(aiPaddle);
     this.addBall(ball);
-    this.addCandy(candy);
-    this.init();
+    this.addCandies(2);
+    this.init(); 
   } 
 
   init() {
@@ -67,9 +68,12 @@ class Game {
     this.objects.set(ball.name, ball);
   }
 
-  addCandy(candy) {
-    candy.draw(this.context);
-    this.objects.set(candy.name, candy);
+  addCandies(numCandies) {
+    for (let i = 0; i < numCandies; i++) {
+      const candy = new Candy(canvas.width, canvas.height, 50);
+      this.candies.push(candy);
+      this.objects.set(`candy_${i}`, candy);
+    }
   }
 
   //MOVE OBJECTS
@@ -202,21 +206,20 @@ class Game {
     }
     
 
-    if (candy.visible && isRectCircleCollision(ball, candy)) {
-      console.log("Candy collected");
-      console.log(ball.last_hit);
-      console.log(player_1.name);
-      if (ball.last_hit == player_1.name) {
-        player_2.height *= 0.8;
-        player_1.height *= 1.2;
+    this.candies.forEach(candy => {
+      if (candy.visible && isRectCircleCollision(ball, candy)) {
+        console.log("Candy collected by " + ball.last_hit);
+        if (ball.last_hit === player_1.name) {
+          player_2.height *= 0.8;
+          player_1.height *= 1.2;
+        } else if (ball.last_hit === player_2.name) {
+          player_1.height *= 0.8;
+          player_2.height *= 1.2;
+        }
+        candy.visible = false;
+        candy.reset(canvas.width, canvas.height, player_1, player_2);
       }
-      if (ball.last_hit == player_2.name) {
-        player_1.height *= 0.8;
-        player_2.height *= 1.2;
-      }
-      candy.visible = false;
-      candy.reset(canvas.width, canvas.height, 50, player_1, player_2);
-    }
+    });
   }
 
   tooglePause() {
@@ -230,33 +233,17 @@ class Game {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
-      //this.score.showScore(this.objects, this.context, canvas);
     } 
     else {
-      // Set the font style
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
-
-      // Set the shadow for the text
-      this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
-      this.context.shadowOffsetX = 1.5;
-      this.context.shadowOffsetY = 1.5;
-      this.context.shadowBlur = 1;
-      
-      //Add a gradient fill for the text
-      //create a gradient light blue
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
+      this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
       var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
-      gradient.addColorStop("0", "white"); 
-      gradient.addColorStop("1", "#759ad7"); // light blue
+      gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
       this.context.fillStyle = gradient;
-
-      // Draw the text
       this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
-
-      // Reset the shadow properties for future drawings
-      this.context.shadowOffsetX = 0;
-      this.context.shadowOffsetY = 0;
-      this.context.shadowBlur = 0;
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
     }
   }
 

@@ -85,7 +85,9 @@ export class events {
         }
         pauseGame.forEach(button => {
             button.addEventListener('click', () => {
-                this.game.pause = !this.game.pause;
+                if (!this.game.pause) {
+                    this.game.pause = !this.game.pause;
+                }
             });
         });
     }
