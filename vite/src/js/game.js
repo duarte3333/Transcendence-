@@ -9,7 +9,9 @@ import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
 import { drawPolygon } from "./map.js";
 import { getPixelColor } from "./map.js";
+import { bounce } from "./map.js";
 import { map } from "./map.js";
+
 
 
 
@@ -52,6 +54,10 @@ class Game {
     map.color = "teal";
     map.radius = canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
+    map.size = canvas.width;
+    if (map.sides < 4) //protect in case there is only one player and player * 2 is equal to 2
+      map.sides = 4;
+    map.prepareMap();
     map.draw(this.context);
     this.objects.set(map.name, map);
   }
