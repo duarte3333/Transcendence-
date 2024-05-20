@@ -13,6 +13,7 @@ class Game {
   objects = new Map();
   pause = false;
   speed = 2.5;
+  isScoring = false;
   score = new Score()
   events = new events(this);  // Initialize events after setting up game
 
@@ -25,6 +26,14 @@ class Game {
       this.setupGame();  // Initialize game after setting context
     });
   }
+
+  updateScore() {
+    const player1ScoreElem = document.getElementById('playerScore1');
+    const player2ScoreElem = document.getElementById('playerScore2');
+    player1ScoreElem.textContent = this.objects.get("player_1").score.value;
+    player2ScoreElem.textContent = this.objects.get("player_2").score.value;
+  }
+
 
   setupGame() {
     this.addPlayer(playerPaddle);
@@ -134,6 +143,15 @@ class Game {
     }
   }
 
+  restartBall() {
+    //wait for 1 second before restarting the ball
+    const ball = this.objects.get("ball");
+    ball.x = canvas.width / 2; 
+    ball.y = canvas.height / 2;
+    ball.speedX = 4 * this.speed;
+    ball.speedY = 0 * this.speed;
+  }
+
   collisionDetection() {
     const ball = this.objects.get("ball");
     const player_1 = this.objects.get("player_1");
@@ -161,31 +179,28 @@ class Game {
     }
 
 
-    if (ball.x + ball.radius > canvas.width) {
+    if (ball.x + ball.radius > canvas.width && !this.isScoring) {
+      this.isScoring = true;
       player_1.score.addScore();
-      this.resartBall();
-      console.log("Player 1 wins");
-      // ball.speedY /= 2;
-      // ball.speedX /= 2;
-      // setTimeout(function() {
-      //   ball.speedY *= 2;
-      //   ball.speedX *= 2;
-      // }, 1400);
+      this.updateScore();
+      setTimeout(() => {
+        this.restartBall();
+        console.log("Player 1 wins");
+        this.isScoring = false;
+      }, 1000);
     }
-
-    if (ball.x - ball.radius < 0) {
-      console.log();
+    
+    if (ball.x - ball.radius < 0 && !this.isScoring) {
+      this.isScoring = true;
       player_2.score.addScore();
-      this.resartBall();
-      ball.speedX *= -1;
-      console.log("Player 2 wins");
-      // ball.speedY /= 2;
-      // ball.speedX /= 2;
-      // setTimeout(function() {
-      //   ball.speedY *= 2;
-      //   ball.speedX *= 2;
-      // }, 1400);
+      this.updateScore();
+      setTimeout(() => {
+        this.restartBall();
+        console.log("Player 2 wins");
+        this.isScoring = false;
+      }, 1000);
     }
+    
 
     if (candy.visible && isRectCircleCollision(ball, candy)) {
       console.log("Candy collected");
@@ -208,15 +223,6 @@ class Game {
     this.pause = !this.pause;
   }
 
-  resartBall() {
-    const ball = this.objects.get("ball");
-    ball.x = canvas.width / 2; 
-    ball.y = canvas.height / 2;
-    ball.speedX = 4 * this.speed;
-    ball.speedY = 0 * this.speed;
-    
-  }
-
   draw() {
     if (!this.pause) {
       this.update();
@@ -224,12 +230,33 @@ class Game {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
-      this.score.showScore(this.objects, this.context, canvas);
+      //this.score.showScore(this.objects, this.context, canvas);
     } 
     else {
-      this.context.font = "30px Verdana, sans-serif";
-      this.context.fillStyle = "white";
-      this.context.fillText("Paused", canvas.width / 2 - 50, canvas.height / 2);
+      // Set the font style
+      this.context.font = "bold 40px Poppins, sans-serif";
+      this.context.fillStyle = "black";
+
+      // Set the shadow for the text
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
+      this.context.shadowOffsetX = 1.5;
+      this.context.shadowOffsetY = 1.5;
+      this.context.shadowBlur = 1;
+      
+      //Add a gradient fill for the text
+      //create a gradient light blue
+      var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop("0", "white"); 
+      gradient.addColorStop("1", "#759ad7"); // light blue
+      this.context.fillStyle = gradient;
+
+      // Draw the text
+      this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
+
+      // Reset the shadow properties for future drawings
+      this.context.shadowOffsetX = 0;
+      this.context.shadowOffsetY = 0;
+      this.context.shadowBlur = 0;
     }
   }
 
@@ -259,7 +286,7 @@ function resizeCanvas() {
 }
 
 resizeCanvas(); // call the function initially when the page loads
-
+ 
 const game = new Game();
 
 

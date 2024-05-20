@@ -5,7 +5,7 @@ export const ball = {
     radius: 10,
     speedX: 4,
     speedY: 0,
-    color: "white",
+    color: "black",
     name: "ball", 
     last_hit: "player_1",
 

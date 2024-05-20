@@ -7,7 +7,7 @@ export const candy = {
     y: Math.random() * (canvas.height - 2 * 50) + 50,
     visible: true, // Visibility controlled for spawn timing
     name: "candy",
-    color: "blue",
+    color: "green",
     reset: function(canvasWidth, canvasHeight, padding, player_1, player_2) {
       // Random position not too close to the walls
       this.x = Math.random() * (canvasWidth - 2 * padding) + padding;

@@ -1,14 +1,14 @@
 export class Score {
   constructor() {
-    this.score = 0;
+    this.value = 0;
   }
 
   addScore() {
-    this.score += 1;
+    this.value += 1;
   }
 
   getScore() {
-    return this.score;
+    return this.value;
   } 
 
   showScore(objects, context, canvas) {
