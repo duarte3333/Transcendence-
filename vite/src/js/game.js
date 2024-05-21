@@ -7,8 +7,6 @@ import { candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
-import { drawPolygon } from "./map.js";
-import { getPixelColor } from "./map.js";
 import { bounce } from "./map.js";
 import { map } from "./map.js";
 
@@ -18,7 +16,7 @@ import { map } from "./map.js";
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 4;
+  numberOfPlayers = 8;
   pause = false;
   speed = 2.5;
   score = new Score();
@@ -46,7 +44,6 @@ class Game {
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
     console.log("Game initialized");
-    drawPolygon("wallsCanvas", canvas.width / 2, this.numberOfPlayers * 2, "white");
   }
 
   //ADD OBJECTS TO GAME
@@ -103,18 +100,18 @@ class Game {
   check_ball_walls_collision() {
     const ball = this.objects.get("ball");
     const map = this.objects.get("map");
-    if ((ball.y - ball.radius <= 0)) {
-      ball.speedY = -ball.speedY;
-      ball.y += 1;
-    }
-    if (ball.y + ball.radius >= canvas.height) {
-      ball.speedY = -ball.speedY;
-      ball.y -= 1;
-    }
-    if (getPixelColor(ball.x, ball.y)) { //if the ball hits the wall canvas or is out of bounds
+    // if ((ball.y - ball.radius <= 0)) {
+    //   ball.speedY = -ball.speedY;
+    //   ball.y += 1;
+    // }
+    // if (ball.y + ball.radius >= canvas.height) {
+    //   ball.speedY = -ball.speedY;
+    //   ball.y -= 1;
+    // }
+    if (map.checkWalls(ball.x, ball.y, ball.radius)) { //if the ball hits the walls
       // document.getElementById("pongCanvas").style.backgroundColor = "green";
-      console.log("hit!");
-      // bounce(ball, map);
+      // console.log("hit!");
+      bounce(ball, map);
     }
   }
 
