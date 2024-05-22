@@ -260,19 +260,19 @@ class Game {
   }
 }
 
-window.addEventListener('resize', resizeCanvas, false);
+// window.addEventListener('resize', resizeCanvas, false);
 
-function resizeCanvas() {
-    var canvas = document.getElementById('pongCanvas');
-    var widthToHeight = 5 / 3; // replace with your desired aspect ratio
-    var newWidth = canvas.offsetWidth;
-    var newHeight = newWidth / widthToHeight;
+// function resizeCanvas() {
+//     var canvas = document.getElementById('pongCanvas');
+//     var widthToHeight = 5 / 3; // replace with your desired aspect ratio
+//     var newWidth = canvas.offsetWidth;
+//     var newHeight = newWidth / widthToHeight;
 
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-}
+//     canvas.width = newWidth;
+//     canvas.height = newHeight;
+// }
 
-resizeCanvas(); // call the function initially when the page loads
+// resizeCanvas(); // call the function initially when the page loads
  
 const game = new Game();
 
