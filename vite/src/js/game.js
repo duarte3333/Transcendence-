@@ -7,10 +7,16 @@ import { Candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
+import { bounce } from "./map.js";
+import { map } from "./map.js";
+
+
+
 
 class Game {
   
   objects = new Map();
+  numberOfPlayers = 6;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -37,6 +43,7 @@ class Game {
 
 
   setupGame() {
+    this.addMap(map);
     this.addPlayer(playerPaddle);
     this.addPlayer(aiPaddle);
     this.addBall(ball);
@@ -50,6 +57,19 @@ class Game {
   }
 
   //ADD OBJECTS TO GAME
+  addMap(map) {
+    map.color = "teal";
+    map.radius = canvas.width / 2;
+    map.sides = this.numberOfPlayers * 2;
+    map.size = canvas.width;
+    if (map.sides < 4) //protect in case there is only one player and player * 2 is equal to 2
+      map.sides = 4;
+    map.prepareMap();
+    map.draw(this.context);
+    this.objects.set(map.name, map);
+  }
+
+
   addPlayer(paddle) {
     paddle.draw(this.context);
     if (paddle.name === "player_1") paddle.x = 0;
@@ -92,13 +112,19 @@ class Game {
 
   check_ball_walls_collision() {
     const ball = this.objects.get("ball");
-    if (ball.y - ball.radius <= 0) {
-      ball.speedY = -ball.speedY;
-      ball.y += 1;
-    }
-    if (ball.y + ball.radius >= canvas.height) {
-      ball.speedY = -ball.speedY;
-      ball.y -= 1;
+    const map = this.objects.get("map");
+    // if ((ball.y - ball.radius <= 0)) {
+    //   ball.speedY = -ball.speedY;
+    //   ball.y += 1;
+    // }
+    // if (ball.y + ball.radius >= canvas.height) {
+    //   ball.speedY = -ball.speedY;
+    //   ball.y -= 1;
+    // }
+    if (map.checkWalls(ball.x, ball.y, ball.radius)) { //if the ball hits the walls
+      // document.getElementById("pongCanvas").style.backgroundColor = "green";
+      // console.log("hit!");
+      bounce(ball, map);
     }
   }
 
