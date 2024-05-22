@@ -50,8 +50,14 @@ export class Edge {
         // Calculate the distance from the point to the closest point on the line segment
         const distanceSquared = this.distanceSquared(x, y, closestX, closestY);
 
+        // if (distanceSquared <= radius * radius / 2) {
+        //     console.log("------------------");
+        //     console.log("------------------");
+        //     }
+        // console.log(`distSq = ${distanceSquared}, radius^2 = 100, x = ${x}, y = ${y}`);
+
         // Check if the distance is less than or equal to the radius squared
-        return distanceSquared <= radius * radius;
+        return distanceSquared / 2 <= radius * radius;
     }
 
     setName(n) {
@@ -190,6 +196,18 @@ export function bounce(ball, map) {
         // Update the ball's speed
         ball.speedX = vpx;
         ball.speedY = vpy;
+        
+        //keep the ball from entering adjacent walls
+        if (vpx > 0)
+            ball.x += 1;
+        else if (vpx < 0)
+            ball.x += -1; 
+
+        if (vpy > 0)
+            ball.y += 1;
+        else if (vpy < 0)
+            ball.y += -1; 
+
         map.wallHit = "";
     } else {
         console.log("Bounce error");

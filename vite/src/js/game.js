@@ -16,7 +16,7 @@ import { map } from "./map.js";
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 4;
+  numberOfPlayers = 6;
   pause = false;
   speed = 2.5;
   score = new Score();
