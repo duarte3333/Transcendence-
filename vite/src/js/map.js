@@ -11,6 +11,7 @@ export class Edge {
     size;
     angle;
     perpAngle;
+    areaHit;
 
     print() {
         console.log("--" + this.name + "--");
@@ -57,7 +58,8 @@ export class Edge {
         // console.log(`distSq = ${distanceSquared}, radius^2 = 100, x = ${x}, y = ${y}`);
 
         // Check if the distance is less than or equal to the radius squared
-        return distanceSquared / 2 <= radius * radius;
+        this.areaHit = radius * radius - distanceSquared;
+        return distanceSquared <= radius * radius;
     }
 
     setName(n) {
@@ -97,6 +99,7 @@ export class Edge {
 // Map object
 export const map = {
     polygon: new Map(),
+    img: new Image(),
     x: 0,
     y: 0,
     radius: 10,
@@ -155,22 +158,38 @@ export const map = {
     draw: function (context) {
         // drawPolygon("pongCanvas", this.radius, this.sides, this.color);
         const canvas = document.getElementById("pongCanvas");
-        let ctx = canvas.getContext('2d');
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
+        // this.img.onload = () => {
+        //     context.fillStyle = context.createPattern(this.img, 'no-repeat');
+
+        //     context.beginPath();
+        //     let x = canvas.width / 2 + this.sideLength / 2; // starting position x
+        //     let y = canvas.height / 2 - this.centerToSideLength; // starting position y
+        //     let angle = 2 * Math.PI / this.sides; // angle created by each side of the polygon
+        //     context.moveTo(x, y);
+
+        //     // Each iteration updates y and x with the next vertex and the angle is multiplied times iterations
+        //     for (let i = 1; i <= this.sides; i++) {
+        //         x = x + this.sideLength * Math.cos(i * angle);
+        //         y = y + this.sideLength * Math.sin(i * angle);
+        //         context.lineTo(x, y);
+        //     }
+        //     context.closePath();
+        //     context.fill();
+        // };
+        context.fillStyle = this.color;
+        context.beginPath();
         let x = canvas.width / 2 + this.sideLength / 2; //startging position x
         let y = canvas.height / 2 - this.centerToSideLength; //starting position y
         let angle = 2 * (Math.PI) / this.sides; // angle created by each side of the polygon
-        ctx.moveTo(x, y);
+        context.moveTo(x, y);
         // each iteration updates y and x with the nex vertix and the angle is multiplied times iterations
         for (var i = 1; i <= this.sides; i++) {
             x = x + this.sideLength * Math.cos(i * angle);
             y = y + this.sideLength * Math.sin(i * angle);
-            ctx.lineTo(x, y);
+            context.lineTo(x, y);
         }
-        ctx.closePath();
-        ctx.fill();
-        
+        context.closePath();
+        context.fill();    
     },
 };
 
@@ -198,15 +217,15 @@ export function bounce(ball, map) {
         ball.speedY = vpy;
         
         //keep the ball from entering adjacent walls
-        if (vpx > 0)
-            ball.x += 1;
-        else if (vpx < 0)
-            ball.x += -1; 
+        // if (vpx > 0)
+        //     ball.x += Math.sqrt(temp.areaHit) / 2;
+        // else if (vpx < 0)
+        //     ball.x += -1 * (Math.sqrt(temp.areaHit) / 2); 
 
-        if (vpy > 0)
-            ball.y += 1;
-        else if (vpy < 0)
-            ball.y += -1; 
+        // if (vpy > 0)
+        //     ball.y += Math.sqrt(temp.areaHit) / 2;
+        // else if (vpy < 0)
+        //     ball.y += -1 * (Math.sqrt(temp.areaHit) / 2); 
 
         map.wallHit = "";
     } else {

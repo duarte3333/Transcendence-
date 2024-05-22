@@ -16,7 +16,7 @@ import { map } from "./map.js";
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 6;
+  numberOfPlayers = 10;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -58,7 +58,8 @@ class Game {
 
   //ADD OBJECTS TO GAME
   addMap(map) {
-    map.color = "teal";
+    map.img.src = "../img/lisboa3.png";
+    map.color =  "teal";
     map.radius = canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
     map.size = canvas.width;
@@ -71,20 +72,20 @@ class Game {
 
 
   addPlayer(paddle) {
-    paddle.draw(this.context);
     if (paddle.name === "player_1") paddle.x = 0;
     else paddle.x = canvas.width - paddle.width;
     paddle.y = canvas.height / 2 - 50;
     paddle.speed *= this.speed;
+    paddle.draw(this.context);
     this.objects.set(paddle.name, paddle);
   }
 
   addBall(ball) {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
-    ball.draw(this.context);
     ball.speedY *= this.speed;
     ball.speedX *= this.speed;
+    ball.draw(this.context);
     this.objects.set(ball.name, ball);
   }
 
@@ -139,7 +140,7 @@ class Game {
     } else if (playerPaddle.moveDown) {
       this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
     }
-    this.move("ball", ball.x + ball.speedX, ball.y + ball.speedY);
+    this.move("ball", ball.x + ball.speedX, ball.y + ball.speedY); //replace with movefor the ball
 
     this.check_ball_walls_collision();
     this.collisionDetection();
@@ -209,27 +210,31 @@ class Game {
     }
 
 
-    if (ball.x + ball.radius > canvas.width && !this.isScoring) {
-      this.isScoring = true;
-      player_1.score.addScore();
-      this.updateScore();
-      setTimeout(() => {
-        this.restartBall();
-        console.log("Player 1 wins");
-        this.isScoring = false;
-      }, 1000);
+    if (ball.x > canvas.width || ball.x < 0 || ball.y > canvas.height || ball.y < 0) {
+      this.restartBall();
     }
+
+    // if (ball.x + ball.radius > canvas.width && !this.isScoring) {
+    //   this.isScoring = true;
+    //   player_1.score.addScore();
+    //   this.updateScore();
+    //   setTimeout(() => {
+    //     this.restartBall();
+    //     console.log("Player 1 wins");
+    //     this.isScoring = false;
+    //   }, 1000);
+    // }
     
-    if (ball.x - ball.radius < 0 && !this.isScoring) {
-      this.isScoring = true;
-      player_2.score.addScore();
-      this.updateScore();
-      setTimeout(() => {
-        this.restartBall();
-        console.log("Player 2 wins");
-        this.isScoring = false;
-      }, 1000);
-    }
+    // if (ball.x - ball.radius < 0 && !this.isScoring) {
+    //   this.isScoring = true;
+    //   player_2.score.addScore();
+    //   this.updateScore();
+    //   setTimeout(() => {
+    //     this.restartBall();
+    //     console.log("Player 2 wins");
+    //     this.isScoring = false;
+    //   }, 1000);
+    // }
     
 
     this.candies.forEach(candy => {
@@ -257,6 +262,7 @@ class Game {
       this.update();
       this.context.clearRect(0, 0, canvas.width, canvas.height);
       this.objects.forEach((element) => {
+        console.log("drawing :" + element.name);
         element.draw(this.context);
       });
     } 
