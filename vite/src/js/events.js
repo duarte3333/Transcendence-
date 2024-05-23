@@ -25,6 +25,10 @@ export class events {
             event.preventDefault();
             const [player, action, state] = playerKeyMap[event.key];
             if (player) {
+                for (let i = 1; i <= this.game.numberOfPlayers; i++) {
+                    let temp = this.game.objects.get("paddle_" + i);
+                    temp[action] = state;
+                }
                 const paddle = this.game.objects.get(player);
                 if (paddle) paddle[action] = state;
             } else {
@@ -44,6 +48,10 @@ export class events {
         if (playerKeyMap[event.key]) {
             event.preventDefault();
             const [player, action, state] = playerKeyMap[event.key];
+            for (let i = 1; i <= this.game.numberOfPlayers; i++) {
+                let temp = this.game.objects.get("paddle_" + i);
+                temp[action] = state;
+            }
             const paddle = this.game.objects.get(player);
             if (paddle) paddle[action] = state;
         }

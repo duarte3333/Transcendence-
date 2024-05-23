@@ -1,3 +1,5 @@
+import { bounce } from "./map.js";
+
 // Ball object
 export const ball = {
     x: 0,
@@ -5,14 +7,20 @@ export const ball = {
     radius: 10,
     speedX: 1,
     speedY: 0,
-    speed : 4,
+    speed: 2,
+    speedLimit: 20,
     color: "black",
     name: "ball", 
     last_hit: "player_1",
 
-    // move: function (map) {
-
-    // },
+    move: function (map) {
+        for (let i = 1; i <= this.speed; i++) {
+            ball.x += ball.speedX;
+            ball.y += ball.speedY;
+            if (map.checkWalls(ball.x, ball.y, ball.radius))
+                bounce(ball, map);
+        }
+    },
 
     draw: function (context) {
         context.fillStyle = this.color;

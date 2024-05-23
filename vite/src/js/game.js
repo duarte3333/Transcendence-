@@ -9,6 +9,7 @@ import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
 import { bounce } from "./map.js";
 import { map } from "./map.js";
+import { Paddle } from "./paddles.js"
 
 
 
@@ -16,7 +17,7 @@ import { map } from "./map.js";
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 10;
+  numberOfPlayers = 3;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -44,8 +45,9 @@ class Game {
 
   setupGame() {
     this.addMap(map);
-    this.addPlayer(playerPaddle);
-    this.addPlayer(aiPaddle);
+    this.addPaddles();
+    // this.addPlayer(playerPaddle);
+    // this.addPlayer(aiPaddle);
     this.addBall(ball);
     this.addCandies(2);
     this.init(); 
@@ -70,21 +72,29 @@ class Game {
     this.objects.set(map.name, map);
   }
 
+  addPaddles() {
+    const map = this.objects.get("map");
+    for (let i = 1; i <= this.numberOfPlayers; i++) {
+      let temp = new Paddle(map, i);
+      temp.print();
+      temp.draw(this.context);
+      this.objects.set(temp.name, temp);
+    }
+  }
 
   addPlayer(paddle) {
     if (paddle.name === "player_1") paddle.x = 0;
     else paddle.x = canvas.width - paddle.width;
     paddle.y = canvas.height / 2 - 50;
     paddle.speed *= this.speed;
-    paddle.draw(this.context);
     this.objects.set(paddle.name, paddle);
+    paddle.draw(this.context);
   }
 
   addBall(ball) {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
-    ball.speedY *= this.speed;
-    ball.speedX *= this.speed;
+    ball.speed *= this.speed;
     ball.draw(this.context);
     this.objects.set(ball.name, ball);
   }
@@ -111,40 +121,27 @@ class Game {
     }
   }
 
-  check_ball_walls_collision() {
-    const ball = this.objects.get("ball");
-    const map = this.objects.get("map");
-    // if ((ball.y - ball.radius <= 0)) {
-    //   ball.speedY = -ball.speedY;
-    //   ball.y += 1;
-    // }
-    // if (ball.y + ball.radius >= canvas.height) {
-    //   ball.speedY = -ball.speedY;
-    //   ball.y -= 1;
-    // }
-    if (map.checkWalls(ball.x, ball.y, ball.radius)) { //if the ball hits the walls
-      // document.getElementById("pongCanvas").style.backgroundColor = "green";
-      // console.log("hit!");
-      bounce(ball, map);
-    }
-  }
-
   //UPDATE OBJECTS
   update() {
     const playerPaddle = this.objects.get("player_1");
     const aiPaddle = this.objects.get("player_2");
+    const ball = this.objects.get("ball");
+    const map = this.objects.get("map");
 
     //Update players paddle and ball
-    if (playerPaddle.moveUp) {
-      this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
-    } else if (playerPaddle.moveDown) {
-      this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
-    }
-    this.move("ball", ball.x + ball.speedX, ball.y + ball.speedY); //replace with movefor the ball
+    for (let i = 1; i <= this.numberOfPlayers; i++) {
+      let temp = this.objects.get("paddle_" + i);
+      temp.move();
 
-    this.check_ball_walls_collision();
-    this.collisionDetection();
-    this.updateAI();
+    }
+    // if (playerPaddle.moveUp) {
+    //   this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
+    // } else if (playerPaddle.moveDown) {
+    //   this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
+    // }
+    ball.move(map);
+    // this.collisionDetection();
+    // this.updateAI();
   }
 
   updateAI() {
@@ -179,8 +176,9 @@ class Game {
     const ball = this.objects.get("ball");
     ball.x = canvas.width / 2; 
     ball.y = canvas.height / 2;
-    ball.speedX = 4 * this.speed;
-    ball.speedY = 0 * this.speed;
+    ball.speed *= this.speed;
+    ball.speedX = 1;
+    ball.speedY = 0;
   }
 
   collisionDetection() {
@@ -196,8 +194,13 @@ class Game {
       (playerPaddle.height / 2);
   
       // Modify speed based on where it hit the paddle
-      ball.speedY = impactPoint * (5 * this.speed); // The '5' factor controls the influence
+      ball.speedY = impactPoint;
       ball.speedX = -ball.speedX;
+      ball.speed += Math.abs(impactPoint) * (2 * this.speed); // Adjust '5' as needed
+      if (ball.speed > ball.speedLimit) {
+        ball.speed = ball.speedLimit;
+      }
+
     }
 
     if (isRectCircleCollision(ball, player_2) 
@@ -205,8 +208,12 @@ class Game {
       ball.last_hit = player_2.name;
       let impactPoint =
       (ball.y - (aiPaddle.y + aiPaddle.height / 2)) / (aiPaddle.height / 2);
-      ball.speedY = impactPoint * (5 * this.speed); // Adjust '5' as needed
+      ball.speedY = impactPoint;
       ball.speedX = -ball.speedX;
+      ball.speed += Math.abs(impactPoint)  * (2 * this.speed); // Adjust '5' as needed
+      if (ball.speed > ball.speedLimit) {
+        ball.speed = ball.speedLimit;
+      }
     }
 
 
@@ -262,7 +269,7 @@ class Game {
       this.update();
       this.context.clearRect(0, 0, canvas.width, canvas.height);
       this.objects.forEach((element) => {
-        console.log("drawing :" + element.name);
+        // console.log("drawing :" + element.name);
         element.draw(this.context);
       });
     } 
@@ -285,8 +292,7 @@ class Game {
     const ball = this.objects.get("ball");
     const player_1 = this.objects.get("player_1");
     const player_2 = this.objects.get("player_2");
-    ball.speedX = 4 * this.speed;
-    ball.speedY = 4 * this.speed;
+    ball.speed = 4 * this.speed;
     player_1.speed = 3 * this.speed;
     player_2.speed = 3 * this.speed;
   }
