@@ -116,9 +116,7 @@ export const map = {
         this.sideLength = 2 * this.radius * Math.sin(Math.PI / this.sides);
         this.centerToSideLength = Math.sqrt(Math.pow(this.radius, 2) - Math.pow(this.sideLength / 2, 2));
         if (this.sides % 4 === 0) { // reajust size to full canvas if none of the vertix are touching canvas walls.
-            // console.log(`this radius: ${this.radius}`);
             this.radius = this.radius / Math.cos((Math.PI) / this.sides); //NEEDS TO CALCULATE THE DISTANCE BETWEEN THE CENTER AND THE EDGE AT A CERTAIN ANGLE
-            // console.log(`this radius: ${this.radius}`);
             this.sideLength = 2 * this.radius * Math.sin(Math.PI / this.sides);
             this.centerToSideLength = Math.sqrt(Math.pow(this.radius, 2) - Math.pow(this.sideLength / 2, 2));
         }
@@ -147,8 +145,6 @@ export const map = {
             let temp = map.polygon.get("edge_" + i);
             if (temp.isItIn(x, y, radius)) {
                 this.wallHit = temp.name;
-                // console.log("wall hit:" + this.wallHit);
-                // console.log(`x = ${x}, y = ${y}`);
                 // temp.print();
                 return true;
             }

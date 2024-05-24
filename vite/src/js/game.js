@@ -17,7 +17,7 @@ import { Paddle } from "./paddles.js"
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 3;
+  numberOfPlayers = 6;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -76,7 +76,7 @@ class Game {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
       let temp = new Paddle(map, i);
-      temp.print();
+      // temp.print();
       temp.draw(this.context);
       this.objects.set(temp.name, temp);
     }
