@@ -196,7 +196,7 @@ export const map = {
     },
 };
 
-export function bounce(ball, map) {
+export function bounceWalls(ball, map) {
     if (map.wallHit != "") {
         let temp = map.polygon.get(map.wallHit);
         // Extract the ball's current speed

@@ -1,4 +1,6 @@
-import { bounce } from "./map.js";
+import { bounceWalls } from "./map.js";
+import { checkPlayers } from "./game.js";
+import { bouncePlayers } from "./game.js";
 
 // Ball object
 export const ball = {
@@ -17,8 +19,10 @@ export const ball = {
         for (let i = 1; i <= this.speed; i++) {
             ball.x += ball.speedX;
             ball.y += ball.speedY;
+            // if (checkPlayers(ball.x, ball.y, ball. radius))
+            //     bouncePlayers(ball);
             if (map.checkWalls(ball.x, ball.y, ball.radius))
-                bounce(ball, map);
+                bounceWalls(ball, map);
         }
     },
 

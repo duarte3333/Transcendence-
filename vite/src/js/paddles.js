@@ -6,8 +6,8 @@ export class Paddle {
   type;
   width;
   height;
-  x;
-  y;
+  x; //one of the vertexes
+  y; //one of the vertexes
   vx;
   vy;
   gapX;
@@ -25,7 +25,7 @@ export class Paddle {
   constructor(map, index) {
     this.name = "paddle_" + index;
     this.type = "player";
-    this.speed = 3;
+    this.speed = 3; // needs to change to edge.size / somthing
     this.moveDown = false;
     this.moveUp = false;
     this.score = new Score();
@@ -36,8 +36,6 @@ export class Paddle {
       console.error(`Edge with key ${edgeKey} not found in map.polygon`);
       return;
     }
-    this.x = this.edge.x1;
-    this.y = this.edge.y1;
     this.angle = this.edge.angle;
     this.vx = Math.cos(this.angle);
     this.vy = Math.sin(this.angle);
@@ -45,6 +43,10 @@ export class Paddle {
     this.width = this.height / 8;
     this.moveUpKey = "w";
     this.moveDownKey = "s";
+    this.x = this.edge.x1 + (this.vx * (this.edge.size / 2));
+    this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
+    this.gapX = 0;
+    this.gapY = 0;
   }
 
   print() {
@@ -81,8 +83,10 @@ export class Paddle {
     x = x + this.width * Math.cos(this.edge.perpAngle + Math.PI * 1);
     y = y + this.width * Math.sin(this.edge.perpAngle + Math.PI * 1);
     context.lineTo(x, y);
-    this.gapX = x - this.x;
-    this.gapY = y - this.y;
+    if (!this.gapX) {
+      this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
+      this.gapY = y - this.y;
+    }
 
     x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 1.5);
     y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 1.5);
@@ -174,10 +178,10 @@ export const aiPaddle = {
     }
 
     // Check if the point is within the bounds of the segment
-    // py = Math.round(py);
-    // px = Math.round(px);
-    const withinXBounds = (px >= Math.min(edge.x1, edge.x2) && px <= Math.max(edge.x1, edge.x2));
-    const withinYBounds = (py >= Math.min(edge.y1, edge.y2) && py <= Math.max(edge.y1, edge.y2));
+    py = Math.round(py);
+    px = Math.round(px);
+    const withinYBounds = (py >= Math.min(Math.round(edge.y1), Math.round(edge.y2)) && py <= Math.max(Math.round(edge.y1), Math.round(edge.y2)));
+    const withinXBounds = (px >= Math.min(Math.round(edge.x1), Math.round(edge.x2)) && px <= Math.max(Math.round(edge.x1), Math.round(edge.x2)));
     
     return withinXBounds && withinYBounds;
 }

@@ -7,17 +7,17 @@ import { Candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
-import { bounce } from "./map.js";
+import { bounceWalls } from "./map.js";
 import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
-
+import { isBallCollidingWithPlayer } from "./aux.js";
 
 
 
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 6;
+  numberOfPlayers = 4;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -44,6 +44,7 @@ class Game {
 
 
   setupGame() {
+    console.log("setting up")
     this.addMap(map);
     this.addPaddles();
     // this.addPlayer(playerPaddle);
@@ -94,7 +95,8 @@ class Game {
   addBall(ball) {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
-    ball.speed *= this.speed;
+    // ball.speed *= this.speed;
+    console.log(`starting speed = ${ball.speed}`);
     ball.draw(this.context);
     this.objects.set(ball.name, ball);
   }
@@ -314,6 +316,20 @@ class Game {
  
 const game = new Game();
 
+
+export function checkPlayers(x, y, radius) {
+  for (let i = 1; i <= game.numberOfPlayers; i++) {
+    let temp = game.objects.get("paddle_" + i);
+    if (isBallCollidingWithPlayer(ball, temp)) {
+      return (true);
+    }
+  }
+  return (false);
+}
+
+export function bouncePlayers(ball) {
+    console.log("HIT");
+}
 
 
 //MOUSE MOVE FT WITH HARDCODED height betweeen canvas 0 and screen 0 (y)
