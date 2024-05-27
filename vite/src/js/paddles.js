@@ -21,6 +21,7 @@ export class Paddle {
   moveUpKey;
   moveDownKey
   color;
+  rectEdges = new Map();
 
   constructor(map, index) {
     this.name = "paddle_" + index;
@@ -47,6 +48,68 @@ export class Paddle {
     this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
     this.gapX = 0;
     this.gapY = 0;
+    this.prepRectMap()
+  }
+
+  prepRectMap() {
+    let x = this.x;
+    let y = this.y;
+    for (let i = 1; i <= 4; i++) {
+      let temp = new Edge();
+      temp.setName("edge_" + i);
+      temp.setPoint1(x, y);
+      if (i == 1) {
+        x = x + this.width * Math.cos(this.edge.perpAngle);
+        y = y + this.width * Math.sin(this.edge.perpAngle);
+      } else if (i == 2) {
+        x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 0.5);
+        y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 0.5);
+      } else if (i == 3) {
+        x = x + this.width * Math.cos(this.edge.perpAngle + Math.PI * 1);
+        y = y + this.width * Math.sin(this.edge.perpAngle + Math.PI * 1);
+        if (!this.gapX) {
+          this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
+          this.gapY = y - this.y;
+        }
+      } else if (i == 4) {
+        x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 1.5);
+      y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 1.5);
+      }
+      temp.setPoint2(x, y);
+      let deltaX = temp.x2 - temp.x1;
+      let deltaY = temp.y2 - temp.y1;
+      temp.setSize(Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+      temp.setAngle(i * this.edge.perpAngle);
+      temp.setperpAngle();
+      this.rectEdges.set(temp.name, temp);
+    }
+  }
+
+  updateRectMap() {
+    let x = this.x;
+    let y = this.y;
+    for (let i = 1; i <= 4; i++) {
+      let temp = this.rectEdges.get("edge_" + i);
+      temp.setPoint1(x, y);
+      if (i == 1) {
+        x = x + this.width * Math.cos(this.edge.perpAngle);
+        y = y + this.width * Math.sin(this.edge.perpAngle);
+      } else if (i == 2) {
+        x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 0.5);
+        y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 0.5);
+      } else if (i == 3) {
+        x = x + this.width * Math.cos(this.edge.perpAngle + Math.PI * 1);
+        y = y + this.width * Math.sin(this.edge.perpAngle + Math.PI * 1);
+        if (!this.gapX) {
+          this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
+          this.gapY = y - this.y;
+        }
+      } else if (i == 4) {
+        x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 1.5);
+      y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 1.5);
+      }
+      temp.setPoint2(x, y);
+    }
   }
 
   print() {
@@ -72,25 +135,12 @@ export class Paddle {
     context.beginPath();
     context.moveTo(x, y);
 
-    x = x + this.width * Math.cos(this.edge.perpAngle);
-    y = y + this.width * Math.sin(this.edge.perpAngle);
-    context.lineTo(x, y);
-
-    x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 0.5);
-    y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 0.5);
-    context.lineTo(x, y);
-
-    x = x + this.width * Math.cos(this.edge.perpAngle + Math.PI * 1);
-    y = y + this.width * Math.sin(this.edge.perpAngle + Math.PI * 1);
-    context.lineTo(x, y);
-    if (!this.gapX) {
-      this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
-      this.gapY = y - this.y;
+    for (let i = 1; i <= 4; i++) {
+      let temp = this.rectEdges.get("edge_" + i);
+      x = temp.x2;
+      y = temp.y2;
+      context.lineTo(x, y);
     }
-
-    x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 1.5);
-    y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 1.5);
-    context.lineTo(x, y);
 
     context.closePath();
     context.fill();
@@ -109,6 +159,7 @@ export class Paddle {
           break ;
         }
       }
+      this.updateRectMap();
     } 
     else if (this.moveDown) {
       for (let i = 1; i <= this.speed; i++) {
@@ -124,7 +175,16 @@ export class Paddle {
         this.x  = newX;
         this.y = newY;
       }
+      this.updateRectMap();
     }
+  }
+  checkColision(ball) {
+    for (let i = 1; i <= 4; i++) {
+      let temp = this.rectEdges.get("edge_" + i);
+      if (temp.isItIn(ball.x, ball.y, ball.radius))
+        return true;
+    }
+    return false;
   }
 }
 
@@ -184,4 +244,42 @@ export const aiPaddle = {
     const withinXBounds = (px >= Math.min(Math.round(edge.x1), Math.round(edge.x2)) && px <= Math.max(Math.round(edge.x1), Math.round(edge.x2)));
     
     return withinXBounds && withinYBounds;
+}
+
+
+export function checkPlayers(ball, game) {
+  for (let i = 1; i <= game.numberOfPlayers; i++) {
+    let temp = game.objects.get("paddle_" + i);
+    if (temp.checkColision(ball)) {
+      return temp.edge;
+    }
+  }
+  return 0;
+}
+
+export function bouncePlayers(ball, edge) {
+
+    //preciso de adicionar impact point para dar um twist na bola consuante o sitio que tocou no player
+
+
+   // Extract the ball's current speed
+   let vx = ball.speedX;
+   let vy = ball.speedY;
+   
+   // Calculate the normal vector components based on the edge angle
+   let nx = Math.cos(edge.perpAngle);
+   let ny = Math.sin(edge.perpAngle);
+   
+   // Calculate the dot product of the velocity vector and the normal vector
+   let dotProduct = vx * nx + vy * ny;
+   
+   // Calculate the reflected velocity components
+   let vpx = vx - 2 * dotProduct * nx;
+   let vpy = vy - 2 * dotProduct * ny;
+   
+   // Update the ball's speed
+   ball.speedX = vpx;
+   ball.speedY = vpy;
+   
+   //keep the ball from entering player paddle!
 }

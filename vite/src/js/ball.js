@@ -1,6 +1,5 @@
 import { bounceWalls } from "./map.js";
-import { checkPlayers } from "./game.js";
-import { bouncePlayers } from "./game.js";
+import { bouncePlayers, checkPlayers } from "./paddles.js";
 
 // Ball object
 export const ball = {
@@ -15,14 +14,17 @@ export const ball = {
     name: "ball", 
     last_hit: "player_1",
 
-    move: function (map) {
+    move: function (game) {
+        let map = game.objects.get("map");
         for (let i = 1; i <= this.speed; i++) {
             ball.x += ball.speedX;
             ball.y += ball.speedY;
-            // if (checkPlayers(ball.x, ball.y, ball. radius))
-            //     bouncePlayers(ball);
-            if (map.checkWalls(ball.x, ball.y, ball.radius))
-                bounceWalls(ball, map);
+            let edge = checkPlayers(ball, game)
+            if (edge)
+                bouncePlayers(ball, edge);
+            edge = map.checkWalls(ball.x, ball.y, ball.radius);
+            if (edge)
+                bounceWalls(ball, edge);
         }
     },
 

@@ -146,10 +146,10 @@ export const map = {
             if (temp.isItIn(x, y, radius)) {
                 this.wallHit = temp.name;
                 // temp.print();
-                return true;
+                return temp;
             }
         }
-        return false;
+        return 0;
     },
 
     draw: function (context) {
@@ -196,42 +196,36 @@ export const map = {
     },
 };
 
-export function bounceWalls(ball, map) {
-    if (map.wallHit != "") {
-        let temp = map.polygon.get(map.wallHit);
-        // Extract the ball's current speed
-        let vx = ball.speedX;
-        let vy = ball.speedY;
-        
-        // Calculate the normal vector components based on the edge angle
-        let nx = Math.cos(temp.perpAngle);
-        let ny = Math.sin(temp.perpAngle);
+export function bounceWalls(ball, edge) {
+    // Extract the ball's current speed
+    let vx = ball.speedX;
+    let vy = ball.speedY;
+    
+    // Calculate the normal vector components based on the edge angle
+    let nx = Math.cos(edge.perpAngle);
+    let ny = Math.sin(edge.perpAngle);
+    
+    // Calculate the dot product of the velocity vector and the normal vector
+    let dotProduct = vx * nx + vy * ny;
+    
+    // Calculate the reflected velocity components
+    let vpx = vx - 2 * dotProduct * nx;
+    let vpy = vy - 2 * dotProduct * ny;
+    
+    // Update the ball's speed
+    ball.speedX = vpx;
+    ball.speedY = vpy;
+    
+    //keep the ball from entering adjacent walls
+    if (ball.x > map.size / 2)
+        ball.x += -1;
+    else
+        ball.x += 1; 
 
-        
-        // Calculate the dot product of the velocity vector and the normal vector
-        let dotProduct = vx * nx + vy * ny;
-        
-        // Calculate the reflected velocity components
-        let vpx = vx - 2 * dotProduct * nx;
-        let vpy = vy - 2 * dotProduct * ny;
-        
-        // Update the ball's speed
-        ball.speedX = vpx;
-        ball.speedY = vpy;
-        
-        //keep the ball from entering adjacent walls
-        if (ball.x > map.size / 2)
-            ball.x += -1;
-        else
-            ball.x += 1; 
+    if (ball.y > map.size / 2)
+        ball.y += -1;
+    else
+        ball.y += 1;
 
-        if (ball.y > map.size / 2)
-            ball.y += -1;
-        else
-            ball.y += 1;
-
-        map.wallHit = "";
-    } else {
-        console.log("Bounce error");
-    }
+    map.wallHit = "";
 }
