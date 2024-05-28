@@ -9,19 +9,21 @@ export const ball = {
     speedX: 1,
     speedY: 0,
     speed: 2,
-    speedLimit: 20,
+    speedLimit: 12,
     color: "black",
     name: "ball", 
     last_hit: "player_1",
 
     move: function (game) {
+        if (this.speed > this.speedLimit)
+                this.speed = this.speedLimit;
         let map = game.objects.get("map");
         for (let i = 1; i <= this.speed; i++) {
             ball.x += ball.speedX;
             ball.y += ball.speedY;
-            let edge = checkPlayers(ball, game)
-            if (edge)
-                bouncePlayers(ball, edge);
+            let {edge: edge, temp: player} = checkPlayers(ball, game)
+            if (edge && player)
+                bouncePlayers(ball, edge, player);
             edge = map.checkWalls(ball.x, ball.y, ball.radius);
             if (edge)
                 bounceWalls(ball, edge);

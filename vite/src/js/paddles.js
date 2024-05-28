@@ -8,6 +8,8 @@ export class Paddle {
   height;
   x; //one of the vertexes
   y; //one of the vertexes
+  centerX;
+  centerY;
   vx;
   vy;
   gapX;
@@ -83,6 +85,9 @@ export class Paddle {
       temp.setperpAngle();
       this.rectEdges.set(temp.name, temp);
     }
+    let temp = this.rectEdges.get("edge_2"); //get the center of rect by the oposit vertexes
+    this.centerX = (this.x + temp.x2) / 2;
+    this.centerY = (this.y + temp.y2) / 2;
   }
 
   updateRectMap() {
@@ -110,6 +115,9 @@ export class Paddle {
       }
       temp.setPoint2(x, y);
     }
+    let temp = this.rectEdges.get("edge_2"); //update the center of rect by the oposit vertexes
+    this.centerX = (this.x + temp.x2) / 2;
+    this.centerY = (this.y + temp.y2) / 2;
   }
 
   print() {
@@ -251,35 +259,61 @@ export function checkPlayers(ball, game) {
   for (let i = 1; i <= game.numberOfPlayers; i++) {
     let temp = game.objects.get("paddle_" + i);
     if (temp.checkColision(ball)) {
-      return temp.edge;
+      const edge = temp.edge;
+      return {edge, temp};
     }
   }
   return 0;
 }
 
-export function bouncePlayers(ball, edge) {
+export function bouncePlayers(ball, edge, player) {
 
-    //preciso de adicionar impact point para dar um twist na bola consuante o sitio que tocou no player
+  // Extract the ball's current speed
+  let vx = ball.speedX;
+  let vy = ball.speedY;
+  
+  // Calculate the normal vector components based on the edge angle
+  let nx = Math.cos(edge.perpAngle);
+  let ny = Math.sin(edge.perpAngle);
+  
+  // Calculate the dot product of the velocity vector and the normal vector
+  let dotProduct = vx * nx + vy * ny;
+  
+  // Calculate the reflected velocity components
+  let vpx = vx - 2 * dotProduct * nx;
+  let vpy = vy - 2 * dotProduct * ny;
+  
+  // Calculate the distance from the ball to the center of the paddle
+  let distanceFromCenter = ball.y - player.centerY;
 
+  // Normalize the distance to a range between -1 and 1
+  let normalizedDistance = distanceFromCenter / (player.height / 2);
 
-   // Extract the ball's current speed
-   let vx = ball.speedX;
-   let vy = ball.speedY;
-   
-   // Calculate the normal vector components based on the edge angle
-   let nx = Math.cos(edge.perpAngle);
-   let ny = Math.sin(edge.perpAngle);
-   
-   // Calculate the dot product of the velocity vector and the normal vector
-   let dotProduct = vx * nx + vy * ny;
-   
-   // Calculate the reflected velocity components
-   let vpx = vx - 2 * dotProduct * nx;
-   let vpy = vy - 2 * dotProduct * ny;
-   
-   // Update the ball's speed
-   ball.speedX = vpx;
-   ball.speedY = vpy;
+  // Adjust the bounce angle based on the distance from the center
+  let angleAdjustment = normalizedDistance * Math.PI / 4; // 45 degree max adjustment
+  let speedMultiplier = 1 + Math.abs(normalizedDistance) * 0.25; // Speed increases up to 50%
+
+  // Convert the reflection components to angle and speed
+  ball.speed *= speedMultiplier;
+  let angle = Math.atan2(vpy, vpx);
+  if (angle > 0)
+      angle -= angleAdjustment;
+  else
+      angle += angleAdjustment;
+
+  // Update the ball's speed and direction
+  ball.speedX = Math.cos(angle);
+  ball.speedY = Math.sin(angle);
+  
    
    //keep the ball from entering player paddle!
+    if (ball.x > player.centerX)
+      ball.x += 1;
+    else
+      ball.x += -1; 
+
+    if (ball.y > player.centerY)
+      ball.y += 1;
+    else
+      ball.y += -1;
 }
