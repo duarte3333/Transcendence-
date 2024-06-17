@@ -15,7 +15,7 @@ import { Paddle } from "./paddles.js"
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 5;
+  numberOfPlayers = 3;
   pause = false;
   speed = 2.5;
   isScoring = false;

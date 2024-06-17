@@ -15,7 +15,7 @@ export class Paddle {
   gapX;
   gapY;
   angle;
-  edge;
+  edge; //baliza
   speed;
   score;
   moveDown;
@@ -28,13 +28,13 @@ export class Paddle {
   constructor(map, index) {
     this.name = "paddle_" + index;
     this.type = "player";
-    this.speed = 3; // needs to change to edge.size / somthing
     this.moveDown = false;
     this.moveUp = false;
     this.score = new Score();
     this.color = "black";
     const edgeKey = "edge_" + (index * 2);
     this.edge = map.polygon.get(edgeKey);
+    this.speed = this.edge.size / 80; // needs to change to edge.size / somthing
     if (!this.edge) {
       console.error(`Edge with key ${edgeKey} not found in map.polygon`);
       return;
@@ -59,6 +59,7 @@ export class Paddle {
     for (let i = 1; i <= 4; i++) {
       let temp = new Edge();
       temp.setName("edge_" + i);
+      console.log(`player = ${this.name}, edge = ${temp.name}`);
       temp.setPoint1(x, y);
       if (i == 1) {
         x = x + this.width * Math.cos(this.edge.perpAngle);
@@ -190,9 +191,9 @@ export class Paddle {
     for (let i = 1; i <= 4; i++) {
       let temp = this.rectEdges.get("edge_" + i);
       if (temp.isItIn(ball.x, ball.y, ball.radius))
-        return true;
+        return temp;
     }
-    return false;
+    return 0;
   }
 }
 
@@ -258,14 +259,14 @@ export const aiPaddle = {
 export function checkPlayers(ball, game) {
   for (let i = 1; i <= game.numberOfPlayers; i++) {
     let temp = game.objects.get("paddle_" + i);
-    if (temp.checkColision(ball)) {
-      const edge = temp.edge;
+    let edge = temp.checkColision(ball)
+    if (edge)
       return {edge, temp};
-    }
   }
   return 0;
 }
 
+// needs to be redone
 export function bouncePlayers(ball, edge, player) {
 
   // Extract the ball's current speed
@@ -273,6 +274,8 @@ export function bouncePlayers(ball, edge, player) {
   let vy = ball.speedY;
   
   // Calculate the normal vector components based on the edge angle
+  console.log(`player name: ${player.name}, edge hit: ${edge.name}, angle: ${edge.perpAngle}`);
+  console.log(`inicio ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`)
   let nx = Math.cos(edge.perpAngle);
   let ny = Math.sin(edge.perpAngle);
   
@@ -294,7 +297,7 @@ export function bouncePlayers(ball, edge, player) {
   let speedMultiplier = 1 + Math.abs(normalizedDistance) * 0.25; // Speed increases up to 50%
 
   // Convert the reflection components to angle and speed
-  ball.speed *= speedMultiplier;
+  // ball.speed *= speedMultiplier;
   let angle = Math.atan2(vpy, vpx);
   if (angle > 0)
       angle -= angleAdjustment;
@@ -304,7 +307,6 @@ export function bouncePlayers(ball, edge, player) {
   // Update the ball's speed and direction
   ball.speedX = Math.cos(angle);
   ball.speedY = Math.sin(angle);
-  
    
    //keep the ball from entering player paddle!
     if (ball.x > player.centerX)
@@ -316,4 +318,6 @@ export function bouncePlayers(ball, edge, player) {
       ball.y += 1;
     else
       ball.y += -1;
+      console.log(`fim ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}, ball angle = ${angle}`)
+
 }
