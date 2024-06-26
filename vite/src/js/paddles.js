@@ -34,11 +34,13 @@ export class Paddle {
     this.color = "black";
     const edgeKey = "edge_" + (index * 2);
     this.edge = map.polygon.get(edgeKey);
-    this.speed = this.edge.size / 80; // needs to change to edge.size / somthing
+    this.speed = this.edge.size / 70;
     if (!this.edge) {
       console.error(`Edge with key ${edgeKey} not found in map.polygon`);
       return;
     }
+    this.edge.class = "goal";
+    this.edge.goalKeeper = this.name;
     this.angle = this.edge.angle;
     this.vx = Math.cos(this.angle);
     this.vy = Math.sin(this.angle);
@@ -84,6 +86,7 @@ export class Paddle {
       temp.setSize(Math.sqrt(deltaX * deltaX + deltaY * deltaY));
       temp.setAngle(i * this.edge.perpAngle);
       temp.setperpAngle();
+      temp.class = "wall";
       this.rectEdges.set(temp.name, temp);
     }
     let temp = this.rectEdges.get("edge_2"); //get the center of rect by the oposit vertexes
@@ -319,5 +322,5 @@ export function bouncePlayers(ball, edge, player) {
     else
       ball.y += -1;
       console.log(`fim ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}, ball angle = ${angle}`)
-
+     ball.updateLastHit(player.name);
 }

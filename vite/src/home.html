@@ -34,24 +34,7 @@
       </nav>
       
       <!-- Player Info Card and Result-->
-      <div class="row justify-content-center py-2">
-        <div class="col-7 d-flex justify-content-between">
-            <div class="text-center w-50 align-items-center">
-                <img class="imgAvatar" id="playerAvatar" src="img/p1.png" alt="Player Avatar">
-                <div>
-                    <h5 id="playerName">Player 1</h5>
-                    <h5 id="playerScore1">0</h5>
-                </div>
-            </div>
-            <div class="text-center w-50 align-items-center">
-                <img class="imgAvatar" id="playerAvatar" src="img/p2.png" alt="Player Avatar">
-                <div>
-                    <h5 id="playerName">Player 2</h5>
-                    <h5 id="playerScore2">0</h5>
-                </div>
-            </div>
-        </div>
-      </div>
+    
 
 
 
@@ -110,11 +93,15 @@
       </div>
         
       <!-- Game -->
-      <div class="row align-items-start px justify-content-center">
-        <div class="col-md-8 text-center">
-              <canvas id="pongCanvas" width="800" height="800" ></canvas>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col-md-6 text-center">
+                <canvas id="pongCanvas" width="800" height="800" ></canvas>
+          </div>
+          <div class="col" id="scoreBoard">
+          
+          </div>
         </div>
-      </div>
       
       <!-- Chat -->
       <!-- <div class="row align-items-start px justify-content-center">

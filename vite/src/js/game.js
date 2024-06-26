@@ -9,7 +9,7 @@ import { Score } from "./score.js";
 import { isRectCircleCollision } from "./aux.js";
 import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
-
+import { createScoreBoard } from "./score.js";
 
 
 class Game {
@@ -33,14 +33,6 @@ class Game {
     });
   }
 
-  updateScore() {
-    const player1ScoreElem = document.getElementById('playerScore1');
-    const player2ScoreElem = document.getElementById('playerScore2');
-    player1ScoreElem.textContent = this.objects.get("player_1").score.value;
-    player2ScoreElem.textContent = this.objects.get("player_2").score.value;
-  }
-
-
   setupGame() {
     this.addMap(map);
     this.addPaddles();
@@ -48,7 +40,8 @@ class Game {
     // this.addPlayer(aiPaddle);
     this.addBall(ball);
     this.addCandies(2);
-    this.init(); 
+    createScoreBoard(this.numberOfPlayers);
+    this.init();
   } 
 
   init() {
@@ -121,10 +114,7 @@ class Game {
 
   //UPDATE OBJECTS
   update() {
-    const playerPaddle = this.objects.get("player_1");
-    const aiPaddle = this.objects.get("player_2");
     const ball = this.objects.get("ball");
-    const map = this.objects.get("map");
 
     //Update players paddle and ball
     for (let i = 1; i <= this.numberOfPlayers; i++) {
@@ -132,14 +122,7 @@ class Game {
       temp.move();
 
     }
-    // if (playerPaddle.moveUp) {
-    //   this.move("player_1", playerPaddle.x, playerPaddle.y - playerPaddle.speed);
-    // } else if (playerPaddle.moveDown) {
-    //   this.move("player_1", playerPaddle.x, playerPaddle.y + playerPaddle.speed);
-    // }
     ball.move(this);
-    // this.collisionDetection();
-    // this.updateAI();
   }
 
   updateAI() {
@@ -167,16 +150,6 @@ class Game {
         this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed);
       }
     }
-  }
-
-  restartBall() {
-    //wait for 1 second before restarting the ball
-    const ball = this.objects.get("ball");
-    ball.x = canvas.width / 2; 
-    ball.y = canvas.height / 2;
-    ball.speed *= this.speed;
-    ball.speedX = 1;
-    ball.speedY = 0;
   }
 
   collisionDetection() {

@@ -4,6 +4,8 @@ import { ball } from "./ball.js";
 //edge class
 export class Edge {
     name;
+    class;
+    goalKeeper;
     x1;
     y1;
     x2;
@@ -134,6 +136,7 @@ export const map = {
             x = x + this.sideLength * Math.cos(i * angle);
             y = y + this.sideLength * Math.sin(i * angle);
             temp.setPoint2(x, y);
+            temp.class = "wall";
             //print
             // temp.print();
             this.polygon.set("edge_" + i, temp);
