@@ -5,7 +5,7 @@ from .models import User
 import json
 
 def login_page(request):
-    return render(request, 'login.html')
+    return render(request, 'index.html')
 
 @csrf_exempt
 def login(request) -> JsonResponse:
