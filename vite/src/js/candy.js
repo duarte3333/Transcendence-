@@ -4,7 +4,7 @@ const canvas = document.getElementById("pongCanvas");
 const context = canvas.getContext("2d");
 
 const candyImage = new Image();
-candyImage.src = '../img/coin_gold.png';
+candyImage.src = '../img/ItemBoxSprite.png';
 // Handle image load error
 candyImage.onerror = function() {
   console.error("Failed to load the image.");
@@ -12,9 +12,9 @@ candyImage.onerror = function() {
 
 class Candy {
   constructor(canvasWidth, canvasHeight, padding) {
-    this.animation = new Animation(8, 32, 32);
-    this.width = 32;
-    this.height = 32;
+    this.animation = new Animation(16, 64, 64);
+    this.width = 64;
+    this.height = 64;
     this.padding = padding;
     this.x = Math.random() * (canvasWidth - 2 * 50) + 50;
     this.y = Math.random() * (canvasHeight - 2 * 50) + 50;
