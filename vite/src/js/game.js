@@ -15,7 +15,7 @@ import { createScoreBoard } from "./score.js";
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 3;
+  numberOfPlayers = 4;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -92,7 +92,7 @@ class Game {
 
   addCandies(numCandies) {
     for (let i = 0; i < numCandies; i++) {
-      const candy = new Candy(canvas.width, canvas.height, 50);
+      const candy = new Candy(canvas.width, canvas.height, 0);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
     }
