@@ -1,3 +1,5 @@
+import { Animation } from "./animation";
+
 const canvas = document.getElementById("pongCanvas");
 const context = canvas.getContext("2d");
 
@@ -10,17 +12,9 @@ candyImage.onerror = function() {
 
 class Candy {
   constructor(canvasWidth, canvasHeight, padding) {
+    this.animation = new Animation(8, 32, 32);
     this.width = 32;
     this.height = 32;
-    this.animationX = 32;
-    this.animationY = 0;
-    this.animationFrame = 0;
-    this.animationNrFrames = 8;
-    setInterval(() => {
-      this.animationFrame++;
-      if (this.animationFrame > this.animationNrFrames - 1)
-        this.animationFrame = 0;
-    }, 45);
     this.padding = padding;
     this.x = Math.random() * (canvasWidth - 2 * 50) + 50;
     this.y = Math.random() * (canvasHeight - 2 * 50) + 50;
@@ -43,7 +37,7 @@ class Candy {
   draw(context) {
     if (this.visible) {
       if (candyImage.complete && candyImage.naturalHeight !== 0) {
-        context.drawImage(candyImage, this.animationFrame * this.animationX, this.animationY, this.width, this.height, this.x, this.y, this.width, this.height);
+        context.drawImage(candyImage, this.animation.frame * this.animation.x, this.animation.y, this.width, this.height, this.x, this.y, this.width, this.height);
       } else {
         console.error("Candy image is not fully loaded.");
       }
