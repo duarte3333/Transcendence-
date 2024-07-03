@@ -10,6 +10,6 @@ export class Animation {
 		this.frame++;
 		if (this.frame > this.nrFrames - 1)
 		this.frame = 0;
-	}, 45);
+	}, 65);
 	}
 };
