@@ -1,0 +1,12 @@
+myenv
+__pycache__
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+*.db
+*.mo
+*.pkl
+*/migrations/*
+!*/migrations/__init__.py
