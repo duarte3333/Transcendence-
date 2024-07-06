@@ -25,6 +25,10 @@ export class Score {
 export function createScoreBoard(numberOfPlayers) {
   const scoreboardContainer = document.getElementById('scoreBoard');
 
+  const h3 = document.createElement('h3');
+  h3.classList.add('centered-text');
+  h3.textContent = "ScoreBoard";
+  scoreboardContainer.appendChild(h3);
   for (let i = 1; i <= numberOfPlayers; i++) {
     const row = document.createElement('div');
     row.classList.add('row');
@@ -51,7 +55,10 @@ export function createScoreBoard(numberOfPlayers) {
 }
 
 
-export function updateScore(playerName) {
+export function updateScore(playerName, flag) {
   const score = document.getElementById("playerScore_" + playerName.charAt(playerName.length - 1));
-  score.textContent++;
+  if (flag)
+    score.textContent++;
+  else
+    score.textContent--;
 }

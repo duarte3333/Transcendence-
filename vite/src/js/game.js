@@ -11,17 +11,27 @@ import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
 
+window.addEventListener('resize', resizeCanvas);
+document.addEventListener('DOMContentLoaded', resizeCanvas);
+
+function resizeCanvas() {
+  const canvas = document.getElementById('pongCanvas');
+  const width = canvas.clientWidth;
+  canvas.style.height = `${width}px`;
+}
+
 
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 4;
+  numberOfPlayers = 5;
   pause = false;
   speed = 2.5;
   isScoring = false;
   score = new Score()
   events = new events(this);  // Initialize events after setting up game
   candies = [];
+  fps = 0;
 
   //INITIALIZE GAME
   constructor() {
@@ -46,6 +56,10 @@ class Game {
 
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
+    setInterval(() => {
+      // console.log(`fps = ${this.fps}`);
+      this.fps = 0;
+    }, 1000);
     console.log("Game initialized");
   }
 
@@ -236,6 +250,7 @@ class Game {
   }
 
   draw() {
+    this.fps++;
     if (!this.pause) {
       this.update();
       this.context.clearRect(0, 0, canvas.width, canvas.height);

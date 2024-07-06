@@ -22,9 +22,9 @@ export const ball = {
                 this.speed = this.speedLimit;
         let map = game.objects.get("map");
         for (let i = 1; i <= this.speed; i++) {
-            ball.x += ball.speedX;
-            ball.y += ball.speedY;
-            let {edge: edge, temp: player} = checkPlayers(ball, game)
+            let futureX = ball.x + ball.speedX;
+            let futureY = ball.y + ball.speedY;
+            let {edge: edge, temp: player} = checkPlayers(futureX, futureY, ball.radius, game);
             if (edge && player)
                 bouncePlayers(ball, edge, player);
             edge = map.checkWalls(ball.x, ball.y, ball.radius);
@@ -32,6 +32,8 @@ export const ball = {
                 bounceWalls(ball, edge);
             else if (edge && edge.class == "goal")
                 this.goal(edge);
+            ball.x += ball.speedX;
+            ball.y += ball.speedY;
         }
     },
 
@@ -44,10 +46,14 @@ export const ball = {
     },
     goal: function (edge) {
         if (edge.goalKeeper != this.last_hit && this.last_hit)
-            updateScore(this.last_hit);
+            updateScore(this.last_hit, 1);
         else if (this.last_hitBK)
-            updateScore(this.last_hitBK);
+            updateScore(this.last_hitBK, 1);
+        else
+            updateScore(edge.goalKeeper, 0);
         this.restartBall();
+        this.last_hit = 0;
+        this.last_hitBK = 0;
     },
 
     restartBall: function () {
