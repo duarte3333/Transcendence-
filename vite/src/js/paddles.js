@@ -84,7 +84,8 @@ export class Paddle {
       let deltaX = temp.x2 - temp.x1;
       let deltaY = temp.y2 - temp.y1;
       temp.setSize(Math.sqrt(deltaX * deltaX + deltaY * deltaY));
-      temp.setAngle(i * this.edge.perpAngle);
+      temp.setAngle(Math.atan2(deltaY, deltaX));
+      // temp.setAngle(i * this.edge.perpAngle + (1.57079633 * (this.vx != 0 && this.vx != 1)));
       temp.setperpAngle();
       temp.class = "wall";
       this.rectEdges.set(temp.name, temp);
@@ -190,10 +191,10 @@ export class Paddle {
       this.updateRectMap();
     }
   }
-  checkColision(ball) {
+  checkColision(x, y, radius) {
     for (let i = 1; i <= 4; i++) {
       let temp = this.rectEdges.get("edge_" + i);
-      if (temp.isItIn(ball.x, ball.y, ball.radius))
+      if (temp.isItIn(x, y, radius))
         return temp;
     }
     return 0;
@@ -259,10 +260,10 @@ export const aiPaddle = {
 }
 
 
-export function checkPlayers(ball, game) {
+export function checkPlayers(x, y, radius, game) {
   for (let i = 1; i <= game.numberOfPlayers; i++) {
     let temp = game.objects.get("paddle_" + i);
-    let edge = temp.checkColision(ball)
+    let edge = temp.checkColision(x, y, radius);
     if (edge)
       return {edge, temp};
   }
@@ -278,7 +279,7 @@ export function bouncePlayers(ball, edge, player) {
   
   // Calculate the normal vector components based on the edge angle
   console.log(`player name: ${player.name}, edge hit: ${edge.name}, angle: ${edge.perpAngle}`);
-  console.log(`inicio ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`)
+  // console.log(`inicio ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`)
   let nx = Math.cos(edge.perpAngle);
   let ny = Math.sin(edge.perpAngle);
   
@@ -289,27 +290,9 @@ export function bouncePlayers(ball, edge, player) {
   let vpx = vx - 2 * dotProduct * nx;
   let vpy = vy - 2 * dotProduct * ny;
   
-  // Calculate the distance from the ball to the center of the paddle
-  let distanceFromCenter = ball.y - player.centerY;
-
-  // Normalize the distance to a range between -1 and 1
-  let normalizedDistance = distanceFromCenter / (player.height / 2);
-
-  // Adjust the bounce angle based on the distance from the center
-  let angleAdjustment = normalizedDistance * Math.PI / 4; // 45 degree max adjustment
-  let speedMultiplier = 1 + Math.abs(normalizedDistance) * 0.25; // Speed increases up to 50%
-
-  // Convert the reflection components to angle and speed
-  // ball.speed *= speedMultiplier;
-  let angle = Math.atan2(vpy, vpx);
-  if (angle > 0)
-      angle -= angleAdjustment;
-  else
-      angle += angleAdjustment;
-
   // Update the ball's speed and direction
-  ball.speedX = Math.cos(angle);
-  ball.speedY = Math.sin(angle);
+  ball.speedX = vpx;
+  ball.speedY = vpy;
    
    //keep the ball from entering player paddle!
     if (ball.x > player.centerX)
@@ -321,6 +304,6 @@ export function bouncePlayers(ball, edge, player) {
       ball.y += 1;
     else
       ball.y += -1;
-      console.log(`fim ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}, ball angle = ${angle}`)
-     ball.updateLastHit(player.name);
+    console.log(`fim ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`);
+    ball.updateLastHit(player.name);
 }

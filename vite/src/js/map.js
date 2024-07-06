@@ -215,9 +215,11 @@ export function bounceWalls(ball, edge) {
     let vpx = vx - 2 * dotProduct * nx;
     let vpy = vy - 2 * dotProduct * ny;
     
+
+
     // Update the ball's speed
-    ball.speedX = vpx;
-    ball.speedY = vpy;
+    ball.speedX = vpx + 0.15;
+    ball.speedY = vpy + 0.15;
     
     //keep the ball from entering adjacent walls
     if (ball.x > map.size / 2)
