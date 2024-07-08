@@ -18,17 +18,17 @@ def login(request) -> JsonResponse:
             return check_login(username, password)
         except Exception as e:
             return JsonResponse({'message': str(e)}, status=400)
-    return JsonResponse({'message': 'Invalid request'}, status=405)
+    return JsonResponse({'message': 'Invalid request', 'success': False}, status=405)
 
 def check_login(username:str, password:str) -> JsonResponse:
     try:
         user = User.objects.get(name=username)
         if user.Password == password:
-            return JsonResponse({'message': 'Login successful'}, status=200)
+            return JsonResponse({'message': 'Login successful', 'success': True}, status=200)
         else:
-            return JsonResponse({'message': 'Invalid password'}, status=400)
+            return JsonResponse({'message': 'Invalid password', 'success': False}, status=401)
     except:
-        return JsonResponse({'message': 'User not found'}, status=404)
+        return JsonResponse({'message': 'User not found', 'success' : False}, status=404)
     
 def register_page(request):
     return render(request, 'register.html')
@@ -42,13 +42,13 @@ def register(request) -> JsonResponse:
             password = data.get('password')
 
             if User.objects.filter(name=username).exists():
-                return JsonResponse({'message': 'Username already exists'}, status=400)
+                return JsonResponse({'message': 'Username already exists', 'success': False}, status=400)
 
             user = User(name=username, Password=password)
             user.save()
-            return JsonResponse({'message': 'User created successfully'}, status=201)
+            return JsonResponse({'message': 'User created successfully', 'success': True}, status=200)
                 
         except Exception as e:
-            return JsonResponse({'message': str(e)}, status=400)
+            return JsonResponse({'message': str(e), 'success': False}, status=400)
 
-    return JsonResponse({'message': 'Invalid request method'}, status=405)
+    return JsonResponse({'message': 'Invalid request method', 'success': False}, status=405)
