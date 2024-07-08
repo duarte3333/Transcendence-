@@ -43,13 +43,51 @@ document.addEventListener("DOMContentLoaded", function() {
     pages.load(window.location.pathname);
 
     document.getElementById("login_B").addEventListener("click", function() {
-        pages.load('/home/');
-        history.pushState({"home": "home"}, '', "/home/");
+        fetch("http://127.0.0.1:8000/api/login/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success === true) {
+                    pages.load('/home/');
+                    history.pushState({"home": "home"}, '', "/home/");
+                } else {
+                    console.log(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     });
 
     document.getElementById("register_B").addEventListener("click", function() {
-        pages.load('/home/');
-        history.pushState({"home": "home"}, '', "/home/");
+        fetch("http://127.0.0.1:8000/api/register/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     });
 
     window.addEventListener('popstate', function(event) {
