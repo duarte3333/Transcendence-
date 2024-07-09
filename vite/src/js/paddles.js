@@ -61,7 +61,6 @@ export class Paddle {
     for (let i = 1; i <= 4; i++) {
       let temp = new Edge();
       temp.setName("edge_" + i);
-      console.log(`player = ${this.name}, edge = ${temp.name}`);
       temp.setPoint1(x, y);
       if (i == 1) {
         x = x + this.width * Math.cos(this.edge.perpAngle);
@@ -191,6 +190,7 @@ export class Paddle {
       this.updateRectMap();
     }
   }
+
   checkColision(x, y, radius) {
     for (let i = 1; i <= 4; i++) {
       let temp = this.rectEdges.get("edge_" + i);
@@ -201,45 +201,7 @@ export class Paddle {
   }
 }
 
-
-export const playerPaddle = {
-    width: 10,
-    height: 100,
-    x: 0,
-    y: 0,
-    name: "player_1",
-    color: "black",
-    moveUp: false,
-    moveDown: false,
-    speed: 3,
-    score: new Score(),
-
-    draw: function (context) {
-        context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, this.width, this.height);
-    },
-  };
-
-
-export const aiPaddle = {
-    width: 10,
-    height: 100,
-    x: 0,
-    y: 0,
-    name: "player_2",
-    color: "black",
-    moveUp: false,
-    moveDown: false,
-    speed: 3,
-    score: new Score(),
-
-    draw: function (context) {
-        context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, this.width, this.height);
-    },
-  };
-
-  function isPointOnEdge(px, py, edge) {
+function isPointOnEdge(px, py, edge) {
     // Calculate the cross product to check for collinearity
     let crossProduct = (px - edge.x1) * (edge.y2 - edge.y1) - (py - edge.y1) * (edge.x2 - edge.x1);
     crossProduct = Math.abs(crossProduct);
@@ -270,7 +232,6 @@ export function checkPlayers(x, y, radius, game) {
   return 0;
 }
 
-// needs to be redone
 export function bouncePlayers(ball, edge, player) {
 
   // Extract the ball's current speed
@@ -278,8 +239,6 @@ export function bouncePlayers(ball, edge, player) {
   let vy = ball.speedY;
   
   // Calculate the normal vector components based on the edge angle
-  console.log(`player name: ${player.name}, edge hit: ${edge.name}, angle: ${edge.perpAngle}`);
-  // console.log(`inicio ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`)
   let nx = Math.cos(edge.perpAngle);
   let ny = Math.sin(edge.perpAngle);
   
@@ -290,20 +249,35 @@ export function bouncePlayers(ball, edge, player) {
   let vpx = vx - 2 * dotProduct * nx;
   let vpy = vy - 2 * dotProduct * ny;
   
-  // Update the ball's speed and direction
+
+  //twist the angle more to the side of player paddle hit
+  vpx += (ball.x - player.centerX) / (player.height / 2);
+  vpy += (ball.y - player.centerY) / (player.height / 2);
+
+  if (vpx < -1)
+    vpx = -1;
+  else if (vpx > 1)
+    vpx = 1;
+  if (vpy < -1)
+      vpy = -1;
+    else if (vpy > 1)
+      vpy = 1;
+
+  
+  // Update the ball's direction
   ball.speedX = vpx;
   ball.speedY = vpy;
-   
-   //keep the ball from entering player paddle!
-    if (ball.x > player.centerX)
-      ball.x += 1;
-    else
-      ball.x += -1; 
+  
+  //keep the ball from entering player paddle!
+  if (ball.x > player.centerX)
+    ball.x += 1;
+  else
+    ball.x += -1; 
 
-    if (ball.y > player.centerY)
-      ball.y += 1;
-    else
-      ball.y += -1;
-    console.log(`fim ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`);
-    ball.updateLastHit(player.name);
+  if (ball.y > player.centerY)
+    ball.y += 1;
+  else
+    ball.y += -1;
+
+  ball.updateLastHit(player.name);
 }

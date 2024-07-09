@@ -1,3 +1,4 @@
+import { checkCandies } from "./candy.js";
 import { bounceWalls } from "./map.js";
 import { bouncePlayers, checkPlayers } from "./paddles.js";
 import { updateScore } from "./score.js";
@@ -31,9 +32,10 @@ export const ball = {
             if (edge && edge.class == "wall")
                 bounceWalls(ball, edge);
             else if (edge && edge.class == "goal")
-                this.goal(edge);
+                this.goal(edge, game.speed);
             ball.x += ball.speedX;
             ball.y += ball.speedY;
+            checkCandies(ball, game);
         }
     },
 
@@ -44,20 +46,21 @@ export const ball = {
         context.closePath();
         context.fill();
     },
-    goal: function (edge) {
+    goal: function (edge, gameSpeed) {
         if (edge.goalKeeper != this.last_hit && this.last_hit)
             updateScore(this.last_hit, 1);
         else if (this.last_hitBK)
             updateScore(this.last_hitBK, 1);
         else
             updateScore(edge.goalKeeper, 0);
-        this.restartBall();
+        this.restartBall(gameSpeed);
         this.last_hit = 0;
         this.last_hitBK = 0;
     },
 
-    restartBall: function () {
+    restartBall: function (gameSpeed) {
         const canvas = document.getElementById("pongCanvas");
+        this.speed = 2 * gameSpeed;
         this.x = canvas.width / 2; 
         this.y = canvas.height / 2;
     },
