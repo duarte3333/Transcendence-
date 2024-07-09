@@ -21,7 +21,7 @@ function resizeCanvas() {
 class Game {
   
   objects = new Map();
-  numCandies = 2;
+  numCandies = 1;
   numberOfPlayers = 4;
   pause = false;
   speed = 2.5;
@@ -76,20 +76,11 @@ class Game {
   addPaddles() {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let temp = new Paddle(map, i);
+      let temp = new Paddle(map, i, this.numberOfPlayers);
       // temp.print();
       temp.draw(this.context);
       this.objects.set(temp.name, temp);
     }
-  }
-
-  addPlayer(paddle) {
-    if (paddle.name === "player_1") paddle.x = 0;
-    else paddle.x = canvas.width - paddle.width;
-    paddle.y = canvas.height / 2 - 50;
-    paddle.speed *= this.speed;
-    this.objects.set(paddle.name, paddle);
-    paddle.draw(this.context);
   }
 
   addBall(ball) {

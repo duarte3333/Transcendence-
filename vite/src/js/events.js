@@ -13,47 +13,34 @@ export class events {
     }
 
     handleKeyDown(event) {
-        const playerKeyMap = {
-            "w": ["player_1", "moveUp", true],
-            "s": ["player_1", "moveDown", true],
-            " ": ["", "togglePause", true],
-            "ArrowUp": ["player_2", "moveUp", true],
-            "ArrowDown": ["player_2", "moveDown", true]
-        };
-
-        if (playerKeyMap[event.key]) {
-            event.preventDefault();
-            const [player, action, state] = playerKeyMap[event.key];
-            if (player) {
-                for (let i = 1; i <= this.game.numberOfPlayers; i++) {
-                    let temp = this.game.objects.get("paddle_" + i);
-                    temp[action] = state;
-                }
-                const paddle = this.game.objects.get(player);
-                if (paddle) paddle[action] = state;
-            } else {
-                this.game.pause = !this.game.pause ;
+        for (let i = 1; i <= this.game.numberOfPlayers; i++) {
+            let temp = this.game.objects.get("paddle_" + i);
+            if (event.key == temp.moveUpKey) {
+                event.preventDefault();
+                temp.moveUp = true;
             }
+            else if (event.key == temp.moveDownKey) {
+                event.preventDefault();
+                temp.moveDown = true;
+            }
+        }
+        if (event.key == " ") {
+            event.preventDefault();
+            this.game.pause = !this.game.pause;
         }
     }
 
     handleKeyUp(event) {
-        const playerKeyMap = {
-            "w": ["player_1", "moveUp", false],
-            "s": ["player_1", "moveDown", false],
-            "ArrowUp": ["player_2", "moveUp", false],
-            "ArrowDown": ["player_2", "moveDown", false]
-        };
-
-        if (playerKeyMap[event.key]) {
-            event.preventDefault();
-            const [player, action, state] = playerKeyMap[event.key];
-            for (let i = 1; i <= this.game.numberOfPlayers; i++) {
-                let temp = this.game.objects.get("paddle_" + i);
-                temp[action] = state;
+        for (let i = 1; i <= this.game.numberOfPlayers; i++) {
+            let temp = this.game.objects.get("paddle_" + i);
+            if (event.key == temp.moveUpKey) {
+                event.preventDefault();
+                temp.moveUp = false;
             }
-            const paddle = this.game.objects.get(player);
-            if (paddle) paddle[action] = state;
+            else if (event.key == temp.moveDownKey) {
+                event.preventDefault();
+                temp.moveDown = false;
+            }
         }
     }
 

@@ -17,8 +17,11 @@ export const ball = {
     name: "ball", 
     last_hit: "",
     last_hitBK: "",
+    visible: true,
+    touches: 0,
 
     move: function (game) {
+        // console.log("speed = " + this.speed)
         if (this.speed > this.speedLimit)
                 this.speed = this.speedLimit;
         let map = game.objects.get("map");
@@ -29,23 +32,33 @@ export const ball = {
             if (edge && player)
                 bouncePlayers(ball, edge, player);
             edge = map.checkWalls(ball.x, ball.y, ball.radius);
-            if (edge && edge.class == "wall")
+            if (edge && edge.class == "wall") {
                 bounceWalls(ball, edge);
-            else if (edge && edge.class == "goal")
+                this.touches++;
+            }
+            else if (edge && edge.class == "goal") {
                 this.goal(edge, game.speed);
+            }
             ball.x += ball.speedX;
             ball.y += ball.speedY;
             checkCandies(ball, game);
         }
+        if (this.touches > 2) {
+            this.speed++;
+            this.touches = 0;
+        }
     },
 
     draw: function (context) {
-        context.fillStyle = this.color;
-        context.beginPath();
-        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        context.closePath();
-        context.fill();
+        if (this.visible) {
+            context.fillStyle = this.color;
+            context.beginPath();
+            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            context.closePath();
+            context.fill();
+        }
     },
+
     goal: function (edge, gameSpeed) {
         if (edge.goalKeeper != this.last_hit && this.last_hit)
             updateScore(this.last_hit, 1);
@@ -59,10 +72,16 @@ export const ball = {
     },
 
     restartBall: function (gameSpeed) {
+        console.log("restarting ball");
         const canvas = document.getElementById("pongCanvas");
-        this.speed = 2 * gameSpeed;
+        this.visible = false;
         this.x = canvas.width / 2; 
         this.y = canvas.height / 2;
+        this.speed = 0;
+        setTimeout(() => {
+            this.visible = true;
+            this.speed = 2 * gameSpeed;
+        }, 700);
     },
 
     updateLastHit: function (name) {

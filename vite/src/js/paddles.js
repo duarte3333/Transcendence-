@@ -25,14 +25,19 @@ export class Paddle {
   color;
   rectEdges = new Map();
 
-  constructor(map, index) {
+  constructor(map, index, numberOfPlayers) {
     this.name = "paddle_" + index;
     this.type = "player";
     this.moveDown = false;
     this.moveUp = false;
     this.score = new Score();
     this.color = "black";
-    const edgeKey = "edge_" + (index * 2);
+    let edgeNumber;
+    if (numberOfPlayers != 2)
+      edgeNumber = index * 2;
+    else
+      edgeNumber = index * 2 - 1;
+    const edgeKey = "edge_" + (edgeNumber);
     this.edge = map.polygon.get(edgeKey);
     this.speed = this.edge.size / 70;
     if (!this.edge) {
@@ -45,9 +50,16 @@ export class Paddle {
     this.vx = Math.cos(this.angle);
     this.vy = Math.sin(this.angle);
     this.height = this.edge.size / 5;
-    this.width = this.height / 8;
-    this.moveUpKey = "w";
-    this.moveDownKey = "s";
+    this.width = this.height / 15;
+    if (this.width < 7)
+        this.width = 7;
+    if (index % 2) {
+      this.moveUpKey = "w";
+      this.moveDownKey = "s";
+    } else {
+      this.moveUpKey = "ArrowUp";
+      this.moveDownKey = "ArrowDown";
+    }
     this.x = this.edge.x1 + (this.vx * (this.edge.size / 2));
     this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
     this.gapX = 0;
@@ -109,10 +121,8 @@ export class Paddle {
       } else if (i == 3) {
         x = x + this.width * Math.cos(this.edge.perpAngle + Math.PI * 1);
         y = y + this.width * Math.sin(this.edge.perpAngle + Math.PI * 1);
-        if (!this.gapX) {
-          this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
-          this.gapY = y - this.y;
-        }
+        this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
+        this.gapY = y - this.y;
       } else if (i == 4) {
         x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 1.5);
       y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 1.5);
@@ -170,6 +180,8 @@ export class Paddle {
         } else {
           break ;
         }
+        this.x  = newX;
+        this.y = newY;
       }
       this.updateRectMap();
     } 
