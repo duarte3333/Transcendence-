@@ -11,26 +11,27 @@ candyImage.onerror = function() {
 };
 
 class Candy {
-  constructor(canvasWidth, canvasHeight, padding) {
+  constructor(map) {
+    this.powerUps = new Map();
+    this.numPowerUps = 1;
+    this.powerUps.set(1, defencePowerUp);
     this.animation = new Animation(16, 64, 64);
     this.width = 64;
     this.height = 64;
-    this.padding = padding;
-    this.x = Math.random() * (canvasWidth - 2 * 50) + 50;
-    this.y = Math.random() * (canvasHeight - 2 * 50) + 50;
-    this.visible = true; // Visibility controlled for spawn timing
+    const {x, y} = generateXnY(map);
+    this.x = x;
+    this.y = y;
+    this.visible = false;
+    setTimeout(() => {
+      this.visible = true;
+    }, 3000);
     this.name = "candy";
   }
 
-  reset(canvasWidth, canvasHeight, player_1, player_2) {
+  reset() {
     // Random position not too close to the walls
-    this.x = Math.random() * (canvasWidth - 2 * this.padding) + this.padding;
-    this.y = Math.random() * (canvasHeight - 2 * this.padding) + this.padding;
      setTimeout(() => {
-         this.visible = true;
-         player_1.height = 100;
-         player_2.height = 100;
-         console.log("Candy is now visible again");
+          this.visible = true;
         }, 5000);
   }
   
@@ -43,6 +44,69 @@ class Candy {
       }
     }
   }
+
+  amIHit(ball) {
+    // Find the closest point on the candy to the ball's center
+    const closestX = Math.max(this.x, Math.min(ball.x, this.x + this.width));
+    const closestY = Math.max(this.y, Math.min(ball.y, this.y + this.height));
+
+     // Calculate the distance between the ball's center and this closest point
+     const dx = ball.x - closestX;
+     const dy = ball.y - closestY;
+     const distance = Math.sqrt(dx * dx + dy * dy);
+
+     // Check if the distance is less than or equal to the ball's radius
+    return distance <= ball.radius;
+  }
+
+  choosePowerUp(player) {
+    let num = Math.floor(Math.random() * this.numPowerUps + 1);
+    const powerUP = this.powerUps.get(num);
+    if (powerUP)
+      powerUP(player);
+  }
+}
+
+function generateXnY(map) {
+  // Generate a random angle between 0 and 2π
+  const angle = Math.random() * 2 * Math.PI;
+  
+  // Generate a random radius with uniform distribution
+  const r = Math.sqrt(Math.random()) * (map.radius  / 1.4);
+  
+  // Convert polar coordinates to Cartesian coordinates
+  const x = r * Math.cos(angle) + (canvas.width / 2);
+  const y = r * Math.sin(angle) + (canvas.height / 2);
+  
+  return { x, y };
 }
 
 export { Candy };
+
+export function checkCandies(ball, game) {
+  let map = game.objects.get("map");
+  for (let i = 1; i <= game.numCandies; i++) {
+    let temp = game.objects.get("candy_" + i);
+    if (temp.visible && temp.amIHit(ball) && ball.last_hit) {
+      let player = game.objects.get(ball.last_hit);
+      temp.visible = false;
+      temp.choosePowerUp(player);
+      const {x, y} = generateXnY(map);
+      temp.x = x;
+      temp.y = y;
+      temp.reset();
+    }
+  }
+}
+
+function defencePowerUp(player) {
+  console.log("defense for " + player.name);
+  player.height *= 2;
+  player.color = "blue";
+  player.updateRectMap();
+  setTimeout(() => {
+    player.height /= 2;
+    player.color = "black";
+    player.updateRectMap();
+  }, 8000);
+}

@@ -1,6 +1,3 @@
-import { ball } from "./ball.js";
-
-
 //edge class
 export class Edge {
     name;
@@ -103,8 +100,6 @@ export class Edge {
 export const map = {
     polygon: new Map(),
     img: new Image(),
-    x: 0,
-    y: 0,
     radius: 10,
     size: 0,
     color: "white",
@@ -177,25 +172,6 @@ export const map = {
             context.fill();
         };
         this.img.onload();
-
-
-
-
-        // context.fillStyle = this.color;
-        // console.log("map.color = " + context.fillStyle);
-        // context.beginPath();
-        // let x = canvas.width / 2 + this.sideLength / 2; //startging position x
-        // let y = canvas.height / 2 - this.centerToSideLength; //starting position y
-        // let angle = 2 * (Math.PI) / this.sides; // angle created by each side of the polygon
-        // context.moveTo(x, y);
-        // // each iteration updates y and x with the nex vertix and the angle is multiplied times iterations
-        // for (var i = 1; i <= this.sides; i++) {
-        //     x = x + this.sideLength * Math.cos(i * angle);
-        //     y = y + this.sideLength * Math.sin(i * angle);
-        //     context.lineTo(x, y);
-        // }
-        // context.closePath();
-        // context.stroke();    
     },
 };
 
@@ -215,8 +191,6 @@ export function bounceWalls(ball, edge) {
     let vpx = vx - 2 * dotProduct * nx;
     let vpy = vy - 2 * dotProduct * ny;
     
-
-
     // Update the ball's speed
     ball.speedX = vpx + 0.15;
     ball.speedY = vpy + 0.15;

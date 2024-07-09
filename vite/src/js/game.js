@@ -1,16 +1,13 @@
-const canvas = document.getElementById("pongCanvas");
-
 import { ball } from "./ball.js";
-import { playerPaddle } from "./paddles.js";
-import { aiPaddle } from "./paddles.js";
 import { Candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
-import { isRectCircleCollision } from "./aux.js";
 import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
+import { sleep } from "./aux.js";
 
+const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
 document.addEventListener('DOMContentLoaded', resizeCanvas);
 
@@ -24,7 +21,8 @@ function resizeCanvas() {
 class Game {
   
   objects = new Map();
-  numberOfPlayers = 5;
+  numCandies = 2;
+  numberOfPlayers = 4;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -46,10 +44,8 @@ class Game {
   setupGame() {
     this.addMap(map);
     this.addPaddles();
-    // this.addPlayer(playerPaddle);
-    // this.addPlayer(aiPaddle);
     this.addBall(ball);
-    this.addCandies(2);
+    this.addCandies();
     createScoreBoard(this.numberOfPlayers);
     this.init();
   } 
@@ -104,25 +100,13 @@ class Game {
     this.objects.set(ball.name, ball);
   }
 
-  addCandies(numCandies) {
-    for (let i = 0; i < numCandies; i++) {
-      const candy = new Candy(canvas.width, canvas.height, 0);
+  addCandies() {
+    const map = this.objects.get("map");
+    for (let i = 1; i <= this.numCandies; i++) {
+      const candy = new Candy(map);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
-    }
-  }
-
-  //MOVE OBJECTS
-  move(name, x, y) {
-    const object = this.objects.get(name);
-    if (object.name === "player_1" || object.name === "player_2") {
-      if (y < 0 || y + object.height > canvas.height) return;
-      else {
-        object.x = x; object.y = y;
-      }
-    } 
-    else {
-      object.x = x; object.y = y;
+      sleep(400);
     }
   }
 
@@ -139,112 +123,6 @@ class Game {
     ball.move(this);
   }
 
-  updateAI() {
-    const player_2 = this.objects.get("player_2") || this.objects.get("ai");
-    if (player_2.name === "ai") {
-      // AI paddle follows the ball
-      if (ball.y < aiPaddle.y + aiPaddle.height / 2 - 10) {
-        this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed); // Move paddle up
-      } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 + 10) {
-        this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed); // Move paddle down
-      }
-
-      // Ensure AI paddle doesn't move out of canvas bounds
-      if (aiPaddle.y < 0) {
-        aiPaddle.y = 0;
-      } else if (aiPaddle.y + aiPaddle.height > canvas.height) {
-        aiPaddle.y = canvas.height - aiPaddle.height;
-      }
-    } 
-    //Manual player_2
-    else if (player_2.name === "player_2") {
-      if (aiPaddle.moveUp) {
-        this.move("player_2", aiPaddle.x, aiPaddle.y - aiPaddle.speed);
-      } else if (aiPaddle.moveDown) {
-        this.move("player_2", aiPaddle.x, aiPaddle.y + aiPaddle.speed);
-      }
-    }
-  }
-
-  collisionDetection() {
-    const ball = this.objects.get("ball");
-    const player_1 = this.objects.get("player_1");
-    const player_2 = this.objects.get("player_2");
-    if (isRectCircleCollision(ball, player_1)
-  ) {
-      ball.last_hit = player_1.name;
-      // Calculate impact point -> a value between -1 and 1
-      let impactPoint =
-      (ball.y - (playerPaddle.y + playerPaddle.height / 2)) /
-      (playerPaddle.height / 2);
-  
-      // Modify speed based on where it hit the paddle
-      ball.speedY = impactPoint;
-      ball.speedX = -ball.speedX;
-      ball.speed += Math.abs(impactPoint) * (2 * this.speed); // Adjust '5' as needed
-      if (ball.speed > ball.speedLimit) {
-        ball.speed = ball.speedLimit;
-      }
-
-    }
-
-    if (isRectCircleCollision(ball, player_2) 
-    ) {
-      ball.last_hit = player_2.name;
-      let impactPoint =
-      (ball.y - (aiPaddle.y + aiPaddle.height / 2)) / (aiPaddle.height / 2);
-      ball.speedY = impactPoint;
-      ball.speedX = -ball.speedX;
-      ball.speed += Math.abs(impactPoint)  * (2 * this.speed); // Adjust '5' as needed
-      if (ball.speed > ball.speedLimit) {
-        ball.speed = ball.speedLimit;
-      }
-    }
-
-
-    if (ball.x > canvas.width || ball.x < 0 || ball.y > canvas.height || ball.y < 0) {
-      this.restartBall();
-    }
-
-    // if (ball.x + ball.radius > canvas.width && !this.isScoring) {
-    //   this.isScoring = true;
-    //   player_1.score.addScore();
-    //   this.updateScore();
-    //   setTimeout(() => {
-    //     this.restartBall();
-    //     console.log("Player 1 wins");
-    //     this.isScoring = false;
-    //   }, 1000);
-    // }
-    
-    // if (ball.x - ball.radius < 0 && !this.isScoring) {
-    //   this.isScoring = true;
-    //   player_2.score.addScore();
-    //   this.updateScore();
-    //   setTimeout(() => {
-    //     this.restartBall();
-    //     console.log("Player 2 wins");
-    //     this.isScoring = false;
-    //   }, 1000);
-    // }
-    
-
-    this.candies.forEach(candy => {
-      if (candy.visible && isRectCircleCollision(ball, candy)) {
-        console.log("Candy collected by " + ball.last_hit);
-        if (ball.last_hit === player_1.name) {
-          player_2.height *= 0.8;
-          player_1.height *= 1.2;
-        } else if (ball.last_hit === player_2.name) {
-          player_1.height *= 0.8;
-          player_2.height *= 1.2;
-        }
-        candy.visible = false;
-        candy.reset(canvas.width, canvas.height, player_1, player_2);
-      }
-    });
-  }
-
   tooglePause() {
     this.pause = !this.pause;
   }
@@ -255,7 +133,6 @@ class Game {
       this.update();
       this.context.clearRect(0, 0, canvas.width, canvas.height);
       this.objects.forEach((element) => {
-        // console.log("drawing :" + element.name);
         element.draw(this.context);
       });
     } 
@@ -282,60 +159,6 @@ class Game {
     player_1.speed = 3 * this.speed;
     player_2.speed = 3 * this.speed;
   }
-
-
 }
-
-// window.addEventListener('resize', resizeCanvas, false);
-
-// function resizeCanvas() {
-//     var canvas = document.getElementById('pongCanvas');
-//     var widthToHeight = 5 / 3; // replace with your desired aspect ratio
-//     var newWidth = canvas.offsetWidth;
-//     var newHeight = newWidth / widthToHeight;
-
-//     canvas.width = newWidth;
-//     canvas.height = newHeight;
-// }
-
-// resizeCanvas(); // call the function initially when the page loads
  
 const game = new Game();
-
-//MOUSE MOVE FT WITH HARDCODED height betweeen canvas 0 and screen 0 (y)
-// document.addEventListener("mousemove", (event) => {
-//   // event.preventDefault();
-//   const mouseY = event.clientY - 150;
-//   console.log(`${mouseY}`);
-//   const playerPaddle = game.objects.get("player_1");
-//   if (mouseY > playerPaddle.y + playerPaddle.height) {
-//     event.preventDefault();
-//     playerPaddle.moveDown = true;
-//   }
-//   else if (mouseY < playerPaddle.y) {
-//     event.preventDefault();
-//     playerPaddle.moveUp= true;
-
-//   }
-//   else {
-//     playerPaddle.moveUp = false;
-//     playerPaddle.moveDown = false;
-//   }
-// });
-
-
-//Adicionar mais candies e de differentes tipos
-//Meter botao login e logout
-//Meter botao de registo
-//Meter selecao unica de display name e email
-//Meter botao de play 
-//Fazer cenario de resart do game
-//Meter upload de imagem para avatar e ter uma default option
-//Meter seccao dos gajos online e seccao para adicionar amigos
-//Local com as estatisticas
-//Meter match history
-//Multiplayers até n jogadores
-//Zona de customizacao: powerups, skins, attacks, different maps
-//Change theme
-//Interface for changing game parameters
-//Game Stats Dashboard
