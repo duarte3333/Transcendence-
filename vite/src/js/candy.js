@@ -72,7 +72,7 @@ function generateXnY(map) {
   const angle = Math.random() * 2 * Math.PI;
   
   // Generate a random radius with uniform distribution
-  const r = Math.sqrt(Math.random()) * (map.radius  / 1.4);
+  const r = Math.sqrt(Math.random()) * (map.radius  / 1.8);
   
   // Convert polar coordinates to Cartesian coordinates
   const x = r * Math.cos(angle) + (canvas.width / 2);
@@ -102,11 +102,16 @@ export function checkCandies(ball, game) {
 function defencePowerUp(player) {
   console.log("defense for " + player.name);
   player.height *= 2;
+  if (player.height > player.edge.size)
+      player.height = player.edge.size;
   player.color = "blue";
   player.updateRectMap();
   setTimeout(() => {
     player.height /= 2;
-    player.color = "black";
+    if (player.height < player.edge.size / 5)
+      player.height = player.edge.size / 5;
+    if (player.height == player.edge.size / 5)
+      player.color = "black";
     player.updateRectMap();
   }, 8000);
 }
