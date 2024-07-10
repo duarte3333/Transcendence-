@@ -53,12 +53,22 @@ export class Paddle {
     this.width = this.height / 15;
     if (this.width < 7)
         this.width = 7;
-    if (index % 2) {
-      this.moveUpKey = "w";
-      this.moveDownKey = "s";
+    if (index % 2) { 
+      if (this.vy < 0) {
+          this.moveUpKey = "w";
+          this.moveDownKey = "s";
+      } else {
+        this.moveUpKey = "s";
+        this.moveDownKey = "w";
+      }
     } else {
-      this.moveUpKey = "ArrowUp";
-      this.moveDownKey = "ArrowDown";
+      if (this.vy < 0) {
+        this.moveUpKey = "ArrowUp";
+        this.moveDownKey = "ArrowDown";
+      } else {
+        this.moveUpKey = "ArrowDown";
+        this.moveDownKey = "ArrowUp";
+      }
     }
     this.x = this.edge.x1 + (this.vx * (this.edge.size / 2));
     this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
@@ -261,20 +271,12 @@ export function bouncePlayers(ball, edge, player) {
   let vpx = vx - 2 * dotProduct * nx;
   let vpy = vy - 2 * dotProduct * ny;
   
-
-  //twist the angle more to the side of player paddle hit
-  vpx += (ball.x - player.centerX) / (player.height / 2);
-  vpy += (ball.y - player.centerY) / (player.height / 2);
-
-  if (vpx < -1)
-    vpx = -1;
-  else if (vpx > 1)
-    vpx = 1;
-  if (vpy < -1)
-      vpy = -1;
-    else if (vpy > 1)
-      vpy = 1;
-
+  // //twist the angle more to the side of player paddle hit
+  let angle = Math.atan2(vpy, vpx);
+  let angle2 = Math.atan2((ball.x - player.centerX) / (player.height / 2), (ball.y - player.centerY) / (player.height / 2));
+  angle -= angle2 / 10;
+  vpx = Math.cos(angle);
+  vpy = Math.sin  (angle);
   
   // Update the ball's direction
   ball.speedX = vpx;

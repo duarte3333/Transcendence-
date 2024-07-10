@@ -21,16 +21,18 @@ export const ball = {
     touches: 0,
 
     move: function (game) {
-        // console.log("speed = " + this.speed)
         if (this.speed > this.speedLimit)
-                this.speed = this.speedLimit;
+            this.speed = this.speedLimit;
+        console.log(`speed = ${this.speed}, vx = ${this.speedX}, vy = ${this.speedY}`);
         let map = game.objects.get("map");
         for (let i = 1; i <= this.speed; i++) {
             let futureX = ball.x + ball.speedX;
             let futureY = ball.y + ball.speedY;
             let {edge: edge, temp: player} = checkPlayers(futureX, futureY, ball.radius, game);
-            if (edge && player)
+            if (edge && player) {
                 bouncePlayers(ball, edge, player);
+                this.touches = 0;
+            }
             edge = map.checkWalls(ball.x, ball.y, ball.radius);
             if (edge && edge.class == "wall") {
                 bounceWalls(ball, edge);
@@ -43,10 +45,13 @@ export const ball = {
             ball.y += ball.speedY;
             checkCandies(ball, game);
         }
-        if (this.touches > 2) {
-            this.speed++;
-            this.touches = 0;
-        }
+        // if (this.touches % 2) {
+        //     this.speed++;
+        //     // if (this.touches > 2) {
+        //     //     this.speedY += 0.5;
+        //     //     this.speedX += 0.5;
+        //     // }
+        // }
     },
 
     draw: function (context) {

@@ -13,8 +13,9 @@ candyImage.onerror = function() {
 class Candy {
   constructor(map) {
     this.powerUps = new Map();
-    this.numPowerUps = 1;
+    this.numPowerUps = 2;
     this.powerUps.set(1, defencePowerUp);
+    this.powerUps.set(2, attackPowerUp);
     this.animation = new Animation(16, 64, 64);
     this.width = 64;
     this.height = 64;
@@ -59,11 +60,11 @@ class Candy {
     return distance <= ball.radius;
   }
 
-  choosePowerUp(player) {
+  choosePowerUp(player, game) {
     let num = Math.floor(Math.random() * this.numPowerUps + 1);
     const powerUP = this.powerUps.get(num);
     if (powerUP)
-      powerUP(player);
+      powerUP(player, game);
   }
 }
 
@@ -90,8 +91,8 @@ export function checkCandies(ball, game) {
     if (temp.visible && temp.amIHit(ball) && ball.last_hit) {
       let player = game.objects.get(ball.last_hit);
       temp.visible = false;
-      temp.choosePowerUp(player);
-      const {x, y} = generateXnY(map);
+      temp.choosePowerUp(player, game);
+      const {x, y} = generateXnY(map); 
       temp.x = x;
       temp.y = y;
       temp.reset();
@@ -99,8 +100,7 @@ export function checkCandies(ball, game) {
   }
 }
 
-function defencePowerUp(player) {
-  console.log("defense for " + player.name);
+function defencePowerUp(player, game) {
   player.height *= 2;
   if (player.height > player.edge.size)
       player.height = player.edge.size;
@@ -114,4 +114,25 @@ function defencePowerUp(player) {
       player.color = "black";
     player.updateRectMap();
   }, 8000);
+}
+
+function attackPowerUp(player, game) {
+  for (let i = 1; i <= game.numberOfPlayers; i++) {
+    let temp = game.objects.get("paddle_" + i);
+    if (temp.height >= temp.edge.size / 5 && temp.name != player.name) {
+      temp.height /= 2;
+      temp.color = "green";
+      temp.updateRectMap();
+    }
+  }
+  setTimeout(() => {
+    for (let i = 1; i <= game.numberOfPlayers; i++) {
+      let temp = game.objects.get("paddle_" + i);
+      if (temp.name != player.name) {
+        temp.height *= 2;
+        temp.color = "black";
+        temp.updateRectMap();
+      }
+    }
+  }, 6000);
 }
