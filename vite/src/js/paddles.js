@@ -106,7 +106,6 @@ export class Paddle {
       let deltaY = temp.y2 - temp.y1;
       temp.setSize(Math.sqrt(deltaX * deltaX + deltaY * deltaY));
       temp.setAngle(Math.atan2(deltaY, deltaX));
-      // temp.setAngle(i * this.edge.perpAngle + (1.57079633 * (this.vx != 0 && this.vx != 1)));
       temp.setperpAngle();
       temp.class = "wall";
       this.rectEdges.set(temp.name, temp);
@@ -256,27 +255,40 @@ export function checkPlayers(x, y, radius, game) {
 
 export function bouncePlayers(ball, edge, player) {
 
-  // Extract the ball's current speed
-  let vx = ball.speedX;
-  let vy = ball.speedY;
+  // Calculate the difference in coordinates
+  let deltaX =  ball.x - player.centerX;
+  let deltaY = ball.y - player.centerY ;
+
+  // Calculate the angle in radians using atan2
+  let angleRadians = Math.atan2(deltaY, deltaX);
+
+  // // Extract the ball's current speed
+  // let vx = ball.speedX;
+  // let vy = ball.speedY;
+
+  // let angle = Math.atan2(vy, vx);
+  // let angle2 = angle;
+  // angle -= Math.PI;
+  // console.log(`angle = ${angle2 * 180 / Math.PI}, after = ${angle * 180 / Math.PI}`);
   
-  // Calculate the normal vector components based on the edge angle
-  let nx = Math.cos(edge.perpAngle);
-  let ny = Math.sin(edge.perpAngle);
+  // // Calculate the normal vector components based on the edge angle
+  // let nx = Math.cos(edge.perpAngle);
+  // let ny = Math.sin(edge.perpAngle);
   
-  // Calculate the dot product of the velocity vector and the normal vector
-  let dotProduct = vx * nx + vy * ny;
+  // // Calculate the dot product of the velocity vector and the normal vector
+  // let dotProduct = vx * nx + vy * ny;
   
-  // Calculate the reflected velocity components
-  let vpx = vx - 2 * dotProduct * nx;
-  let vpy = vy - 2 * dotProduct * ny;
+  // // Calculate the reflected velocity components
+  // let vpx = vx - 2 * dotProduct * nx;
+  // let vpy = vy - 2 * dotProduct * ny;
   
-  // //twist the angle more to the side of player paddle hit
-  let angle = Math.atan2(vpy, vpx);
-  let angle2 = Math.atan2((ball.x - player.centerX) / (player.height / 2), (ball.y - player.centerY) / (player.height / 2));
-  angle -= angle2 / 10;
-  vpx = Math.cos(angle);
-  vpy = Math.sin  (angle);
+  // // //twist the angle more to the side of player paddle hit NOT WORKING
+  // let distanceToCenter = Math.sqrt((ball.x - player.centerX) * (ball.x - player.centerX) + (ball.y - player.centerY) * (ball.y - player.centerY));
+  // distanceToCenter /= 2;
+  // angle += distanceToCenter * (Math.PI / 180);
+  // // angle += angle2 / 5;
+  let vpx = Math.cos(angleRadians);
+  let vpy = Math.sin(angleRadians);
   
   // Update the ball's direction
   ball.speedX = vpx;

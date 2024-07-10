@@ -35,8 +35,22 @@ export const ball = {
             }
             edge = map.checkWalls(ball.x, ball.y, ball.radius);
             if (edge && edge.class == "wall") {
-                bounceWalls(ball, edge);
                 this.touches++;
+                console.log(`wall hit: ${edge.name}`);
+                bounceWalls(ball, edge);
+                if (this.touches % 2) {
+                    this.speed++;
+                    if (this.touches > 2) {
+                        let angle = Math.atan2(this.speedX, this.speedY);
+                        angle += 5;
+                        if (angle > 360) {
+                            angle -= 360;
+                        }
+
+                        this.speedY = Math.sin(angle);
+                        this.speedX = Math.cos(angle);
+                    }
+                }
             }
             else if (edge && edge.class == "goal") {
                 this.goal(edge, game.speed);
@@ -44,14 +58,8 @@ export const ball = {
             ball.x += ball.speedX;
             ball.y += ball.speedY;
             checkCandies(ball, game);
+            edge = null;
         }
-        // if (this.touches % 2) {
-        //     this.speed++;
-        //     // if (this.touches > 2) {
-        //     //     this.speedY += 0.5;
-        //     //     this.speedX += 0.5;
-        //     // }
-        // }
     },
 
     draw: function (context) {
