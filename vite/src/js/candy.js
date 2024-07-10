@@ -13,9 +13,10 @@ candyImage.onerror = function() {
 class Candy {
   constructor(map) {
     this.powerUps = new Map();
-    this.numPowerUps = 2;
+    this.numPowerUps = 3;
     this.powerUps.set(1, defencePowerUp);
     this.powerUps.set(2, attackPowerUp);
+    this.powerUps.set(3, speedPowerUp);
     this.animation = new Animation(16, 64, 64);
     this.width = 64;
     this.height = 64;
@@ -135,4 +136,13 @@ function attackPowerUp(player, game) {
       }
     }
   }, 6000);
+}
+
+function speedPowerUp(player, game) {
+  player.speed *= 2;
+  player.color = "yellow";
+  setTimeout(() => {
+    player.speed /= 2;
+    player.color = "black";
+  }, 7000);
 }
