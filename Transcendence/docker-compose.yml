@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  django_gunicorn:
+    build: ./django
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      # - static:/static
+      - ./django/backend:/app
+
+    env_file:
+      - .env
+
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres:13.15
+
+    env_file:
+      - .env
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+
+  nginx:
+    build: ./nginx
+
+    ports:
+      - "8080:81"
+
+    volumes:
+      # - static:/static
+      - ./django/backend/static:/static
+
+    depends_on:
+      - django_gunicorn
+
+
+volumes:
+  static:
+  postgres_data:
