@@ -22,7 +22,7 @@ class Game {
   
   objects = new Map();
   numCandies = 1;
-  numberOfPlayers = 4;
+  numberOfPlayers = 2;
   pause = false;
   speed = 2.5;
   isScoring = false;

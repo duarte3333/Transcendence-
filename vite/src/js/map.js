@@ -93,6 +93,22 @@ export class Edge {
     getperpAngle() {
         return this.perpAngle;
     }
+
+    draw(context) {
+        if (this.class == "wall") {
+            context.strokeStyle = "black";
+            context.lineWidth = 2;
+        } else if (this.class == "goal") {
+            context.strokeStyle = "blue";
+            context.lineWidth = 2;
+        }
+    
+        context.beginPath();
+        context.moveTo(this.x1, this.y1);
+        context.lineTo(this.x2, this.y2);
+        context.closePath();
+        context.stroke();
+    }
 }
 
 
@@ -172,6 +188,10 @@ export const map = {
             context.fill();
         };
         this.img.onload();
+        for (let i = 1; i <= this.sides; i++) {
+            let temp = this.polygon.get("edge_" + i);
+            temp.draw(context);
+        }
     },
 };
 
