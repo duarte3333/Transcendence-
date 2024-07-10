@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="shortcut icon" href="#">
+        <script type="module" src="{% static 'pong/js/login.js' %}" defer></script>
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <link rel="stylesheet" href="{% static 'pong/css/styles.css' %}" >
+    </head>
+    <body class="body">
+        {% include 'login.html' %}
+        {% include 'home.html' %}
+        {% include 'chat.html' %}
+    </body>
+</html>
