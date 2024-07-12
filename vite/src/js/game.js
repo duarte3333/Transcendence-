@@ -6,17 +6,22 @@ import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
 import { sleep } from "./aux.js";
+import { Banner } from "./banner.js";
 
+const playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
 document.addEventListener('DOMContentLoaded', resizeCanvas);
 
 function resizeCanvas() {
   const canvas = document.getElementById('pongCanvas');
+  const banner = document.getElementById('banner');
   const width = canvas.clientWidth;
   canvas.style.height = `${width}px`;
+  banner.style.width = '20px';
 }
 
+playerBanner.createBanner();
 
 class Game {
   
@@ -62,6 +67,7 @@ class Game {
   //ADD OBJECTS TO GAME
   addMap(map) {
     map.img.src = "../img/lisboa3.png";
+    map.pattern.src = "../img/cobblestone.jpg"
     map.color =  "teal";
     map.radius = canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;

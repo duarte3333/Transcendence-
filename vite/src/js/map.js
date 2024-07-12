@@ -116,6 +116,7 @@ export class Edge {
 export const map = {
     polygon: new Map(),
     img: new Image(),
+    pattern: new Image(),
     radius: 10,
     size: 0,
     color: "white",
@@ -170,9 +171,16 @@ export const map = {
 
         const canvas = document.getElementById("pongCanvas");
         this.img.onload = () => {
-            context.fillStyle = context.createPattern(this.img, 'no-repeat');
+            const imgX = (canvas.width - this.img.width) / 2;
+            const imgY = (canvas.height - this.img.height) / 2;
+    
+            context.drawImage(this.img, imgX, imgY);
 
             context.beginPath();
+            context.moveTo(0,0);
+            context.lineTo(canvas.width,0);
+            context.lineTo(canvas.width,canvas.height);
+            context.lineTo(0,canvas.height);
             let x = canvas.width / 2 + this.sideLength / 2; // starting position x
             let y = canvas.height / 2 - this.centerToSideLength; // starting position y
             let angle = 2 * Math.PI / this.sides; // angle created by each side of the polygon
@@ -185,7 +193,10 @@ export const map = {
                 context.lineTo(x, y);
             }
             context.closePath();
-            context.fill();
+            // context.clip(); // <-- THIS FUNCTION SUCKS ASS
+            context.fillStyle = context.createPattern(this.pattern, 'repeat');
+            context.fill('evenodd');
+
         };
         this.img.onload();
         for (let i = 1; i <= this.sides; i++) {
