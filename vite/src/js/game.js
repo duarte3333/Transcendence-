@@ -18,7 +18,7 @@ function resizeCanvas() {
   const banner = document.getElementById('banner');
   const width = canvas.clientWidth;
   canvas.style.height = `${width}px`;
-  banner.style.width = '20px';
+  banner.style.height = `${width}px`;
 }
 
 playerBanner.createBanner();
