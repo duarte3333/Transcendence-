@@ -49,11 +49,20 @@ export class events {
         const aiButton = document.getElementById('AiButton');
         const playerButton = document.getElementById('PlayerButton');
         const pauseGame = document.querySelectorAll('.pauseGame');
+        const menuClose = document.getElementById('menuClose');
 
         if (speedControl) {
             speedControl.addEventListener('change', () => {
                 const newSpeed = speedControl.value;
                 this.game.updateGameSpeed(parseFloat(newSpeed));
+            });
+        }
+
+        if (menuClose) {
+            menuClose.addEventListener('click', () => {
+                if (this.game.pause) {
+                    this.game.pause = !this.game.pause;
+                }
             });
         }
 

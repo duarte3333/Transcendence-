@@ -40,9 +40,6 @@ $success: #007bff; // Changed to a blue color
 //
 
 body {
-  width: 90%;
-  margin: 0 auto;
-  background-color: #f0f2f5; // Light grey background
   //background-image: url("../img/lala4.png") !important;
   background-size: cover;
   background-repeat: no-repeat;
@@ -62,9 +59,8 @@ body {
 // }
 
 #pongCanvas { 
-  //background-color: #1e3a8a; /* Deep blue b ackground */
+  // background-color: #1e3a8a; /* Deep blue b ackground */
   width: 100%;
-
   border-radius: 8px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid #000000; /* Light blue border */
@@ -81,15 +77,6 @@ body {
   padding-bottom: 10px;
 }
 
-.canvas-container {
-  position: relative;
-  width: 100%;
-  padding-top: 100%; /* 1:1 Aspect Ratio */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 footer {
   justify-content: center;
   align-items: center;
@@ -103,54 +90,20 @@ footer {
 }
 
 .navbar {
-  //background-color: #374151 !important; /* Dark grey background */
   //background-image: url(../img/como2.png) !important;
-  background-color: #e4ecf6 !important;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  color: #ffffff; /* Light text color */
-  color: white; /* Ensure the text is readable */
   margin-bottom: 2rem;
   font-weight: bold;
   font-size: 1rem;
   letter-spacing: 1px;
-  text-transform: uppercase;
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-}
-
-.navbar .nav-link,
-.navbar .navbar-brand {
-  color: #3c3c3c; /* Ensure the text is readable */
-}
-.navbar .nav-link.active,
-.navbar .navbar-brand.active {
-  color: #759ad7; /* Light blue for active links */
-}
-
-.navbar .nav-link:hover,
-.navbar .navbar-brand:hover {
-  color: #759ad7; /* Light blue on hover */
 }
 
 .imgAvatar {
   border: 2px solid #759ad7; /* Blue border for avatar images */
   border-radius: 50%; /* Make avatars circular */
-}
-
-h5 {
-  color: #6079a1; /* Deep blue text */
-}
-
-.canvas {
-  background-color: #1f2937; /* Dark background for the canvas */
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.modal-content {
-  background-color: #f8fafc; /* Light background for the modal */
 }
 
 .btn-primary {
@@ -228,4 +181,12 @@ h5 {
   width: 50px;
   height: 50px;
   background-image: url('src/img/back1.png');
+}
+
+.navbar-brand img {
+  filter: invert(1);
+}
+
+#banner {
+  overflow: hidden;
 }

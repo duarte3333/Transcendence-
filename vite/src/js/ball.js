@@ -23,7 +23,6 @@ export const ball = {
     move: function (game) {
         if (this.speed > this.speedLimit)
             this.speed = this.speedLimit;
-        console.log(`speed = ${this.speed}, vx = ${this.speedX}, vy = ${this.speedY}`);
         let map = game.objects.get("map");
         for (let i = 1; i <= this.speed; i++) {
             let futureX = ball.x + ball.speedX;
@@ -36,7 +35,6 @@ export const ball = {
             edge = map.checkWalls(ball.x, ball.y, ball.radius);
             if (edge && edge.class == "wall") {
                 this.touches++;
-                console.log(`wall hit: ${edge.name}`);
                 bounceWalls(ball, edge);
                 if (this.touches % 2) {
                     this.speed++;
@@ -85,7 +83,6 @@ export const ball = {
     },
 
     restartBall: function (gameSpeed) {
-        console.log("restarting ball");
         const canvas = document.getElementById("pongCanvas");
         this.visible = false;
         this.x = canvas.width / 2; 

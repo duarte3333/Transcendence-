@@ -1,0 +1,59 @@
+draw: function (context) {
+
+        const canvas = document.getElementById("pongCanvas");
+        this.img.onload = () => {
+            const imgX = (canvas.width - this.img.width) / 2;
+            const imgY = (canvas.height - this.img.height) / 2;
+    
+            context.drawImage(this.img, imgX, imgY);
+
+            context.beginPath();
+            let x = canvas.width / 2 + this.sideLength / 2; // starting position x
+            let y = canvas.height / 2 - this.centerToSideLength; // starting position y
+            let angle = 2 * Math.PI / this.sides; // angle created by each side of the polygon
+            context.moveTo(x, y);
+
+            // Each iteration updates y and x with the next vertex and the angle is multiplied times iterations
+            for (let i = 1; i <= this.sides; i++) {
+                x = x + this.sideLength * Math.cos(i * angle);
+                y = y + this.sideLength * Math.sin(i * angle);
+                context.lineTo(x, y);
+            }
+            context.closePath();
+            context.clip();
+
+        };
+        this.img.onload();
+        for (let i = 1; i <= this.sides; i++) {
+            let temp = this.polygon.get("edge_" + i);
+            temp.draw(context);
+        }
+    },
+
+	draw: function (context) {
+
+        const canvas = document.getElementById("pongCanvas");
+        this.img.onload = () => {
+            context.fillStyle = context.createPattern(this.img, 'no-repeat');
+
+            context.beginPath();
+            let x = canvas.width / 2 + this.sideLength / 2; // starting position x
+            let y = canvas.height / 2 - this.centerToSideLength; // starting position y
+            let angle = 2 * Math.PI / this.sides; // angle created by each side of the polygon
+            context.moveTo(x, y);
+
+            // Each iteration updates y and x with the next vertex and the angle is multiplied times iterations
+            for (let i = 1; i <= this.sides; i++) {
+                x = x + this.sideLength * Math.cos(i * angle);
+                y = y + this.sideLength * Math.sin(i * angle);
+                context.lineTo(x, y);
+            }
+            context.closePath();
+            context.fill();
+        };
+        this.img.onload();
+        for (let i = 1; i <= this.sides; i++) {
+            let temp = this.polygon.get("edge_" + i);
+            temp.draw(context);
+        }
+    },
