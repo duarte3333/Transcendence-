@@ -9,8 +9,29 @@ document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {
   new Popover(popover);
 });
 
+//CHANGE THE PAGE
 document.addEventListener("DOMContentLoaded", (event) => {
   const loginButton = document.getElementById("loginButton");
+  const controlsButton = document.getElementById("controlsButton");
+
+  if (controlsButton) {
+    controlsButton.addEventListener("click", function () {
+      //all fill spaces must be filled
+      const numPlayers = document.getElementById("numPlayers").value;
+      let all_filled = true;
+      for (let i = 1; i <= numPlayers; i++) {
+        const input = document.getElementsByName(`player${i}Keys`)[0];
+        if (!input.value) {
+          all_filled = false;
+          alert(`Please fill in keys for Player ${i}`);
+          break;
+        }
+      }
+      if (all_filled) {
+        window.location.href = "index.html";
+      }
+    });
+  }
   if (loginButton) {
     loginButton.addEventListener("click", function () {
       //check if the user is named "admin" and the password is "admin"
@@ -20,7 +41,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         alert("Invalid credentials");
         return;
       }
-      window.location.href = "home.html";
+      window.location.href = "local_menu.html";
     });
   }
 });
