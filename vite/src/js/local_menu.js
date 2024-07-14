@@ -32,6 +32,7 @@ document.getElementById('numPlayers').addEventListener('input', function() {
 
 document.getElementById('playerForm').addEventListener('submit', function(event) {
     event.preventDefault();  // Prevent the default form submission
+    console.log(`entrou submit`);
 
     const numPlayers = document.getElementById('numPlayers').value;
     const playerData = {};

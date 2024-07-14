@@ -53,33 +53,23 @@ export class Paddle {
     this.width = this.height / 15;
     if (this.width < 7)
         this.width = 7;
-    // if (index % 2) { 
-    //   if (this.vy < 0) {
-    //       this.moveUpKey = "w";
-    //       this.moveDownKey = "s";
-    //   } else {
-    //     this.moveUpKey = "s";
-    //     this.moveDownKey = "w";
-    //   }
-    // } else {
-    //   if (this.vy < 0) {
-    //     this.moveUpKey = "ArrowUp";
-    //     this.moveDownKey = "ArrowDown";
-    //   } else {
-    //     this.moveUpKey = "ArrowDown";
-    //     this.moveDownKey = "ArrowUp";
-    //   }
-    // }
-
-    if (this.vy < 0) {
-        this.moveUpKey = entry_controls[0];
-        this.moveDownKey = entry_controls[1];
+    if (index % 2) { 
+      if (this.vy < 0) {
+          this.moveUpKey = "w";
+          this.moveDownKey = "s";
+      } else {
+        this.moveUpKey = "s";
+        this.moveDownKey = "w";
+      }
     } else {
-      this.moveUpKey = entry_controls[1];
-      this.moveDownKey = entry_controls[0];
+      if (this.vy < 0) {
+        this.moveUpKey = "ArrowUp";
+        this.moveDownKey = "ArrowDown";
+      } else {
+        this.moveUpKey = "ArrowDown";
+        this.moveDownKey = "ArrowUp";
+      }
     }
-    console.log('name = ' + this.name);
-    console.log(`moveUpKey = ${this.moveUpKey}, moveDownKey = ${this.moveDownKey}`);
     this.x = this.edge.x1 + (this.vx * (this.edge.size / 2));
     this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
     this.gapX = 0;
