@@ -93,9 +93,21 @@
           </div>
         </div>
       </div>
+
+      <!-- Game form-->
+      <div class="configure_players" id="gameForm">
+        <h1>Configure Players</h1>
+        <form id="playerForm">
+            <label for="numPlayers">Number of Players:</label>
+            <input type="number" id="numPlayers" name="numPlayers" min="2" max="100" required>
+            <div id="playerControls"></div>
+            <input type="hidden" id="playerData" name="playerData">
+            <input id="controlsButton" type="submit" value="Save Configuration" href="">
+        </form>
+      </div>
         
       <!-- Game -->
-        <div class="row">
+        <div class="row" id="game">
           <div class="col" id="banner"></div>
           <div class="col-md-5 text-center">
                 <canvas id="pongCanvas" width="800" height="800"></canvas>
@@ -112,6 +124,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script type="module" src="./js/game.js"></script>
   <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/local_menu.js"></script>
   </body>
   </html>
   

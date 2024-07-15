@@ -1,10 +1,8 @@
 export class events {
     constructor(game) {
         this.game = game; 
-        document.addEventListener('DOMContentLoaded', () => {
-            this.setupControls();
-            this.initializeUIButtons();
-        });
+        this.setupControls();
+        this.initializeUIButtons();
     }
 
     setupControls() {

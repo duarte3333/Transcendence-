@@ -8,10 +8,8 @@ import { createScoreBoard } from "./score.js";
 import { sleep } from "./aux.js";
 import { Banner } from "./banner.js";
 
-const playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
-document.addEventListener('DOMContentLoaded', resizeCanvas);
 
 function resizeCanvas() {
   const canvas = document.getElementById('pongCanvas');
@@ -21,13 +19,13 @@ function resizeCanvas() {
   banner.style.height = `${width}px`;
 }
 
-playerBanner.createBanner();
 
-class Game {
+export class Game {
   
+  playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
   objects = new Map();
   numCandies = 1;
-  numberOfPlayers = 3;
+  numberOfPlayers = 2;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -37,21 +35,24 @@ class Game {
   fps = 0;
 
   //INITIALIZE GAME
-  constructor() {
+  constructor(numPlayers, controlsList) {
+    this.numberOfPlayers = numPlayers;
+    const row = document.getElementById("game");
+    row.style.display = "flex";
+    const canvas = document.getElementById("pongCanvas");
     this.context = canvas.getContext("2d");
-    document.addEventListener('DOMContentLoaded', () => {
-      const canvas = document.getElementById("pongCanvas");
-      this.context = canvas.getContext("2d");
-      this.setupGame();  // Initialize game after setting context
-    });
+    this.context = canvas.getContext("2d");
+    this.setupGame(controlsList);  // Initialize game after setting context
   }
-
-  setupGame() {
+  
+  setupGame(controlsList) {
     this.addMap(map);
-    this.addPaddles();
+    this.addPaddles(controlsList);
     this.addBall(ball);
     this.addCandies();
     createScoreBoard(this.numberOfPlayers);
+    this.playerBanner.createBanner();
+    resizeCanvas();
     this.init();
   } 
 
@@ -79,10 +80,10 @@ class Game {
     this.objects.set(map.name, map);
   }
 
-  addPaddles() {
+  addPaddles(controlsList) {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let temp = new Paddle(map, i, this.numberOfPlayers);
+      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[`Player${i}`]);
       // temp.print();
       temp.draw(this.context);
       this.objects.set(temp.name, temp);
@@ -158,4 +159,4 @@ class Game {
   }
 }
  
-const game = new Game();
+// const game = new Game();
