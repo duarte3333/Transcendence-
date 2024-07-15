@@ -1,7 +1,13 @@
+import  {Game} from "./game.js"
+
 const playerControls = document.getElementById('playerControls');
 
-document.getElementById('numPlayers').addEventListener('input', function() {
+function displayExtendedForm(){
     const numPlayers = this.value;
+    if (numPlayers && numPlayers < 2) {
+        alert("Please selecte a value greater than 2!");
+        return ;
+    }
     playerControls.innerHTML = '';
     for (let i = 1; i <= (numPlayers * 2); i++) {
 
@@ -24,13 +30,23 @@ document.getElementById('numPlayers').addEventListener('input', function() {
 
         // Add event listener to capture key press
         input.addEventListener('keydown', function keyHandler(event) {
-            input.value = event.key.toUpperCase();  // Capture the key and convert to uppercase
+            input.value = event.key;  // Capture the key
             document.removeEventListener('keydown', keyHandler);  // Remove the event listener after capturing the key
         });
     }
-});
+}
+
+document.getElementById('numPlayers').addEventListener('input', displayExtendedForm);
+// document.addEventListener('DOMContentLoaded', displayExtendedForm); //SE DEIXARMOS UM NR EM CASH DA MERDA, ISTO NAO RESOLVE
 
 document.getElementById('playerForm').addEventListener('submit', function(event) {
+    //add achekc if it is all filled...
+
+
+    //hide form:
+    const form = document.getElementById("gameForm");
+    form.style.display = "none";
+
     event.preventDefault();  // Prevent the default form submission
 
     const numPlayers = document.getElementById('numPlayers').value;
@@ -41,31 +57,7 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
         const downKey = document.getElementById(`player${i * 2}Keys`).value;
         playerData[`Player${i}`] = [upKey, downKey];
     }
-    console.log('Player Data:', playerData);
-    
-    // Redirect to the home page or the desired location
-    //window.location.href = "home.html";
-});
+    //add somthing to parse info
 
-// document.addEventListener("DOMContentLoaded", (event) => {
-//     //CHECK IF ALL FIELDS ARE FILLED
-//     const controlsButton = document.getElementById("controlsButton");
-//     if (controlsButton) {
-//       controlsButton.addEventListener("click", function () {
-//         //all fill spaces must be filled
-//         const numPlayers = document.getElementById("numPlayers").value;
-//         let all_filled = true;
-//         for (let i = 1; i <= numPlayers; i++) {
-//           const input = document.getElementsByName(`player${i}Keys`)[0];
-//           if (!input.value) {
-//             all_filled = false;
-//             alert(`Please fill in keys for Player ${i}`);
-//             break;
-//           }
-//         }
-//         if (all_filled) {
-//           document.getElementById('playerForm').submit();
-//         }
-//       });
-//     }
-// });
+    const game = new Game(numPlayers, playerData);
+});
