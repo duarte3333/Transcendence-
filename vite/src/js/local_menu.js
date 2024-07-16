@@ -40,24 +40,42 @@ document.getElementById('numPlayers').addEventListener('input', displayExtendedF
 // document.addEventListener('DOMContentLoaded', displayExtendedForm); //SE DEIXARMOS UM NR EM CASH DA MERDA, ISTO NAO RESOLVE
 
 document.getElementById('playerForm').addEventListener('submit', function(event) {
-    //add achekc if it is all filled...
-
-
-    //hide form:
-    const form = document.getElementById("gameForm");
-    form.style.display = "none";
-
+    
     event.preventDefault();  // Prevent the default form submission
-
     const numPlayers = document.getElementById('numPlayers').value;
     const playerData = {};
-
+    const keysSet = new Set();
+    let allFilled = true;
+    
     for (let i = 1; i <= numPlayers; i++) {
         const upKey = document.getElementById(`player${i*2 - 1}Keys`).value;
         const downKey = document.getElementById(`player${i * 2}Keys`).value;
+        if (!upKey || !downKey) {
+            alert(`Please fill in both keys for Player ${i}`);
+            allFilled = false;
+            break;
+        }
+        if (upKey === downKey) {
+            alert(`Player ${i} cannot have the same key for both up and down.`);
+            allFilled = false;
+            break;
+        }
+        
+        if (keysSet.has(upKey) || keysSet.has(downKey)) {
+            alert(`Keys must be unique. The key ${upKey} or ${downKey} is already used.`);
+            allFilled = false;
+            break;
+        }
+        keysSet.add(upKey);
+        keysSet.add(downKey);
         playerData[`Player${i}`] = [upKey, downKey];
     }
+    //hide form:
+    
     //add somthing to parse info
-
-    const game = new Game(numPlayers, playerData);
+    if ( allFilled ){
+        const form = document.getElementById("gameForm");
+        form.style.display = "none";
+        const game = new Game(numPlayers, playerData);
+    }
 });

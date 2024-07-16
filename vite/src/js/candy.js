@@ -1,7 +1,6 @@
 import { Animation } from "./animation";
 
 const canvas = document.getElementById("pongCanvas");
-const context = canvas.getContext("2d");
 
 const candyImage = new Image();
 candyImage.src = '../img/ItemBoxSprite.png';
