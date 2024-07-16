@@ -191,7 +191,7 @@ footer {
   overflow: hidden;
 }
 
-#game {
+#game, #clientGame {
   display: none;
 }
 
@@ -328,4 +328,18 @@ footer {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
+}
+
+#clientPong { 
+  // background-color: #1e3a8a; /* Deep blue b ackground */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  border: 2px solid #000000; /* Light blue border */
+  // background-image: url("../img/lisboa3.png") !important;
+  // background-color: #007bff;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 8px;
 }

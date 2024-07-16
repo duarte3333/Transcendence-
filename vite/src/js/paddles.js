@@ -248,10 +248,6 @@ export function checkPlayers(x, y, radius, game) {
 }
 
 export function bouncePlayers(ball, edge, player) {
-
-  console.log(`player centerX = ${player.centerX}, centerY = ${player.centerY}`);
-  console.log(`player bounceX = ${player.bounceX}, bounceY = ${player.bounceY}`);
-
   // Calculate the difference in coordinates
   let deltaX =  ball.x - player.bounceX;
   let deltaY = ball.y - player.bounceY;
