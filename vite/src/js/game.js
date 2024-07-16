@@ -158,5 +158,3 @@ export class Game {
     player_2.speed = 3 * this.speed;
   }
 }
- 
-// const game = new Game();
