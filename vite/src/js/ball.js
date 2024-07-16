@@ -9,7 +9,7 @@ export const ball = {
     x: 0,
     y: 0,
     radius: 10,
-    speedX: 1,
+    speedX: -1,
     speedY: 0,
     speed: 2,
     speedLimit: 12,
@@ -36,17 +36,18 @@ export const ball = {
             if (edge && edge.class == "wall") {
                 this.touches++;
                 bounceWalls(ball, edge);
-                if (this.touches % 2) {
+                if (this.touches && this.touches % 2) {
                     this.speed++;
-                    if (this.touches > 2) {
+                    //PROTECTION FROM INFINITE LOOP
+                    if (this.touches > 4) {
                         let angle = Math.atan2(this.speedX, this.speedY);
-                        angle += 5;
-                        if (angle > 360) {
-                            angle -= 360;
+                        angle *= 1.01;
+                        if (angle > 2 * Math.PI) {
+                            angle -= 2 * Math.PI;
                         }
-
                         this.speedY = Math.sin(angle);
                         this.speedX = Math.cos(angle);
+                        this.touches = 0;
                     }
                 }
             }
@@ -84,6 +85,7 @@ export const ball = {
 
     restartBall: function (gameSpeed) {
         const canvas = document.getElementById("pongCanvas");
+        this.touches = 0;
         this.visible = false;
         this.x = canvas.width / 2; 
         this.y = canvas.height / 2;

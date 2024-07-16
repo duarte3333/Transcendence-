@@ -86,7 +86,7 @@ export class Edge {
 
     setperpAngle() {
         this.perpAngle = this.angle + Math.PI * 0.5; //angle plus 90º in radians
-        if (this.perpAngle > 2 * Math.PI)
+        if (this.perpAngle >= 2 * Math.PI)
             this.perpAngle -= 2 * Math.PI;
     }
     
@@ -223,8 +223,8 @@ export function bounceWalls(ball, edge) {
     let vpy = vy - 2 * dotProduct * ny;
     
     // Update the ball's speed
-    ball.speedX = vpx + 0.15;
-    ball.speedY = vpy + 0.15;
+    ball.speedX = vpx;
+    ball.speedY = vpy;
     
     //keep the ball from entering adjacent walls
     if (ball.x > map.size / 2)

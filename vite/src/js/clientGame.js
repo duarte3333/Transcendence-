@@ -7,7 +7,6 @@ import { Paddle } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
 import { sleep } from "./aux.js";
 import { Banner } from "./banner.js";
-import { ClientGame } from "./clientGame.js";
 
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
@@ -21,7 +20,7 @@ function resizeCanvas() {
 }
 
 
-export class Game {
+export class ClientGame {
   
   playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
   objects = new Map();
@@ -36,12 +35,13 @@ export class Game {
   fps = 0;
 
   //INITIALIZE GAME
-  constructor(numPlayers, controlsList) {
-    // this.client = new ClientGame(numPlayers, controlsList, "paddle_2"); <-- CLIENT GAME
+  constructor(numPlayers, controlsList, playerName) {
     this.numberOfPlayers = numPlayers;
-    const row = document.getElementById("game");
+    const row = document.createElement("row");
+	row.id = "clientGame";
     row.style.display = "flex";
-    const canvas = document.getElementById("pongCanvas");
+    const canvas = document.createElement("canvas");
+	canvas.id = "clientPong";
     this.context = canvas.getContext("2d");
     this.context = canvas.getContext("2d");
     this.setupGame(controlsList);  // Initialize game after setting context
@@ -130,7 +130,7 @@ export class Game {
   draw() {
     this.fps++;
     if (!this.pause) {
-      this.update();
+    //   this.update();
       this.context.clearRect(0, 0, canvas.width, canvas.height);
       this.objects.forEach((element) => {
         element.draw(this.context);
@@ -148,17 +148,4 @@ export class Game {
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
     }
   }
-
-  updateGameSpeed(speed) {
-    this.speed = 2.5 * speed;
-    console.log("Speed updated to: " + this.speed);
-    const ball = this.objects.get("ball");
-    const player_1 = this.objects.get("player_1");
-    const player_2 = this.objects.get("player_2");
-    ball.speed = 4 * this.speed;
-    player_1.speed = 3 * this.speed;
-    player_2.speed = 3 * this.speed;
-  }
 }
- 
-// const game = new Game();

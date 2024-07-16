@@ -10,6 +10,8 @@ export class Paddle {
   y; //one of the vertexes
   centerX;
   centerY;
+  bounceX; // created to normalize bounce angle
+  bounceY;
   vx;
   vy;
   gapX;
@@ -101,6 +103,8 @@ export class Paddle {
     let temp = this.rectEdges.get("edge_2"); //get the center of rect by the oposit vertexes
     this.centerX = (this.x + temp.x2) / 2;
     this.centerY = (this.y + temp.y2) / 2;
+    this.bounceX = this.centerX + (Math.cos(this.edge.perpAngle + Math.PI) * 80);
+    this.bounceY = this.centerY + (Math.sin(this.edge.perpAngle + Math.PI) * 80);
   }
 
   updateRectMap() {
@@ -129,6 +133,8 @@ export class Paddle {
     let temp = this.rectEdges.get("edge_2"); //update the center of rect by the oposit vertexes
     this.centerX = (this.x + temp.x2) / 2;
     this.centerY = (this.y + temp.y2) / 2;
+    this.bounceX = this.centerX + (Math.cos(this.edge.perpAngle + Math.PI) * 80);
+    this.bounceY = this.centerY + (Math.sin(this.edge.perpAngle + Math.PI) * 80);
   }
 
   print() {
@@ -243,9 +249,12 @@ export function checkPlayers(x, y, radius, game) {
 
 export function bouncePlayers(ball, edge, player) {
 
+  console.log(`player centerX = ${player.centerX}, centerY = ${player.centerY}`);
+  console.log(`player bounceX = ${player.bounceX}, bounceY = ${player.bounceY}`);
+
   // Calculate the difference in coordinates
-  let deltaX =  ball.x - player.centerX;
-  let deltaY = ball.y - player.centerY ;
+  let deltaX =  ball.x - player.bounceX;
+  let deltaY = ball.y - player.bounceY;
 
   // Calculate the angle in radians using atan2
   let angleRadians = Math.atan2(deltaY, deltaX);
