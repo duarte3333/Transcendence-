@@ -7,7 +7,7 @@
     <title>Bootstrap w/ Vite - Pong 42</title>
     <link rel="stylesheet" href="scss/styles.scss">
   </head>
-  <body>
+  <body id="body">
       <!-- Navbar Section -->
       <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
@@ -132,8 +132,14 @@
         </div>
       </div>
 
-            
-    
+      <div class="row" id="clientGame">
+        <div class="col" id="clientBanner"></div>
+        <div class="col-md-5 text-center">
+              <canvas id="clientPong" width="800" height="800"></canvas>
+        </div>
+        <div class="col" id="clientScoreBoard"></div>
+      </div>
+
       <!-- Footer Section -->
       <footer class="py-3 my-4">
           <p class="text-center text-muted">© The Best Transcendence of 2024, Inc</p>
