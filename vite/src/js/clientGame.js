@@ -105,24 +105,38 @@ export class ClientGame {
   addCandies() {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numCandies; i++) {
-      const candy = new Candy(map);
+      const candy = new Candy(map, "candy_" + i);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
       sleep(400);
     }
   }
 
-  //
-  updateBall(x, y) {
-	this.ball.x = x;
-	this.ball.y = y;
+  //client calls for updates
+  updateBall(hostBall) {
+    this.ball.x = hostBall.x;
+    this.ball.y = hostBall.y;
+    this.ball.visible = hostBall.visible;
   }
 
-  updatePlayer(playerName, x, y) {
-	const temp = this.objects.get(playerName);
-	temp.x = x;
-	temp.y = y;
-	temp.updateRectMap();
+  updatePlayer(hostPaddle) {
+    const clientPaddle = this.objects.get(hostPaddle.name);
+    clientPaddle.x = hostPaddle.x;
+    clientPaddle.y = hostPaddle.y;
+    clientPaddle.height = hostPaddle.height;
+    clientPaddle.color = hostPaddle.color;
+    clientPaddle.updateRectMap();
+  }
+
+  updateCandy(hostCandy) {
+    const clientCandy = this.objects.get(hostCandy.name);
+    clientCandy.x = hostCandy.x;
+    clientCandy.y = hostCandy.y;
+    clientCandy.visible = hostCandy.visible;
+  }
+
+  updatePause(hostPause) {
+    this.pause = hostPause;
   }
 
   //UPDATE OBJECTS

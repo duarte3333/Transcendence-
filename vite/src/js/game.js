@@ -52,7 +52,7 @@ export class Game {
     this.addBall();
     this.addCandies();
     createScoreBoard(this.numberOfPlayers);
-    this.playerBanner.createBanner();
+    // this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
   } 
@@ -102,7 +102,7 @@ export class Game {
   addCandies() {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numCandies; i++) {
-      const candy = new Candy(map);
+      const candy = new Candy(map, "candy_" + i);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
       sleep(400);
@@ -117,10 +117,17 @@ export class Game {
     for (let i = 1; i <= this.numberOfPlayers; i++) {
       let temp = this.objects.get("paddle_" + i);
       temp.move();
-      this.client.updatePlayer(temp.name, temp.x, temp.y);
+      //send paddle info to client
+      this.client.updatePlayer(temp);
     }
     ball.move(this);
-    this.client.updateBall(ball.x, ball.y);
+    //send ball info to client
+    this.client.updateBall(ball);
+    //send candy info to client
+    for (let i = 1; i <= this.numCandies; i++) {
+      let temp = this.objects.get("candy_" + i);
+      this.client.updateCandy(temp);
+    }
   }
 
   tooglePause() {
@@ -137,6 +144,7 @@ export class Game {
       });
     } 
     else {
+      this.client.updatePause(this.pause);
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
