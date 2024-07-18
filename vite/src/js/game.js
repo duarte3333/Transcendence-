@@ -15,9 +15,12 @@ window.addEventListener('resize', resizeCanvas);
 function resizeCanvas() {
   const canvas = document.getElementById('pongCanvas');
   const banner = document.getElementById('banner');
+  const scoreBoard = document.getElementById('scoreBoard');
   const width = canvas.clientWidth;
   canvas.style.height = `${width}px`;
   banner.style.height = `${width}px`;
+  scoreBoard.style.height = `${width}px`;
+
 }
 
 
@@ -52,7 +55,7 @@ export class Game {
     this.addBall();
     this.addCandies();
     createScoreBoard(this.numberOfPlayers);
-    // this.playerBanner.createBanner();
+    this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
   } 

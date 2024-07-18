@@ -41,7 +41,7 @@ export class ClientGame {
     this.numberOfPlayers = numPlayers;
 	this.playerName = playerName;
 	const row = document.getElementById("clientGame");
-    row.style.display = "flex";
+    // row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
     this.setupGame(controlsList);  // Initialize game after setting context
   }
@@ -88,7 +88,6 @@ export class ClientGame {
       // temp.print();
       temp.draw(this.context);
       this.objects.set(temp.name, temp);
-	  console.log(`added paddle = ${temp.name}`);
     }
   }
 
@@ -143,7 +142,6 @@ export class ClientGame {
   update() {
 	  const temp = this.objects.get(this.playerName);
 	  temp.move;
-	  console.log(`trying to move paddle ${temp.name}`);
   }
 
   tooglePause() {
