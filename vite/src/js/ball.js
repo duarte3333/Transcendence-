@@ -5,37 +5,53 @@ import { updateScore } from "./score.js";
 
 
 // Ball object
-export const ball = {
-    x: 0,
-    y: 0,
-    radius: 10,
-    speedX: -1,
-    speedY: 0,
-    speed: 2,
-    speedLimit: 12,
-    color: "black",
-    name: "ball", 
-    last_hit: "",
-    last_hitBK: "",
-    visible: true,
-    touches: 0,
+export class Ball {
+    x;
+    y;
+    radius;
+    speedX;
+    speedY;
+    speed;
+    speedLimit;
+    color;
+    name; 
+    last_hit;
+    last_hitBK;
+    visible;
+    touches;
 
-    move: function (game) {
+    constructor() {
+        this.x = 0;
+        this.y = 0;
+        this.radius = 10;
+        this.speedX = -1;
+        this.speedY = 0;
+        this.speed = 2;
+        this.speedLimit = 12;
+        this.color = "black";
+        this.name = "ball"; 
+        this.last_hit = "";
+        this.last_hitBK = "";
+        this.visible = true;
+        this.touches = 0;
+    }
+
+    move(game) {
         if (this.speed > this.speedLimit)
             this.speed = this.speedLimit;
         let map = game.objects.get("map");
         for (let i = 1; i <= this.speed; i++) {
-            let futureX = ball.x + ball.speedX;
-            let futureY = ball.y + ball.speedY;
-            let {edge: edge, temp: player} = checkPlayers(futureX, futureY, ball.radius, game);
+            let futureX = this.x + this.speedX;
+            let futureY = this.y + this.speedY;
+            let {edge: edge, temp: player} = checkPlayers(futureX, futureY, this.radius, game);
             if (edge && player) {
-                bouncePlayers(ball, edge, player);
+                bouncePlayers(this, edge, player);
                 this.touches = 0;
             }
-            edge = map.checkWalls(ball.x, ball.y, ball.radius);
+            edge = map.checkWalls(this.x, this.y, this.radius);
             if (edge && edge.class == "wall") {
                 this.touches++;
-                bounceWalls(ball, edge);
+                bounceWalls(this, edge);
                 if (this.touches && this.touches % 2) {
                     this.speed++;
                     //PROTECTION FROM INFINITE LOOP
@@ -54,14 +70,14 @@ export const ball = {
             else if (edge && edge.class == "goal") {
                 this.goal(edge, game.speed);
             }
-            ball.x += ball.speedX;
-            ball.y += ball.speedY;
-            checkCandies(ball, game);
+            this.x += this.speedX;
+            this.y += this.speedY;
+            checkCandies(this, game);
             edge = null;
         }
-    },
+    }
 
-    draw: function (context) {
+    draw(context) {
         if (this.visible) {
             context.fillStyle = this.color;
             context.beginPath();
@@ -69,9 +85,9 @@ export const ball = {
             context.closePath();
             context.fill();
         }
-    },
+    }
 
-    goal: function (edge, gameSpeed) {
+    goal(edge, gameSpeed) {
         if (edge.goalKeeper != this.last_hit && this.last_hit)
             updateScore(this.last_hit, 1);
         else if (this.last_hitBK)
@@ -81,9 +97,9 @@ export const ball = {
         this.restartBall(gameSpeed);
         this.last_hit = 0;
         this.last_hitBK = 0;
-    },
+    }
 
-    restartBall: function (gameSpeed) {
+    restartBall(gameSpeed) {
         const canvas = document.getElementById("pongCanvas");
         this.touches = 0;
         this.visible = false;
@@ -94,12 +110,12 @@ export const ball = {
             this.visible = true;
             this.speed = 2 * gameSpeed;
         }, 700);
-    },
+    }
 
-    updateLastHit: function (name) {
+    updateLastHit(name) {
         if (this.last_hit != name) {
             this.last_hitBK = this.last_hit;
             this.last_hit = name;
         }
-    },
-  };
+    }
+  }

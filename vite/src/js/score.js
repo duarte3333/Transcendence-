@@ -24,7 +24,9 @@ export class Score {
 
 export function createScoreBoard(numberOfPlayers) {
   const scoreboardContainer = document.getElementById('scoreBoard');
-
+  scoreboardContainer.style.paddingTop = "2%";
+  scoreboardContainer.style.borderRadius = "10px";
+  scoreboardContainer.style.border = "3px solid #000000";
   const h3 = document.createElement('h3');
   h3.classList.add('centered-text');
   h3.textContent = "ScoreBoard";
@@ -34,6 +36,10 @@ export function createScoreBoard(numberOfPlayers) {
     row.classList.add('row');
     const center = document.createElement('div');
     center.classList.add('text-center');
+    center.style.display = "flex";
+    center.style.flexDirection = "column";
+    center.style.alignItems = "center";
+    center.style.justifyContent = "center";
     const img = document.createElement('img');
     img.classList.add('imgAvatar');
     img.src = "img/p1.png";
@@ -42,6 +48,7 @@ export function createScoreBoard(numberOfPlayers) {
     const playerName = document.createElement('h5');
     playerName.classList.add('playerName');
     playerName.textContent = "Player_" + i;
+    playerName.style.maxWidth = "100%";
     const playerScore = document.createElement('h5');
     playerScore.classList.add('playerScore');
     playerScore.textContent = 0;
@@ -51,7 +58,6 @@ export function createScoreBoard(numberOfPlayers) {
     row.appendChild(center);
     scoreboardContainer.appendChild(row);
   }
-
 }
 
 

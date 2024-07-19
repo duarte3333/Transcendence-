@@ -10,7 +10,7 @@ candyImage.onerror = function() {
 };
 
 class Candy {
-  constructor(map) {
+  constructor(map, name) {
     this.powerUps = new Map();
     this.numPowerUps = 3;
     this.powerUps.set(1, defencePowerUp);
@@ -26,7 +26,7 @@ class Candy {
     setTimeout(() => {
       this.visible = true;
     }, 3000);
-    this.name = "candy";
+    this.name = name;
   }
 
   reset() {

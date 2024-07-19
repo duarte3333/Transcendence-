@@ -1,4 +1,4 @@
-import { ball } from "./ball.js";
+import { Ball } from "./ball.js";
 import { Candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
@@ -15,14 +15,16 @@ window.addEventListener('resize', resizeCanvas);
 function resizeCanvas() {
   const canvas = document.getElementById('pongCanvas');
   const banner = document.getElementById('banner');
+  const scoreBoard = document.getElementById('scoreBoard');
   const width = canvas.clientWidth;
   canvas.style.height = `${width}px`;
   banner.style.height = `${width}px`;
+  scoreBoard.style.height = `${width}px`;
+
 }
 
 
 export class Game {
-  
   playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
   objects = new Map();
   numCandies = 1;
@@ -34,15 +36,15 @@ export class Game {
   events = new events(this);  // Initialize events after setting up game
   candies = [];
   fps = 0;
+  ball = new Ball();
 
   //INITIALIZE GAME
   constructor(numPlayers, controlsList) {
-    // this.client = new ClientGame(numPlayers, controlsList, "paddle_2"); <-- CLIENT GAME
+    this.client = new ClientGame(numPlayers, controlsList, "paddle_2"); //<-- CLIENT GAME
     this.numberOfPlayers = numPlayers;
     const row = document.getElementById("game");
     row.style.display = "flex";
     const canvas = document.getElementById("pongCanvas");
-    this.context = canvas.getContext("2d");
     this.context = canvas.getContext("2d");
     this.setupGame(controlsList);  // Initialize game after setting context
   }
@@ -50,7 +52,7 @@ export class Game {
   setupGame(controlsList) {
     this.addMap(map);
     this.addPaddles(controlsList);
-    this.addBall(ball);
+    this.addBall();
     this.addCandies();
     createScoreBoard(this.numberOfPlayers);
     this.playerBanner.createBanner();
@@ -92,18 +94,18 @@ export class Game {
     }
   }
 
-  addBall(ball) {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.speed *= this.speed;
-    ball.draw(this.context);
-    this.objects.set(ball.name, ball);
+  addBall() {
+    this.ball.x = canvas.width / 2;
+    this.ball.y = canvas.height / 2;
+    this.ball.speed *= this.speed;
+    this.ball.draw(this.context);
+    this.objects.set(this.ball.name, this.ball);
   }
 
   addCandies() {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numCandies; i++) {
-      const candy = new Candy(map);
+      const candy = new Candy(map, "candy_" + i);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
       sleep(400);
@@ -118,9 +120,17 @@ export class Game {
     for (let i = 1; i <= this.numberOfPlayers; i++) {
       let temp = this.objects.get("paddle_" + i);
       temp.move();
-
+      //send paddle info to client
+      this.client.updatePlayer(temp);
     }
     ball.move(this);
+    //send ball info to client
+    this.client.updateBall(ball);
+    //send candy info to client
+    for (let i = 1; i <= this.numCandies; i++) {
+      let temp = this.objects.get("candy_" + i);
+      this.client.updateCandy(temp);
+    }
   }
 
   tooglePause() {
@@ -137,6 +147,7 @@ export class Game {
       });
     } 
     else {
+      this.client.updatePause(this.pause);
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
