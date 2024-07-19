@@ -114,21 +114,31 @@
         </div>
         <div class="col-md-3" id="scoreBoard">
         </div>
-        <!-- Botão para abrir o chat -->
-        <div id="chatButton" class="chat-button" onclick="openChat()">Chat</div>
-        <!-- Janela de Chat -->
-        <div id="chatWindow" class="chat-window">
-          <div class="chat-header">
-            <span>Live Pong Chat</span>
-            <button onclick="closeChat()">X</button>
-          </div>
-          <div class="chat-body">
-            <!-- Conteúdo do chat vai aqui -->
-          </div>
-          <div class="chat-footer">
-            <input type="text" placeholder="Type a message..." />
-            <button>Send</button>
-          </div>
+      </div>
+    </div>
+    
+    <!-- Chat -->
+    <!-- Botão para abrir o chat -->
+    <div id="chatButton" class="chat-button" onclick="openChat()">Chat</div>
+    <!-- Janela de Chat -->
+    <div id="chatWindow" class="chat-window">
+      <div class="chat-sidebar" id="chatSidebar">
+        <!-- <button onclick="selectChannel('general')">General</button> -->
+        <!-- <button onclick="selectChannel('player1')">Player 1</button> -->
+        <!-- <button onclick="selectChannel('player2')">Player 2</button> -->
+        <!-- Adicione mais botões conforme necessário -->
+      </div>
+      <div class="chat-main">
+        <div class="chat-header">
+          <span id="chatHeader">Live Pong Chat</span>
+          <button onclick="closeChat()">X</button>
+        </div>
+        <div class="chat-body" id="chatBody">
+          <!-- Conteúdo do chat vai aqui -->
+        </div>
+        <div class="chat-footer">
+          <input type="text" placeholder="Type a message..." id="chatInput" />
+          <button onclick="sendMessage()">Send</button>
         </div>
       </div>
 
@@ -152,12 +162,42 @@
 
   <script>
     function openChat() {
-      document.getElementById("chatWindow").style.display = "block";
+      document.getElementById("chatWindow").style.display = "flex";
     }
 
     function closeChat() {
       document.getElementById("chatWindow").style.display = "none";
     }
+
+    function selectChannel(channel) {
+      document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
+      document.getElementById("chatBody").innerHTML = `<!-- Conteúdo do chat para ${channel} vai aqui -->`;
+    }
+
+    function sendMessage() {
+      const message = document.getElementById("chatInput").value;
+      // Lógica para enviar a mensagem
+      document.getElementById("chatInput").value = '';
+    }
+
+    // Certifique-se de que a janela do chat está oculta ao carregar a página
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("chatWindow").style.display = "none";
+    });
+
+    // Função para gerar botões de jogadores dinamicamente
+    document.getElementById("playerForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const numPlayers = document.getElementById("numPlayers").value;
+      const chatSidebar = document.getElementById("chatSidebar");
+      chatSidebar.innerHTML = '<button onclick="selectChannel(\'general\')">General</button>';
+      for (let i = 1; i <= numPlayers; i++) {
+        const button = document.createElement("button");
+        button.innerText = `Player ${i}`;
+        button.onclick = function() { selectChannel(`player${i}`); };
+        chatSidebar.appendChild(button);
+      }
+    });
   </script>
   </body>
   </html>
