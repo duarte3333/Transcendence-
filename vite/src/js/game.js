@@ -20,7 +20,6 @@ function resizeCanvas() {
   canvas.style.height = `${width}px`;
   banner.style.height = `${width}px`;
   scoreBoard.style.height = `${width}px`;
-
 }
 
 
@@ -57,6 +56,7 @@ export class Game {
     createScoreBoard(this.numberOfPlayers);
     this.playerBanner.createBanner();
     resizeCanvas();
+    const temp = document.getElementById("scoreBoard");
     this.init();
   } 
 

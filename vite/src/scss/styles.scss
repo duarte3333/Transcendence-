@@ -39,6 +39,12 @@ $success: #007bff; // Changed to a blue color
 // Custom styles
 //
 
+.centerAll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 body {
   //background-image: url("../img/lala4.png") !important;
   background-size: cover;
@@ -104,6 +110,7 @@ footer {
 .imgAvatar {
   border: 2px solid #759ad7; /* Blue border for avatar images */
   border-radius: 50%; /* Make avatars circular */
+  margin: 10px;
 }
 
 .btn-primary {
