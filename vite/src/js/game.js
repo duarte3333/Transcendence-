@@ -22,9 +22,26 @@ function resizeCanvas() {
   scoreBoard.style.height = `${width}px`;
 }
 
+// function resizeCanvas() {
+//   const canvas = document.getElementById('clientPong');
+//   const banner = document.getElementById('banner');
+//   //const scoreBoard = document.getElementById('scoreBoard');
+  
+  
+//   const width = window.innerWidth;  // More reliable measurement of the viewport width
+//   canvas.width = width;  // Set the canvas width to fill the container or viewport
+//   canvas.height = width;  // Maintain a 1:1 aspect ratio for the canvas
+
+//   const heightProportion = width / 5;  // Example proportion based on design needs
+//   banner.style.height = `${heightProportion}px`;  // Set proportionally smaller than canvas
+//   //scoreBoard.style.height = `${canvas.height}px`;  // Same as banner
+// }
+
+
+
 
 export class Game {
-  playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
+  playerBanner = new Banner("../img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
   objects = new Map();
   numCandies = 1;
   numberOfPlayers = 2;
