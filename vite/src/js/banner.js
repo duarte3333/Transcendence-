@@ -1,30 +1,68 @@
 export class Banner {
-	constructor (imgPath, playerName) {
-		this.img = new Image();
-		this.img.src = imgPath;
-		this.playerName = playerName;
-	}
+    constructor(imgPath, playerName, playerNickname, playerStats) {
+        this.img = new Image();
+        this.img.src = imgPath;
+		this.imgProfile = new Image();
+		this.imgProfile.src = "img/p1.png";
+        this.playerName = playerName;
+        this.playerNickname = playerNickname;
+        this.playerStats = playerStats;
+    }
 
-	createBanner() {
-		const bannerContainer = document.getElementById('banner');
-		bannerContainer.classList.add('d-flex');
-		bannerContainer.classList.add('justify-content-center');
-		bannerContainer.classList.add('align-items-start');
-		bannerContainer.style.paddingTop = "2%";
-		bannerContainer.style.borderRadius = "10px";
-		bannerContainer.style.border = "3px solid #000000";
-		const h3 = document.createElement('h3');
-		h3.classList.add('centered-text');
-		h3.textContent = this.playerName;
-		h3.style.display = "inline-block";
-		h3.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
-		h3.style.color = "white";
-		h3.style.padding = "10px 20px";
-		h3.style.borderRadius = "10px";
-		bannerContainer.appendChild(h3);
-		bannerContainer.style.backgroundImage = `url(${this.img.src})`;
-		bannerContainer.style.backgroundSize = "cover";
-		bannerContainer.style.backgroundPosition = "center";
-		bannerContainer.style.backgroundRepeat = "no-repeat";
-	}
+    createBanner() {
+        const bannerContainer = document.getElementById('banner');
+        bannerContainer.classList.add('d-flex', 'flex-column', 'justify-content-center', 'align-items-center');
+        bannerContainer.style.padding = "20px";
+        bannerContainer.style.borderRadius = "10px";
+        bannerContainer.style.border = "3px solid #000000";
+        bannerContainer.style.backgroundImage = `url(${this.img.src})`;
+        bannerContainer.style.backgroundSize = "cover";
+        bannerContainer.style.backgroundPosition = "center";
+        bannerContainer.style.backgroundRepeat = "no-repeat";
+        bannerContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.5)"; // Adds depth
+
+        const profilePhoto = new Image();
+        profilePhoto.src = "img/p1.png"; // Path to the player's profile photo
+        profilePhoto.alt = 'Player Profile';
+        profilePhoto.style.width = "100px"; // Set the width as needed
+        profilePhoto.style.height = "100px"; // Set the height as needed
+        profilePhoto.style.borderRadius = "50%"; // Circular photo
+        //profilePhoto.style.border = "2px solid white";
+		profilePhoto.style.border = "3px solid #0000ff"; // Bright green border
+        profilePhoto.style.boxShadow = "0 0 10px #0000ff"; // Blue glow effect
+        profilePhoto.style.marginBottom = "10px";
+
+        const nameText = document.createElement('h3');
+        nameText.textContent = this.playerName;
+        nameText.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+        nameText.style.color = "white";
+        nameText.style.padding = "10px 20px";
+        nameText.style.borderRadius = "10px";
+		nameText.style.textShadow = "2px 2px 2px #000000"; // Text shadow for readability
+        nameText.style.marginBottom = "5px"; // space between name and nickname
+
+
+        const nicknameText = document.createElement('h4');
+        nicknameText.textContent = this.playerNickname;
+        nicknameText.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        nicknameText.style.color = "white";
+		//nicknameText.style.textShadow = "1px 1px 2px #000000";
+        nicknameText.style.padding = "8px 16px";
+        nicknameText.style.borderRadius = "10px";
+        nicknameText.style.textShadow = "1px 1px 5px #0000ff"; // Blue glow effect
+        nicknameText.style.fontSize = "0.8rem"; // Smaller text size for nickname
+
+        const statsText = document.createElement('p');
+        statsText.textContent = `${this.playerStats}`;
+        statsText.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+        statsText.style.color = "white";
+        statsText.style.padding = "5px 10px";
+        statsText.style.borderRadius = "10px";
+        statsText.style.fontSize = "0.8rem";
+
+        bannerContainer.appendChild(profilePhoto);
+        bannerContainer.appendChild(nameText);
+        bannerContainer.appendChild(nicknameText);
+        bannerContainer.appendChild(statsText);
+    }
 }

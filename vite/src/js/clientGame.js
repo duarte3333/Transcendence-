@@ -8,16 +8,24 @@ import { createScoreBoard } from "./score.js";
 import { sleep } from "./aux.js";
 import { Banner } from "./banner.js";
 
-window.addEventListener('resize', resizeCanvas);
 
 function resizeCanvas() {
   const canvas = document.getElementById('clientPong');
   const banner = document.getElementById('banner');
-  const width = canvas.clientWidth;
-  canvas.style.height = `${width}px`;
-  banner.style.height = `${width}px`;
+  const scoreBoard = document.getElementById('scoreBoard');
+  
+  
+  const width = window.innerWidth;  // More reliable measurement of the viewport width
+  canvas.width = width;  // Set the canvas width to fill the container or viewport
+  canvas.height = width;  // Maintain a 1:1 aspect ratio for the canvas
+
+  const heightProportion = width / 5;  // Example proportion based on design needs
+  banner.style.height = `${heightProportion}px`;  // Set proportionally smaller than canvas
+  scoreBoard.style.height = `${heightProportion}px`;  // Same as banner
 }
 
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 export class ClientGame {
   
@@ -39,9 +47,9 @@ export class ClientGame {
   //INITIALIZE GAME
   constructor(numPlayers, controlsList, playerName) {
     this.numberOfPlayers = numPlayers;
-	this.playerName = playerName;
-	const row = document.getElementById("clientGame");
-    // row.style.display = "flex";
+	  this.playerName = playerName;
+	  const row = document.getElementById("clientGame");
+    //row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
     this.setupGame(controlsList);  // Initialize game after setting context
   }
@@ -52,7 +60,7 @@ export class ClientGame {
     this.addBall();
     this.addCandies();
     // createScoreBoard(this.numberOfPlayers);
-	// this.playerBanner.createBanner();
+	  // this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
   } 

@@ -1,5 +1,5 @@
 // Import our custom CSS
-import "../scss/styles.scss";
+import "../css/styles.css";
 
 // Import only the Bootstrap components we need
 import { Popover } from "bootstrap";
