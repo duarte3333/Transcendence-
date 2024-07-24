@@ -50,7 +50,7 @@ function changeText(event, type) {
 		input.type = 'text';
 	else
 		input.type = 'password'
-	input.id = "inputChange";
+	input.id = type + "input";
 	input.className = 'form-control';
 	input.placeholder = 'Username';
 	input.setAttribute('aria-label', 'Username');
@@ -58,7 +58,7 @@ function changeText(event, type) {
 
 	//add finish button;
 	let completeButton = document.createElement('button');
-	completeButton.id = "completeChange";
+	completeButton.id = type + "button";
 	completeButton.className = "btn btn-dark rounded-circle p-2 lh-1 changeButton";
 	completeButton.type = "button";
 	completeButton.innerHTML = `
@@ -67,7 +67,7 @@ function changeText(event, type) {
 			</svg>
 	`;
 	completeButton.addEventListener('click', () => {
-		completeChangeText(oldParent, div, type);
+		completeChangeText(oldParent, div, type, input.id, completeButton.id);
 	});
 
 	div.appendChild(input);
@@ -75,8 +75,8 @@ function changeText(event, type) {
 	col.appendChild(completeButton);
 }
 
-function completeChangeText(oldParent, div, type) {
-	const input = document.getElementById('inputChange');
+function completeChangeText(oldParent, div, type, inputID, buttonID) {
+	const input = document.getElementById(inputID);
 	//checks input
 	
 	//update info latter on db
@@ -90,7 +90,7 @@ function completeChangeText(oldParent, div, type) {
 	//show old elements hide new ones
 	oldParent.style.setProperty('display', 'flex', 'important');
 	div.remove();
-	const button = document.getElementById('completeChange');
+	const button = document.getElementById(buttonID);
 	button.remove();
 }
 
@@ -114,14 +114,14 @@ function changeImage(event, type) {
 	let input;
 	input = document.createElement('input');
 	input.type = 'file'
-	input.id = "inputChange";
+	input.id = type + "input";
 	input.className = 'form-control';
 	input.placeholder = 'Choose a file';
 	input.setAttribute('aria-label', 'Small file input example');
 
 	//add finish button;
 	let completeButton = document.createElement('button');
-	completeButton.id = "completeChange";
+	completeButton.id = type + "button";
 	completeButton.className = "btn btn-dark rounded-circle p-2 lh-1 changeButton";
 	completeButton.type = "button";
 	completeButton.innerHTML = `
@@ -130,7 +130,7 @@ function changeImage(event, type) {
 			</svg>
 	`;
 	completeButton.addEventListener('click', () => {
-		completeChangeImage(oldParent, div, type);
+		completeChangeImage(oldParent, div, type, input.id, completeButton.id);
 	});
 
 	div.appendChild(input);
@@ -138,8 +138,8 @@ function changeImage(event, type) {
 	col.appendChild(completeButton);
 }
 
-function completeChangeImage(oldParent, div, type) {
-	const fileInput = document.getElementById('inputChange');
+function completeChangeImage(oldParent, div, type, inputID, buttonID) {
+	const fileInput = document.getElementById(inputID);
 	if (!fileInput || fileInput.files.length === 0) {
 		alert('Please select a file.');
 		return;
@@ -175,6 +175,6 @@ function completeChangeImage(oldParent, div, type) {
 	//show old elements hide new ones
 	oldParent.style.setProperty('display', 'flex', 'important');
 	div.remove();
-	const button = document.getElementById('completeChange');
+	const button = document.getElementById(buttonID);
 	button.remove();
 }

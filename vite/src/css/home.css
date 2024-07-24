@@ -1,0 +1,13 @@
+.container {
+	margin-top: 3rem;
+}
+
+.btn {
+	font-size: 1.5rem;
+}
+
+.iconImg {
+	display: block;
+	margin: auto;
+	filter: invert(1);
+}
