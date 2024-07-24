@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', login_page),
+    # path('', include('pong.urls')),
     path('register/', register_page),
 
     path('api/login/', login),

@@ -20,9 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'default_secret_key')
 
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']
 
@@ -34,14 +34,14 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'pong',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pong',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
@@ -104,11 +106,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
     }
 }
 
