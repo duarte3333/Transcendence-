@@ -52,13 +52,16 @@ function nextPage(event, type) {
         	<svg class="bi" width="20" height="20"><image class="iconImg" width="20" height="20" xlink:href="../img/return.png"></image></svg>
         </button>
 	`;
-
+	
 	rowBack.appendChild(back);
 	rowButtons.appendChild(match);
 	rowButtons.appendChild(tournament);
 	div.appendChild(rowButtons);
 	div.appendChild(rowBack);
 	container.appendChild(div);
+	document.getElementById(`${type}button`).addEventListener('click', () => {
+		goBack(div, oldParent);
+	});
 }
 
 function goBack(div, oldParent) {
