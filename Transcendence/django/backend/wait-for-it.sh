@@ -3,14 +3,20 @@
 # wait-for-it.sh
 # Use this script to test if a given TCP host/port are available
 
-TIMEOUT=15
-HOST=$1
-PORT=$2
+set -e
 
-until nc -z -v -w $TIMEOUT $HOST $PORT
-do
-  echo "Waiting for $HOST:$PORT to be available..."
+host="$1"
+port="$2"
+shift 2
+cmd="$@"
+
+until nc -z "$host" "$port"; do
+  echo "Waiting for $host:$port..."
   sleep 1
 done
 
+echo "$host:$port is up and running"
+
 echo "$HOST:$PORT is available"
+
+exec $cmd
