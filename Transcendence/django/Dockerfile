@@ -15,4 +15,7 @@ COPY ./backend/wait-for-it.sh /
 
 RUN chmod +x /entrypoint.sh /wait-for-it.sh
 
+# Install Daphne
+RUN pip install daphne
+
 ENTRYPOINT ["sh", "/entrypoint.sh"]
