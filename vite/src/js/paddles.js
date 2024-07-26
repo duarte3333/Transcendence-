@@ -258,6 +258,32 @@ export function bouncePlayers(ball, edge, player) {
   let vpx = Math.cos(angleRadians);
   let vpy = Math.sin(angleRadians);
   
+  // Calculate the normal vector components based on the edge angle
+  let nx = Math.cos(edge.perpAngle);
+  let ny = Math.sin(edge.perpAngle);
+  
+  // Calculate the dot product of the velocity vector and the normal vector
+  let dotProduct = vx * nx + vy * ny;
+  
+  // Calculate the reflected velocity components
+  let vpx = vx - 2 * dotProduct * nx;
+  let vpy = vy - 2 * dotProduct * ny;
+  
+
+  //twist the angle more to the side of player paddle hit
+  vpx += (ball.x - player.centerX) / (player.height / 2);
+  vpy += (ball.y - player.centerY) / (player.height / 2);
+
+  if (vpx < -1)
+    vpx = -1;
+  else if (vpx > 1)
+    vpx = 1;
+  if (vpy < -1)
+      vpy = -1;
+    else if (vpy > 1)
+      vpy = 1;
+
+  
   // Update the ball's direction
   ball.speedX = vpx;
   ball.speedY = vpy;

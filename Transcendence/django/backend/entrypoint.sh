@@ -3,10 +3,6 @@
 # Optional delay
 sleep 5
 
-# Wait for the PostgreSQL service to be ready
-./wait-for-it.sh "$DATABASE_HOST" "$DATABASE_PORT" -- echo "Postgres is up and running"
-
-
 python manage.py makemigrations pong
 python manage.py migrate --no-input
 python manage.py collectstatic --no-input
