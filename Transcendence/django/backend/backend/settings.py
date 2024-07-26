@@ -36,7 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
 INSTALLED_APPS = [
     'pong',
     'channels',
-    # 'chat',
+    'chat',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
