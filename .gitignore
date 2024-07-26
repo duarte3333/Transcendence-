@@ -1,4 +1,5 @@
 .env
+tests.txt
 __pycache__
 *.log
 *.pot
