@@ -44,8 +44,7 @@ services:
       - ./django/backend/static:/static
 
     depends_on:
-      - django_daphne
-      
+      - django_gunicorn
 
 
 volumes:
