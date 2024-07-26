@@ -12,12 +12,16 @@ services:
       # - static:/static
       - ./django/backend:/app
 
+    command: daphne -u /tmp/daphne.sock myproject.asgi:application
+    
     env_file:
       - .env
 
     depends_on:
       - postgres
       - redis
+
+  
 
   postgres:
     image: postgres:13.15

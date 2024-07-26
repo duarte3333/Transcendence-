@@ -6,6 +6,8 @@ RUN pip install --upgrade pip
 COPY ./backend/requirements.txt /
 RUN pip install -r /requirements.txt
 
+ENV DJANGO_SETTINGS_MODULE=backend.settings
+
 COPY ./backend /app
 
 WORKDIR /app
