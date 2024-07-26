@@ -1,0 +1,243 @@
+// Override Bootstrap's Sass default variables
+
+$enable-gradients: true;
+$enable-shadows: true;
+
+$offcanvas-box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+
+// Include functions first
+@import "bootstrap/scss/functions";
+
+// Customize some defaults
+$body-color: #333;
+$body-bg: #f0f2f5; // Light grey background
+$border-radius: 0.5rem;
+$success: #007bff; // Changed to a blue color
+
+// Required
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/offcanvas";
+@import "bootstrap/scss/utilities/api";
+
+//
+// Custom styles
+//
+
+body {
+  //background-image: url("../img/lala4.png") !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+
+}
+
+.div-game {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+// #gameBackground {
+//   padding: 20px;
+//   border-radius: 8px;
+// }
+
+#pongCanvas { 
+  // background-color: #1e3a8a; /* Deep blue b ackground */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  border: 2px solid #000000; /* Light blue border */
+  // background-image: url("../img/lisboa3.png") !important;
+  // background-color: #007bff;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 8px;
+}
+
+.centered-text {
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+footer {
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  width: 100%;
+  height: 50px; /* Footer height */
+  //background-color: #ffffff; /* Dark background for the footer */
+  color: #d1d5db; /* Light text color */
+  display: flex;
+}
+
+.navbar {
+  //background-image: url(../img/como2.png) !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 2rem;
+  font-weight: bold;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 0.5rem 1rem;
+}
+
+.imgAvatar {
+  border: 2px solid #759ad7; /* Blue border for avatar images */
+  border-radius: 50%; /* Make avatars circular */
+}
+
+.btn-primary {
+  background-color: #3b82f6; /* Blue button */
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+}
+
+.feature-card {
+  background-color: #1e40af; /* Dark blue background for feature cards */
+  color: #ffffff;
+  margin: 5px; /* Ensures space between cards */
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-cover {
+  height: 150px; /* Reduced height for smaller display */
+  font-size: 0.8rem; /* Smaller text within the card */
+  padding: 10px; /* Less padding to fit the smaller area */
+  background-size: cover; /* Ensures background image covers the entire card */
+  border-radius: 0.5rem;
+}
+
+.card h3 {
+  font-size: 1.2rem; /* Smaller heading size */
+}
+
+.card ul {
+  padding: 0;
+  list-style-type: none; /* Removes bullet points from lists */
+  margin-top: 10px; /* Positions list closer to the bottom of the card */
+}
+
+.card img {
+  width: 24px; /* Smaller image size */
+  height: 24px;
+}
+
+.card svg {
+  width: 16px; /* Smaller icon size */
+  height: 16px;
+}
+
+.game-settings {
+  #speedControl {
+    width: 90px;
+    align-self: left;
+    margin-top: 0 !important;
+  }
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 10px;
+}
+
+.SelectPlayer {
+  display: flex;
+  align-items: right;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 10px;
+  padding: 10px;
+}
+
+.imgAvatar {
+  width: 50px;
+  height: 50px;
+  background-image: url('src/img/back1.png');
+}
+
+.navbar-brand img {
+  filter: invert(1);
+}
+
+#banner {
+  overflow: hidden;
+}
+
+#game {
+  display: none;
+}
+
+// local menu styles:
+
+.configure_players {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+}
+.configure_players h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.configure_players form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.configure_players label, 
+.configure_players input {
+  width: 100%;
+  max-width: 400px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.configure_players input[type="number"]::-webkit-outer-spin-button,
+.configure_players input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.configure_players input[type="number"] {
+  -moz-appearance: textfield;
+}
+.configure_players input[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.configure_players input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
