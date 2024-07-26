@@ -1,8 +1,11 @@
 import { Animation } from "./animation";
 
+import { Animation } from "./animation";
+
 const canvas = document.getElementById("pongCanvas");
 
 const candyImage = new Image();
+candyImage.src = '../img/ItemBoxSprite.png';
 candyImage.src = '../img/ItemBoxSprite.png';
 // Handle image load error
 candyImage.onerror = function() {
@@ -30,15 +33,20 @@ class Candy {
   }
 
   reset() {
+  reset() {
     // Random position not too close to the walls
      setTimeout(() => {
           this.visible = true;
         }, 5000);
+          this.visible = true;
+        }, 5000);
   }
+  
   
   draw(context) {
     if (this.visible) {
       if (candyImage.complete && candyImage.naturalHeight !== 0) {
+        context.drawImage(candyImage, this.animation.frame * this.animation.x, this.animation.y, this.width, this.height, this.x, this.y, this.width, this.height);
         context.drawImage(candyImage, this.animation.frame * this.animation.x, this.animation.y, this.width, this.height, this.x, this.y, this.width, this.height);
       } else {
         console.error("Candy image is not fully loaded.");
@@ -80,10 +88,106 @@ function generateXnY(map) {
   const y = r * Math.sin(angle) + (canvas.height / 2);
   
   return { x, y };
+
+  amIHit(ball) {
+    // Find the closest point on the candy to the ball's center
+    const closestX = Math.max(this.x, Math.min(ball.x, this.x + this.width));
+    const closestY = Math.max(this.y, Math.min(ball.y, this.y + this.height));
+
+     // Calculate the distance between the ball's center and this closest point
+     const dx = ball.x - closestX;
+     const dy = ball.y - closestY;
+     const distance = Math.sqrt(dx * dx + dy * dy);
+
+     // Check if the distance is less than or equal to the ball's radius
+    return distance <= ball.radius;
+  }
+
+  choosePowerUp(player, game) {
+    let num = Math.floor(Math.random() * this.numPowerUps + 1);
+    const powerUP = this.powerUps.get(num);
+    if (powerUP)
+      powerUP(player, game);
+  }
+}
+
+function generateXnY(map) {
+  // Generate a random angle between 0 and 2π
+  const angle = Math.random() * 2 * Math.PI;
+  
+  // Generate a random radius with uniform distribution
+  const r = Math.sqrt(Math.random()) * (map.radius  / 1.8);
+  
+  // Convert polar coordinates to Cartesian coordinates
+  const x = r * Math.cos(angle) + (canvas.width / 2);
+  const y = r * Math.sin(angle) + (canvas.height / 2);
+  
+  return { x, y };
 }
 
 export { Candy };
 
+export function checkCandies(ball, game) {
+  let map = game.objects.get("map");
+  for (let i = 1; i <= game.numCandies; i++) {
+    let temp = game.objects.get("candy_" + i);
+    if (temp.visible && temp.amIHit(ball) && ball.last_hit) {
+      let player = game.objects.get(ball.last_hit);
+      temp.visible = false;
+      temp.choosePowerUp(player, game);
+      const {x, y} = generateXnY(map); 
+      temp.x = x;
+      temp.y = y;
+      temp.reset();
+    }
+  }
+}
+
+function defencePowerUp(player, game) {
+  player.height *= 2;
+  if (player.height > player.edge.size)
+      player.height = player.edge.size;
+  player.color = "blue";
+  player.updateRectMap();
+  setTimeout(() => {
+    player.height /= 2;
+    if (player.height < player.edge.size / 5)
+      player.height = player.edge.size / 5;
+    if (player.height == player.edge.size / 5)
+      player.color = "black";
+    player.updateRectMap();
+  }, 8000);
+}
+
+function attackPowerUp(player, game) {
+  for (let i = 1; i <= game.numberOfPlayers; i++) {
+    let temp = game.objects.get("paddle_" + i);
+    if (temp.height >= temp.edge.size / 5 && temp.name != player.name) {
+      temp.height /= 2;
+      temp.color = "green";
+      temp.updateRectMap();
+    }
+  }
+  setTimeout(() => {
+    for (let i = 1; i <= game.numberOfPlayers; i++) {
+      let temp = game.objects.get("paddle_" + i);
+      if (temp.name != player.name) {
+        temp.height *= 2;
+        temp.color = "black";
+        temp.updateRectMap();
+      }
+    }
+  }, 6000);
+}
+
+function speedPowerUp(player, game) {
+  player.speed *= 2;
+  player.color = "yellow";
+  setTimeout(() => {
+    player.speed /= 2;
+    player.color = "black";
+  }, 7000);
+}
 export function checkCandies(ball, game) {
   let map = game.objects.get("map");
   for (let i = 1; i <= game.numCandies; i++) {

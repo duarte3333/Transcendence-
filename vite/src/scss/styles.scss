@@ -61,6 +61,8 @@ body {
 #pongCanvas { 
   // background-color: #1e3a8a; /* Deep blue b ackground */
   width: 100%;
+  // background-color: #1e3a8a; /* Deep blue b ackground */
+  width: 100%;
   border-radius: 8px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid #000000; /* Light blue border */
@@ -72,6 +74,9 @@ body {
   border-radius: 8px;
 }
 
+.centered-text {
+  text-align: center;
+  padding-bottom: 10px;
 .centered-text {
   text-align: center;
   padding-bottom: 10px;

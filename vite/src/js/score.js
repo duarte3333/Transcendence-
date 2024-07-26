@@ -111,4 +111,8 @@ export function updateScore(playerName, flag) {
     score.textContent++;
   else
     score.textContent--;
+  if (flag)
+    score.textContent++;
+  else
+    score.textContent--;
 }
