@@ -46,6 +46,10 @@ services:
     depends_on:
       - django_gunicorn
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
 
 volumes:
   static:
