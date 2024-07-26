@@ -1,4 +1,6 @@
 asgiref==3.8.1
+channels==3.0.5
+channels_redis==3.2.0
 daphne
 channels
 channels-redis
