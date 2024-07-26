@@ -1,24 +1,23 @@
 class Match {
-  winner = null;
-  score = [];
-  nb_players = 0;
-  constructor(score, nb_players) {
-    this.score = score;
-    this.nb_players = nb_players;
-    this.match = null;
-  }
-
-  setWinner() {
-    win = INT_MIN;
-    for (let i = 1; i <= this.nb_players; i++) {
-        if (score[i - 1] > win) {
-            this.winner = i;
-            win = score[i - 1];
-        }
+  type; //online or local
+  numPlayers;
+  players; //list
+  hostName; // who is the host
+  id; // id so it can be identified in backend
+  finalScore;
+  constructor(type, nPlayers, listPlayers, host) {
+    this.type = type;
+    this.numPlayers = nPlayers;
+    this.players = listPlayers;
+    this.hostName = host;
+    if (type == "local") {
+      //game start?
+    } else if (type == "online") {
+      //send msg to backend to inform it that match was created with this players and who the host is
+      //in return server gives match its id
+      //after that match starts at host and clients
+      //after game ends inform backend and share result, also each player in the game should have access to it
+      //this.finalScore = smthing
     }
-  }
-
-  getWinner() {
-    return this.winner;
   }
 }
