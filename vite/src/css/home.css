@@ -40,6 +40,15 @@ footer {
 	--bs-navbar-color: rgba(255, 255, 255, 0);
 }
 
-#friendsButton {
-	font-size: var(--bs-nav-link-font-size);
+#friendsList {
+	--bs-dropdown-header-color: #5e8f1e;
+	--bs-dropdown-bg: #313131;
+	--bs-dropdown-link-active-color: #575757;
+	--bs-dropdown-link-hover-bg:  #575757;
+	--bs-dropdown-link-active-bg: transparent;
+	--bs-dropdown-link-hover-color: white;
+}
+
+.lightGreyText {
+	color: #aaaaaa;
 }
