@@ -45,7 +45,8 @@
       </div>
     </nav>
       
-      
+    <button id="debugFill">Auto Fill Keys for Debugging</button>
+
     <!-- Settings Modal -->
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -103,13 +104,36 @@
     <div class="configure_players" id="gameForm">
       <h1>Configure Players</h1>
       <form id="playerForm">
-          <label for="numPlayers">Number of Players:</label>
+          <p>Choose the number of players bellow</p>
           <input type="number" id="numPlayers" name="numPlayers" min="0" max="100" autocomplete="off" required>
           <div id="playerControls"></div>
           <input type="hidden" id="playerData" name="playerData">
           <input id="controlsButton" type="submit" value="Save Configuration" href="">
       </form>
     </div>
+
+    <!-- Tournament -->
+    <div class="container">
+      <header>
+          <h1>Pong Game Tournament</h1>
+      </header>
+
+      <section class="tournament">
+          <h2>Tournament Bracket</h2>
+          <div class="tournament-setup">
+              <input type="text" id="player-name" placeholder="Enter player name">
+              <button id="add-player">Add Player</button>
+          </div>
+          <div class="players-list">
+              <h3>Players:</h3>
+              <ul id="player-list"></ul>
+              <button id="start-tournament">Start Tournament</button>
+          </div>
+          <div id="bracket"></div>
+      </section>
+    </div>
+
+
         
     <!-- Game -->
     <div class="container-fluid">
@@ -164,6 +188,7 @@
   <script type="module" src="./js/main.js"></script>
   <script type="module" src="./js/local_menu.js"></script>
   <script type="module" src="./js/chat.js"></script>
+  <script type="module" src="./js/tournament.js"></script>
 
   </body>
   </html>

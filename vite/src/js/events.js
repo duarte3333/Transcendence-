@@ -3,6 +3,7 @@ export class events {
         this.game = game; 
         this.setupControls();
         this.initializeUIButtons();
+        this.initializeTournament();
     }
 
     setupControls() {
@@ -69,7 +70,7 @@ export class events {
                 if (this.game.objects) {
                     const playerPaddle_ai = this.game.objects.get("player_2") || this.game.objects.get("ai");
                     playerPaddle_ai.name = "ai";
-                    console.log(playerPaddle_ai.name);
+                    //console.log(playerPaddle_ai.name);
                 }
                 aiButton.className = "btn btn-dark";
                 playerButton.className = "btn btn-light";
@@ -79,7 +80,7 @@ export class events {
                 if (this.game.objects) {
                     const playerPaddle_2 = this.game.objects.get("player_2") || this.game.objects.get("ai");
                     playerPaddle_2.name = "player_2";
-                    console.log(playerPaddle_2.name);
+                    //console.log(playerPaddle_2.name);
                 }
                 aiButton.className = "btn btn-light";
                 playerButton.className = "btn btn-dark";
@@ -94,5 +95,29 @@ export class events {
         });
     }
 
+    initializeTournament()  {
+        const addPlayerButton = document.getElementById('add-player');
+        const playerNameInput = document.getElementById('player-name');
+        const playerList = document.getElementById('player-list');
+        const startTournamentButton = document.getElementById('start-tournament');
+
+        addPlayerButton.addEventListener('click', () => {
+            const playerName = this.playerNameInput.value.trim();
+            if (playerName) {
+                this.game.tournament.players.push(playerName);
+                const li = document.createElement('li');
+                li.textContent = playerName;
+                playerList.appendChild(li);
+                playerNameInput.value = '';
+            }
+        });
     
+        startTournamentButton.addEventListener('click', () => {
+            if (this.game.tournament.players.length < 2) {
+                alert('Please add at least two players.');
+                return;
+            }
+            this.game.tournament.generateBracket(this.game.tournament.players);
+        });
+    }
 }

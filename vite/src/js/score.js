@@ -47,21 +47,31 @@ export function createScoreBoard(numberOfPlayers) {
   sleep(100);
   for (let i = 1; i <= numberOfPlayers; i++) {
     const row = document.createElement('div');
-    row.classList.add('row');
-    row.classList.add('centerAll');
-    row.style.borderBottom = "2px solid #000000"
+    row.classList.add('row', 'centerAll');
+    row.style.borderBottom = "2px solid #000000";
     row.style.width = "100%";
-    //FOR TESTING, after useres are implemented change this
+    row.style.position = 'relative';
+    row.style.overflow = 'hidden';
+    row.style.backgroundSize = "cover";
+    row.style.backgroundPosition = "center";
+    row.style.backgroundRepeat = "no-repeat";
+
+    // Setting up background images with transparency
     if (!(i % 2)) {
-		  row.style.backgroundColor = "rgba(255, 255, 255, 0.3)";
-      row.style.backgroundImage = `url(../img/vamo.png)`;
+      row.style.backgroundImage = 
+          "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/vamo.png')";
     } else if (!(i % 3)) {
-      row.style.backgroundImage = `url(../img/lala.png)`;
+        row.style.backgroundImage = 
+            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/lala.png')";
     } else if (!(i % 4)) {
-      row.style.backgroundImage = `url(../img/lala3.png)`;
+        row.style.backgroundImage = 
+            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/lala3.png')";
     } else {
-      row.style.backgroundImage = `url(../img/lala2.png)`;
+        row.style.backgroundImage = 
+            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/lala2.png')";
     }
+    row.style.position = 'relative';
+    row.style.overflow = 'hidden';
     row.style.backgroundSize = "cover";
     row.style.backgroundPosition = "center";
     row.style.backgroundRepeat= "no-repeat";
@@ -84,9 +94,7 @@ export function createScoreBoard(numberOfPlayers) {
     const playerName = document.createElement('h5');
     playerName.style.marginBottom = "0px";
     playerName.textContent = "Player_" + i;
-		playerName.style.backgroundColor = "rgba(255, 255, 255, 0.6)";
     playerName.style.padding = "10px 20px";
-		playerName.style.borderRadius = "10px";
 
     const playerScore = document.createElement('h5');
     playerScore.style.marginBottom = "0px";
@@ -111,4 +119,14 @@ export function updateScore(playerName, flag) {
     score.textContent++;
   else
     score.textContent--;
+}
+
+export function checkGameOver(numberOfPlayers) {
+  for (let i = 1; i <= numberOfPlayers; i++) {
+    const score = document.getElementById("playerScore_" + i);
+    if (score.textContent >= 5) {
+      return i;
+    }
+  }
+  return -1;
 }
