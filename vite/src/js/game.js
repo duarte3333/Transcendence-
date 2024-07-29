@@ -5,7 +5,7 @@ import { Score, checkGameOver } from "./score.js";
 import { map } from "./map.js";
 import { Paddle, writePaddleNames } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
-import { sleep } from "./aux.js";
+import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
 import { Tournament } from "./tournament.js";

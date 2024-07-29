@@ -1,5 +1,5 @@
 import { bottom } from "@popperjs/core";
-import { sleep } from "./aux";
+import { sleep } from "./auxFts";
 
 export class Score {
   constructor() {

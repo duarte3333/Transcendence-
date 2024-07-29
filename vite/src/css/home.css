@@ -1,0 +1,45 @@
+.container {
+	margin-top: 3rem;
+}
+
+.navbar-brand img {
+	filter: invert(1);
+  }
+
+.bodyBtns {
+	font-size: 1.5rem;
+}
+
+.iconImg {
+	display: block;
+	margin: auto;
+	filter: invert(1);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+#menuOpen {
+	--bs-navbar-color: rgba(255, 255, 255, 0);
+}
+
+#friendsButton {
+	font-size: var(--bs-nav-link-font-size);
+}

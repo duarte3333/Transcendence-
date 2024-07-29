@@ -15,7 +15,7 @@
     }
   </style> -->
   <body id="body">
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark" id="navbar">
       <div class="container-fluid">
         <div class="navbar-brand  ms-2"  href="#">
           <img src="./img/42_Logo.png" alt="Logo" width="40" height="40" class="d-inline-block">
@@ -136,25 +136,25 @@
 
         
     <!-- Game -->
-    <div class="container-fluid border">
-        <div class="row gx-2 align-items-top" id="game">
-          <div class="col-xxl-4 col-md-3 col-sm-2" id="banner"></div>
-          <div class="col-xxl-4 col-md-6 col-sm-8 justify-content-center">
+    <div class="container-fluid">
+      <div class="row text-center justify-content-center gx-2" id="game">
+        <div class="col-sm-12 col-md-3 col-xl-3 justify-content-center" id="banner"></div>
+        <div class="col-sm-12 col-md-5 col-xl-5 justify-content-center">
                 <canvas id="pongCanvas" width="800" height="800"></canvas>
-          </div>
-          <div class="col-xxl-4 col-md-3 col-sm-2" id="scoreBoard">
-          </div>
-      <!-- Game -->
-      <div class="row justify-content-center" id="game">
-        <div class="col-md-3" id="banner"></div>
-        <div class="col-md-5 justify-content-center">
-              <canvas id="pongCanvas" width="800" height="800"></canvas>
         </div>
-        <div class="col-md-3" id="scoreBoard">
+        <div class="col-sm-12 col-md-3 col-xl-3 justify-content-top" id="scoreBoard"></div>
+      </div>
+
+      <!-- Game CLIENT FOR TESTING-->
+      <div class="row" id="clientGame">
+        <div class="col" id="clientBanner"></div>
+        <div class="col-md-5 text-center">
+              <canvas id="clientPong" width="800" height="800"></canvas>
         </div>
+        <div class="col" id="clientScoreBoard"></div>
       </div>
     </div>
-    
+
     <!-- Chat -->
     <!-- Botão para abrir o chat -->
     <button id="chatButton" class="btn btn-primary" data-bs-toggle="button">Live Chat</button>
@@ -175,14 +175,6 @@
           <button> Send </button>
         </div>
       </div>
-    </div>
-
-    <div class="row" id="clientGame">
-      <div class="col" id="clientBanner"></div>
-      <div class="col-md-5 text-center">
-            <canvas id="clientPong" width="800" height="800"></canvas>
-      </div>
-      <div class="col" id="clientScoreBoard"></div>
     </div>
 
     <!-- Footer Section -->

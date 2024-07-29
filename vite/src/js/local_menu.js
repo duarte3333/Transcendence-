@@ -56,7 +56,6 @@ document.getElementById('debugFill').addEventListener('click', autoFillDebugKeys
 
 
 document.getElementById('numPlayers').addEventListener('input', displayExtendedForm);
-// document.addEventListener('DOMContentLoaded', displayExtendedForm); //SE DEIXARMOS UM NR EM CASH DA MERDA, ISTO NAO RESOLVE
 
 document.getElementById('playerForm').addEventListener('submit', function(event) {
     
@@ -94,7 +93,6 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
     
     //hide form:
     
-    //add somthing to parse info
     if ( allFilled ){
         const form = document.getElementById("gameForm");
         form.style.display = "none";

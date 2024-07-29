@@ -5,7 +5,7 @@ import { Score } from "./score.js";
 import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
-import { sleep } from "./aux.js";
+import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 
 
