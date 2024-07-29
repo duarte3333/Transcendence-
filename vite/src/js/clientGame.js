@@ -13,8 +13,6 @@ function resizeCanvas() {
   const canvas = document.getElementById('clientPong');
   const banner = document.getElementById('banner');
   const scoreBoard = document.getElementById('scoreBoard');
-  
-  
   const width = window.innerWidth;  // More reliable measurement of the viewport width
   canvas.width = width;  // Set the canvas width to fill the container or viewport
   canvas.height = width;  // Maintain a 1:1 aspect ratio for the canvas
@@ -103,8 +101,8 @@ export class ClientGame {
     this.ball.x = this.canvas.width / 2;
     this.ball.y = this.canvas.height / 2;
     this.ball.speed = 0;
-	this.ball.speedX = 0;
-	this.ball.speedY = 0;
+	  this.ball.speedX = 0;
+	  this.ball.speedY = 0;
     this.ball.draw(this.context); 
     this.objects.set(this.ball.name, this.ball);
   }

@@ -44,6 +44,7 @@ document.getElementById("chatButton").addEventListener("click", function() {
       closeChat(); open = false;
     }
 });  
-document.getElementById("closeChat").addEventListener("click", closeChat);
+
+//document.getElementById("closeChat").addEventListener("click", closeChat);
 // document.getElementById("sendButton").addEventListener("click", sendMessage);
 // document.getElementById("chatSidebar").addEventListener("click", selectChannel);

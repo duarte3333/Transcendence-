@@ -36,6 +36,25 @@ function displayExtendedForm(){
     }
 }
 
+function autoFillDebugKeys() {
+    const numPlayers = document.getElementById('numPlayers').value || 4; // Default to 4 players if none selected
+    const startCharCode = 'a'.charCodeAt(0); // Starting ASCII code for 'a'
+    
+    for (let i = 1; i <= numPlayers; i++) {
+        const upKeyInput = document.getElementById(`player${i * 2 - 1}Keys`);
+        const downKeyInput = document.getElementById(`player${i * 2}Keys`);
+
+        if (upKeyInput && downKeyInput) {
+            upKeyInput.value = String.fromCharCode(startCharCode + 2 * (i - 1));   // e.g., 'a', 'c', 'e', ...
+            downKeyInput.value = String.fromCharCode(startCharCode + 2 * (i - 1) + 1); // e.g., 'b', 'd', 'f', ...
+        }
+    }
+}
+
+// Event listener for the debug fill button
+document.getElementById('debugFill').addEventListener('click', autoFillDebugKeys);
+
+
 document.getElementById('numPlayers').addEventListener('input', displayExtendedForm);
 // document.addEventListener('DOMContentLoaded', displayExtendedForm); //SE DEIXARMOS UM NR EM CASH DA MERDA, ISTO NAO RESOLVE
 
@@ -46,7 +65,8 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
     const playerData = {};
     const keysSet = new Set();
     let allFilled = true;
-    
+
+    //if i click in tab is fills all the keys from 0 to n
     for (let i = 1; i <= numPlayers; i++) {
         const upKey = document.getElementById(`player${i*2 - 1}Keys`).value;
         const downKey = document.getElementById(`player${i * 2}Keys`).value;
@@ -69,7 +89,9 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
         keysSet.add(upKey);
         keysSet.add(downKey);
         playerData[`Player${i}`] = [upKey, downKey];
+
     }
+    
     //hide form:
     
     //add somthing to parse info

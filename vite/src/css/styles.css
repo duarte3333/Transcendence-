@@ -360,3 +360,56 @@ footer {
   background-position: center;
   border-radius: 8px;
 }
+
+/* Tournament */
+
+tournament-setup {
+  text-align: center;
+}
+
+.players-list {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.players-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.players-list li {
+  margin: 5px 0;
+}
+
+#bracket {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.match-up {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 80px;
+  margin: 10px 0;
+  background-color: #007BFF;
+  color: #fff;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.match-up.bye {
+  background-color: #ccc;
+  color: #000;
+}

@@ -275,3 +275,27 @@ export function bouncePlayers(ball, edge, player) {
 
   ball.updateLastHit(player.name);
 }
+
+
+export function writePaddleNames(game) {
+  const canvas = document.getElementById("pongCanvas");
+  game.context.font = "30px Arial"; // Define a fonte e o tamanho
+  //add transparency to this text
+  game.context.fillStyle = "rgb(154, 153, 150)";
+
+  let centerXcanvas = canvas.width / 2;
+  let centerYcanvas = canvas.height / 2;
+  for (let i = 1; i <= game.numberOfPlayers; i++) {
+    let temp = game.objects.get("paddle_" + i);
+    let dirX = 0
+    let midpointx = (temp.centerX + centerXcanvas) / 2;
+    let midpointy = (temp.centerY + centerYcanvas) / 2;
+    let midpointxofmid = (temp.centerX + midpointx) / 2;
+    let midpointyofmid = (temp.centerY + midpointy) / 2;
+    let finalx = (temp.centerX + midpointxofmid) / 2;
+    let finaly = (temp.centerY + midpointyofmid) / 2;
+    if (temp.centerX > canvas.width / 2)
+      dirX = -125;
+    game.context.fillText(temp.name, finalx + dirX, finaly);
+  }
+}

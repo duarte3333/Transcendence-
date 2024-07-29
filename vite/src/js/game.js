@@ -1,13 +1,14 @@
 import { Ball } from "./ball.js";
 import { Candy } from "./candy.js";
 import { events } from "./events.js";
-import { Score } from "./score.js";
+import { Score, checkGameOver } from "./score.js";
 import { map } from "./map.js";
-import { Paddle } from "./paddles.js"
+import { Paddle, writePaddleNames } from "./paddles.js"
 import { createScoreBoard } from "./score.js";
 import { sleep } from "./aux.js";
 import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
+import { Tournament } from "./tournament.js";
 
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
@@ -37,9 +38,6 @@ function resizeCanvas() {
 //   //scoreBoard.style.height = `${canvas.height}px`;  // Same as banner
 // }
 
-
-
-
 export class Game {
   playerBanner = new Banner("../img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
   objects = new Map();
@@ -48,11 +46,13 @@ export class Game {
   pause = false;
   speed = 2.5;
   isScoring = false;
-  score = new Score()
   events = new events(this);  // Initialize events after setting up game
   candies = [];
   fps = 0;
   ball = new Ball();
+  finish = false;
+  winner = 0;
+  tournament = null;
 
   //INITIALIZE GAME
   constructor(numPlayers, controlsList) {
@@ -148,6 +148,12 @@ export class Game {
       let temp = this.objects.get("candy_" + i);
       this.client.updateCandy(temp);
     }
+
+    let final_i = checkGameOver(this.numberOfPlayers);
+    if (final_i != -1) {
+      this.finish = true;
+      this.winner = final_i;
+    }
   }
 
   tooglePause() {
@@ -156,14 +162,36 @@ export class Game {
 
   draw() {
     this.fps++;
-    if (!this.pause) {
+    if (!this.pause && !this.finish) {
       this.update();
       this.context.clearRect(0, 0, canvas.width, canvas.height);
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
+
     } 
-    else {
+    else if (this.finish) {
+      
+      
+      this.context.font = "bold 40px Poppins, sans-serif";
+      this.context.fillStyle = "black";
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
+      this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
+      var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
+      this.context.fillStyle = gradient;
+      this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadow
+      //tell who wins
+      this.context.font = "bold 30px Poppins, sans-serif";
+      this.context.fillStyle = "black";
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
+      this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
+      this.context.fillStyle = gradient;
+      this.context.fillText(`Player ${this.winner} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
+    }
+    else if(this.pause){
       this.client.updatePause(this.pause);
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
@@ -174,6 +202,7 @@ export class Game {
       this.context.fillStyle = gradient;
       this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
+      writePaddleNames(this);
     }
   }
 
