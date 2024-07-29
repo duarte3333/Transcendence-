@@ -26,7 +26,7 @@ function nextPage(event, type) {
 	rowButtons.style.marginBottom = "1.5rem";
 
 	const match = document.createElement('button');
-	match.className = "btn btn-outline-dark w-25";
+	match.className = "btn btn-outline-dark w-25 bodyBtns";
 	match.type = "button";
 	match.textContent = "Match";
 	match.addEventListener('click', () => {
@@ -34,7 +34,7 @@ function nextPage(event, type) {
 	});
 
 	const tournament = document.createElement('button');
-	tournament.className = "btn btn-outline-dark w-25";
+	tournament.className = "btn btn-outline-dark w-25 bodyBtns";
 	tournament.type = "button";
 	tournament.textContent = "Tournament";
 	tournament.addEventListener('click', () => {

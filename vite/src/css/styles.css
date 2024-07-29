@@ -195,6 +195,10 @@ body {
   filter: invert(1);
 }
 
+#menuOpen {
+	--bs-navbar-color: rgba(255, 255, 255, 0);
+}
+
 #banner {
   overflow: hidden;
 

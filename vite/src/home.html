@@ -32,7 +32,17 @@
 						<a class="nav-link active" aria-current="page" href="#">Home</a>
 						</li>
 						<li class="nav-item">
-						<a class="nav-link pauseGame mb-3 w-20" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">Settings</a>
+							<button class="btn nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Friends
+							</button>
+							<ul id="friendsButton" class="dropdown-menu">
+								<li><h6 class="dropdown-header">User's Friends</h6></li>
+								<li><a class="dropdown-item" href="#">#User 1</a></li>
+								<li><a class="dropdown-item" href="#">#User 2</a></li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">Settings</a>
 						</li>
 					</ul>
 				</div>
@@ -47,10 +57,10 @@
 		</div>
 		<div class="displayDiv">
 			<div class="row justify-content-center gap-3" style="margin-bottom: 1rem;">
-				<button id="playOnline" type="button" class="btn btn-outline-dark w-25">Play online</button>
+				<button id="playOnline" type="button" class="btn btn-outline-dark w-25 bodyBtns">Play online</button>
 			</div>
 			<div class="row justify-content-center gap-3" style="margin-bottom: 3rem;">
-				<button id="playLocal" type="button" class="btn btn-outline-dark w-25">Play local</button>
+				<button id="playLocal" type="button" class="btn btn-outline-dark w-25 bodyBtns">Play local</button>
 			</div>
 		</div>
 	</div>
