@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'pong',
     'channels',
     'chat',
+    'core',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',

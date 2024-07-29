@@ -1,6 +1,8 @@
+
+
 function openChat() {
     document.getElementById("chatWindow").style.display = "flex";
-  }
+}
 
 function closeChat() {
   document.getElementById("chatWindow").style.display = "none";
@@ -12,9 +14,9 @@ document.getElementById("chatBody").innerHTML = `<!-- Conteúdo do chat para ${c
 }
 
 function sendMessage() {
-const message = document.getElementById("chatInput").value;
-// Lógica para enviar a mensagem
-document.getElementById("chatInput").value = '';
+  const message = document.getElementById("chatInput").value;
+  // Lógica para enviar a mensagem
+  document.getElementById("chatInput").value = '';
 }
 
 // Certifique-se de que a janela do chat está oculta ao carregar a página
@@ -44,6 +46,13 @@ document.getElementById("chatButton").addEventListener("click", function() {
       closeChat(); open = false;
     }
 });  
-document.getElementById("closeChat").addEventListener("click", closeChat);
+// document.getElementById("closeChat").addEventListener("click", closeChat);
 // document.getElementById("sendButton").addEventListener("click", sendMessage);
 // document.getElementById("chatSidebar").addEventListener("click", selectChannel);
+
+
+// //That's my part
+// export function handleChatMessage(data) {
+//   let message = data.message;
+//   document.getElementById('messages').innerHTML += '<p>' + message + '</p>';
+// }

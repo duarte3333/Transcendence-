@@ -1,5 +1,4 @@
 import { Ball } from "./ball.js";
-import { Ball } from "./ball.js";
 import { Candy } from "./candy.js";
 import { events } from "./events.js";
 import { Score } from "./score.js";
@@ -39,13 +38,9 @@ function resizeCanvas() {
 // }
 
 
-
-
 export class Game {
   playerBanner = new Banner("../img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
   objects = new Map();
-  numCandies = 1;
-  numberOfPlayers = 2;
   numCandies = 1;
   numberOfPlayers = 2;
   pause = false;
@@ -56,16 +51,8 @@ export class Game {
   candies = [];
   fps = 0;
   ball = new Ball();
-  fps = 0;
-  ball = new Ball();
 
   //INITIALIZE GAME
-  constructor(numPlayers, controlsList) {
-    this.client = new ClientGame(numPlayers, controlsList, "paddle_2"); //<-- CLIENT GAME
-    this.numberOfPlayers = numPlayers;
-    const row = document.getElementById("game");
-    row.style.display = "flex";
-    const canvas = document.getElementById("pongCanvas");
   constructor(numPlayers, controlsList) {
     this.client = new ClientGame(numPlayers, controlsList, "paddle_2"); //<-- CLIENT GAME
     this.numberOfPlayers = numPlayers;
@@ -77,14 +64,7 @@ export class Game {
   }
   
   setupGame(controlsList) {
-    this.setupGame(controlsList);  // Initialize game after setting context
-  }
-  
-  setupGame(controlsList) {
     this.addMap(map);
-    this.addPaddles(controlsList);
-    this.addBall();
-    this.addCandies();
     this.addPaddles(controlsList);
     this.addBall();
     this.addCandies();
@@ -101,17 +81,12 @@ export class Game {
       // console.log(`fps = ${this.fps}`);
       this.fps = 0;
     }, 1000);
-    setInterval(() => {
-      // console.log(`fps = ${this.fps}`);
-      this.fps = 0;
-    }, 1000);
     console.log("Game initialized");
   }
 
   //ADD OBJECTS TO GAME
   addMap(map) {
     map.img.src = "../img/lisboa3.png";
-    map.pattern.src = "../img/cobblestone.jpg"
     map.pattern.src = "../img/cobblestone.jpg"
     map.color =  "teal";
     map.radius = canvas.width / 2;
@@ -125,10 +100,8 @@ export class Game {
   }
 
   addPaddles(controlsList) {
-  addPaddles(controlsList) {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[`Player${i}`]);
       let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[`Player${i}`]);
       // temp.print();
       temp.draw(this.context);
@@ -136,12 +109,6 @@ export class Game {
     }
   }
 
-  addBall() {
-    this.ball.x = canvas.width / 2;
-    this.ball.y = canvas.height / 2;
-    this.ball.speed *= this.speed;
-    this.ball.draw(this.context);
-    this.objects.set(this.ball.name, this.ball);
   addBall() {
     this.ball.x = canvas.width / 2;
     this.ball.y = canvas.height / 2;
@@ -156,7 +123,6 @@ export class Game {
       const candy = new Candy(map, "candy_" + i);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
-      sleep(400);
       sleep(400);
     }
   }
@@ -187,7 +153,6 @@ export class Game {
   }
 
   draw() {
-    this.fps++;
     this.fps++;
     if (!this.pause) {
       this.update();
@@ -220,5 +185,4 @@ export class Game {
     player_1.speed = 3 * this.speed;
     player_2.speed = 3 * this.speed;
   }
-}
 }

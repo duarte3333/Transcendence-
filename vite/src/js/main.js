@@ -4,6 +4,8 @@ import "../css/styles.css";
 // Import only the Bootstrap components we need
 import { Popover } from "bootstrap";
 
+import { MyWebSocket } from './MyWebSocket.js';
+
 // Create an example popover
 document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {
   new Popover(popover);
@@ -25,6 +27,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
       window.location.href = "local_menu.html";
     });
   }
+
+  const { sendMessage } = MyWebSocket();
+
+  // Bind sendMessage function to the chat send button
+  const chatSendButton = document.querySelector('#chatWindow button');
+  if (chatSendButton) {
+    chatSendButton.addEventListener('click', sendMessage);
+  }
+
 });
 
 // document.getElementById('avatarUpload').addEventListener('change', function (event) {
