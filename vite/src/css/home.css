@@ -52,3 +52,18 @@ footer {
 .lightGreyText {
 	color: #aaaaaa;
 }
+
+.dropdown-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.text-start {
+	flex-grow: 1;
+}
+
+.image-end {
+	flex-shrink: 0;
+}
+  
