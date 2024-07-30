@@ -32,11 +32,14 @@ services:
     build: ./nginx
 
     ports:
-      - "8080:81"
+      - "8080:80"
+      - "443:443"
 
     volumes:
       # - static:/static
       - ./django/backend/static:/static
+      - ./ssl:/etc/nginx/ssl
+
 
     depends_on:
       - django_daphne
@@ -45,3 +48,4 @@ services:
 volumes:
   static:
   postgres_data:
+
