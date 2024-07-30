@@ -15,7 +15,7 @@ views.setElement("/", (state) => {
     secureElement("login-body").style.display = state;
 })
 .setEvents(
-    ["login_B", "click", () => {console.log("working");}],
+    ["login_B", "click", () => {views.urlLoad("/home/")}],
     ["register_B", "click", () => views.urlLoad("/register/")]
 );
 

@@ -9,28 +9,26 @@ def login_page(request):
 
 @csrf_exempt
 def login(request) -> JsonResponse:
-    pass
-    # if request.method == 'POST':
-    #     try:
-    #         data = json.loads(request.body)
-    #         username = data.get('username')
-    #         password = data.get('password')
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
 
-    #         return check_login(username, password)
-    #     except Exception as e:
-    #         return JsonResponse({'message': str(e)}, status=400)
-    # return JsonResponse({'message': 'Invalid request', 'success': False}, status=405)
+            return check_login(username, password)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=400)
+    return JsonResponse({'message': 'Invalid request', 'success': False}, status=405)
 
 def check_login(username:str, password:str) -> JsonResponse:
-    pass
-    # try:
-    #     user = User.objects.get(name=username)
-    #     if user.Password == password:
-    #         return JsonResponse({'message': 'Login successful', 'success': True}, status=200)
-    #     else:
-    #         return JsonResponse({'message': 'Invalid password', 'success': False}, status=401)
-    # except:
-    #     return JsonResponse({'message': 'User not found', 'success' : False}, status=404)
+    try:
+        user = User.objects.get(name=username)
+        if user.Password == password:
+            return JsonResponse({'message': 'Login successful', 'success': True}, status=200)
+        else:
+            return JsonResponse({'message': 'Invalid password', 'success': False}, status=401)
+    except:
+        return JsonResponse({'message': 'User not found', 'success' : False}, status=404)
     
 def register_page(request):
     return render(request, 'register.html')
