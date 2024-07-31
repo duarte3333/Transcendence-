@@ -1,76 +1,431 @@
+/* Gradients and Shadows */
+/* Since CSS doesn't handle conditions like SASS, you need to manually add gradients and shadows where needed. Here's an example: */
+.btn {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+}
+
+/* Customizing default body styles */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f7f7f7;
-    background-image: url('/static/pong/images/loginbackground4.jpg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    height: 100vh;
-    margin: 0;
+  color: #333; /* Darker text color for better readability */
+  background-color: #f0f2f5; /* Light grey background */
 }
 
-.login-card {
-    margin-top: 45px;
-    position: relative;
-    width: 300px;
-    padding: 50px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.4);
-    box-sizing: border-box;
-    text-shadow: 
-        2px 2px 0 white, 
-        -2px -2px 0 white,
-        -2px 2px 0 white, 
-        2px -2px 0 white,
-        2px 0 0 white,
-        0 2px 0 white,
-        -2px 0 0 white,
-        0 -2px 0 white;
+/* Border Radius */
+/* You will need to override all elements where border-radius is applied, such as buttons, cards, modals, etc. */
+.btn, .card, .modal-content {
+  border-radius: 0.5rem; /* Consistent border-radius */
 }
 
-.login-card h2 {
-    margin-bottom: 20px;
-    text-align: center;
+/* Success Color - Used in various components like alerts, links, buttons, etc. */
+/* You would need to manually change each component's success state color if needed */
+.alert-success, .btn-success, .text-success {
+  background-color: #007bff; /* Using blue for success elements */
+  border-color: #007bff;
+  color: white; /* Ensuring text is readable on blue background */
 }
 
-.login-card form {
-    display: flex;
-    flex-direction: column;
+
+/* Custom styles */
+
+
+/* to make footer better */
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
-.login-card input[type="text"],
-.login-card input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.login-card button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 50px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+.main-content {
+  flex-grow: 1;
 }
 
-.login-card button + button {
-    margin-top: 10px; /* Adjust this value to control the spacing */
+footer {
+  text-align: center;
+  padding: 1rem 0;
 }
 
-.login-card button:hover {
-    background-color: #0056b3;
-} 
 
+
+.centerAll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body {
+  /* background-image: url("/static/pong/img/lala4.png") !important; */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+
+}
+
+.div-game {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+#pongCanvas { 
+  /* background-color: #1e3a8a;  */
+  /* Deep blue b ackground */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  border: 2px solid #000000; /* Light blue border */
+  /* background-image: url("/static/pong/img/lisboa3.png") !important; */
+  /* background-color: #007bff; */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Ensuring the column takes up the space flexibly */
+.col-md-6 {
+  flex: 1; /* Takes up any available space */
+  min-width: 0; /* Fixes overflow issues in some flexbox layouts */
+}
+
+.centered-text {
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.navbar {
+  /* background-image: url(/static/pong/img/como2.png) !important; */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 2rem;
+  font-weight: bold;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 0.5rem 1rem;
+}
+
+.imgAvatar {
+  border: 2px solid #759ad7; /* Blue border for avatar images */
+  border-radius: 50%; /* Make avatars circular */
+  margin: 10px;
+}
+
+.btn-primary {
+  background-color: #3b82f6; /* Blue button */
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+}
+
+.feature-card {
+  background-color: #1e40af; /* Dark blue background for feature cards */
+  color: #ffffff;
+  margin: 5px; /* Ensures space between cards */
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-cover {
+  height: 150px; /* Reduced height for smaller display */
+  font-size: 0.8rem; /* Smaller text within the card */
+  padding: 10px; /* Less padding to fit the smaller area */
+  background-size: cover; /* Ensures background image covers the entire card */
+  border-radius: 0.5rem;
+}
+
+.card h3 {
+  font-size: 1.2rem; /* Smaller heading size */
+}
+
+.card ul {
+  padding: 0;
+  list-style-type: none; /* Removes bullet points from lists */
+  margin-top: 10px; /* Positions list closer to the bottom of the card */
+}
+
+.card img {
+  width: 24px; /* Smaller image size */
+  height: 24px;
+}
+
+.card svg {
+  width: 16px; /* Smaller icon size */
+  height: 16px;
+}
+
+.game-settings {
+  #speedControl {
+    width: 90px;
+    align-self: left;
+    margin-top: 0 !important;
+  }
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 10px;
+}
+
+.SelectPlayer {
+  display: flex;
+  align-items: right;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  margin: 10px;
+  padding: 10px;
+}
+
+.imgAvatar {
+  width: 50px;
+  height: 50px;
+  background-image: url("/static/pong/img/back1.png");
+}
+
+.navbar-brand img {
+  filter: invert(1);
+}
+
+#menuOpen {
+	--bs-navbar-color: rgba(255, 255, 255, 0);
+}
+
+#banner {
+  overflow: hidden;
+
+}
+
+#game, #clientGame {
+  display: none;
+}
+
+/* local menu styles: */
+
+.configure_players {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+}
+.configure_players h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.configure_players form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.configure_players label, 
+.configure_players input {
+  width: 100%;
+  max-width: 400px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.configure_players input[type="number"]::-webkit-outer-spin-button,
+.configure_players input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.configure_players input[type="number"] {
+  -moz-appearance: textfield;
+}
+.configure_players input[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.configure_players input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+/* chat css */
+/* Estilo para o botão do chat */
+    #chatButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 100px;
+      justify-content: center;
+    }
+
+    /* Estilo para a janela do chat */
+    .chat-window {
+      display: none;
+      position: fixed;
+      bottom: 60px;
+      right: 20px;
+      width: 400px;
+      max-width: 90%; /* Responsivo */
+      height: 400px;
+      max-height: 70%; /* Responsivo */
+      background-color: #f8f9fa; /* Fundo claro */
+      border: 1px solid #007bff; /* Cor do site */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      border-radius: 10px; /* Bordas arredondadas */
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .chat-sidebar {
+      width: 100px;
+      background-color: #343a40;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .chat-sidebar button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px;
+      margin: 5px 0;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-sidebar button:hover {
+      background-color: #0056b3;
+    }
+
+    .chat-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .chat-header {
+      background-color: #007bff; /* Cor do site */
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-body {
+      padding: 10px;
+      flex: 1; /* Ajuste responsivo */
+      overflow-y: scroll;
+      background-color: #fff; /* Fundo branco */
+    }
+
+    .chat-footer {
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #ccc;
+      background-color: #f1f1f1; /* Fundo claro */
+    }
+
+    .chat-footer input {
+      width: 80%;
+      padding: 5px;
+      border: 1px solid #007bff; /* Cor do site */
+      border-radius: 5px;
+    }
+
+    .chat-footer button {
+      padding: 5px 10px;
+      background-color: #007bff; /* Cor do site */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  .chat-header {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+
+#clientPong { 
+  /* background-color: #1e3a8a;  */ /* Deep blue b ackground */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  border: 2px solid #000000; /* Light blue border */
+  /* background-image: url("/static/pong/img/lisboa3.png") !important; */
+  /* background-color: #007bff; */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 8px;
+}
+
+/* Tournament */
+
+tournament-setup {
+  text-align: center;
+}
+
+.players-list {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.players-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.players-list li {
+  margin: 5px 0;
+}
+
+#bracket {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.match-up {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 80px;
+  margin: 10px 0;
+  background-color: #007BFF;
+  color: #fff;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.match-up.bye {
+  background-color: #ccc;
+  color: #000;
+}

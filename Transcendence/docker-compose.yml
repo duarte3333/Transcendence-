@@ -2,14 +2,13 @@ version: '3.9'
 
 services:
   django_daphne:
-    build: 
-      context: ./django
+    build: ./django
 
     ports:
       - "8000:8000"
 
     volumes:
-      # - static:/static
+      - ./django/backend/static:/app/static
       - ./django/backend:/app
 
     command: daphne -u /tmp/daphne.sock myproject.asgi:application
@@ -20,8 +19,6 @@ services:
     depends_on:
       - postgres
       - redis
-
-  
 
   postgres:
     image: postgres:13.15
@@ -41,11 +38,14 @@ services:
     build: ./nginx
 
     ports:
-      - "8080:81"
+      - "8080:80"
+      - "443:443"
+      # - "443:443"
 
     volumes:
-      # - static:/static
       - ./django/backend/static:/static
+      - ./ssl:/etc/nginx/ssl
+
 
     depends_on:
       - django_daphne
@@ -54,5 +54,4 @@ services:
 volumes:
   static:
   postgres_data:
-
 
