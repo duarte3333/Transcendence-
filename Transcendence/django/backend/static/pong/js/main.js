@@ -20,11 +20,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
         alert("Invalid credentials");
         return;
       }
-      window.location.href = "home.html";
+      window.location.href = "game/";
     });
   }
 });
-
+document.addEventListener('load', () => {
+  
 document.getElementById('avatarUpload').addEventListener('change', function (event) {
   const file = event.target.files[0];
   if (file) {
@@ -67,4 +68,6 @@ document.getElementById('saveSettings').addEventListener('click', function () {
 
 document.getElementById('modal-content').addEventListener('click', function (event) {
   event.stopPropagation();
+});
+
 });

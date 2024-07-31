@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener('popstate', () => {
         views.urlLoad(window.location.pathname);
     });
+   
+    console.log(views.p);
     views.urlLoad(window.location.pathname);
 });
 

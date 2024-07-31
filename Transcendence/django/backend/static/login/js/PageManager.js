@@ -52,7 +52,7 @@ export class PageManager {
         else {
             this.load("/");
             console.log(`The page ${name} does not exist`);
-            name = "/";
+            // name = "/nao_tem_esse/";
         }
         if (window.location.pathname !== name)
             history.pushState({name: name}, '', name);
