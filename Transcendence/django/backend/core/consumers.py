@@ -38,8 +38,8 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
 
         if message_type == 'chat':
             await ChatConsumer().receive(text_data)
-        #elif message_type == 'game_move':
-            #await GameConsumer().receive(text_data)
+        #elif message_type == 'game_GameConsumermove':
+            #await ().receive(text_data)
         #elif message_type == 'game_stats':
             #await handle_game_stats(self, text_data_json)
     #

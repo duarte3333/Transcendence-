@@ -88,7 +88,7 @@ export function createScoreBoard(numberOfPlayers) {
 
     const img = document.createElement('img');
     img.classList.add('imgAvatar');
-    img.src = "img/p1.png";
+    img.src = "/static/pong/img/p1.png";
     img.alt = `Player_${i}'s avatar`;
 
     const playerName = document.createElement('h5');
