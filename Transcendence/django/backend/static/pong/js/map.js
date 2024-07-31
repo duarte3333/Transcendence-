@@ -1,6 +1,3 @@
-import { ball } from "./ball.js";
-
-
 //edge class
 export class Edge {
     name;
@@ -89,12 +86,28 @@ export class Edge {
 
     setperpAngle() {
         this.perpAngle = this.angle + Math.PI * 0.5; //angle plus 90º in radians
-        if (this.perpAngle > 2 * Math.PI)
+        if (this.perpAngle >= 2 * Math.PI)
             this.perpAngle -= 2 * Math.PI;
     }
     
     getperpAngle() {
         return this.perpAngle;
+    }
+
+    draw(context) {
+        if (this.class == "wall") {
+            context.strokeStyle = "black";
+            context.lineWidth = 2;
+        } else if (this.class == "goal") {
+            context.strokeStyle = "blue";
+            context.lineWidth = 2;
+        }
+    
+        context.beginPath();
+        context.moveTo(this.x1, this.y1);
+        context.lineTo(this.x2, this.y2);
+        context.closePath();
+        context.stroke();
     }
 }
 
@@ -103,8 +116,7 @@ export class Edge {
 export const map = {
     polygon: new Map(),
     img: new Image(),
-    x: 0,
-    y: 0,
+    pattern: new Image(),
     radius: 10,
     size: 0,
     color: "white",
@@ -159,9 +171,16 @@ export const map = {
 
         const canvas = document.getElementById("pongCanvas");
         this.img.onload = () => {
-            context.fillStyle = context.createPattern(this.img, 'no-repeat');
+            const imgX = (canvas.width - this.img.width) / 2;
+            const imgY = (canvas.height - this.img.height) / 2;
+    
+            context.drawImage(this.img, imgX, imgY);
 
             context.beginPath();
+            context.moveTo(0,0);
+            context.lineTo(canvas.width,0);
+            context.lineTo(canvas.width,canvas.height);
+            context.lineTo(0,canvas.height);
             let x = canvas.width / 2 + this.sideLength / 2; // starting position x
             let y = canvas.height / 2 - this.centerToSideLength; // starting position y
             let angle = 2 * Math.PI / this.sides; // angle created by each side of the polygon
@@ -174,28 +193,16 @@ export const map = {
                 context.lineTo(x, y);
             }
             context.closePath();
-            context.fill();
+            // context.clip(); // <-- THIS FUNCTION SUCKS ASS
+            context.fillStyle = context.createPattern(this.pattern, 'repeat');
+            context.fill('evenodd');
+
         };
         this.img.onload();
-
-
-
-
-        // context.fillStyle = this.color;
-        // console.log("map.color = " + context.fillStyle);
-        // context.beginPath();
-        // let x = canvas.width / 2 + this.sideLength / 2; //startging position x
-        // let y = canvas.height / 2 - this.centerToSideLength; //starting position y
-        // let angle = 2 * (Math.PI) / this.sides; // angle created by each side of the polygon
-        // context.moveTo(x, y);
-        // // each iteration updates y and x with the nex vertix and the angle is multiplied times iterations
-        // for (var i = 1; i <= this.sides; i++) {
-        //     x = x + this.sideLength * Math.cos(i * angle);
-        //     y = y + this.sideLength * Math.sin(i * angle);
-        //     context.lineTo(x, y);
-        // }
-        // context.closePath();
-        // context.stroke();    
+        for (let i = 1; i <= this.sides; i++) {
+            let temp = this.polygon.get("edge_" + i);
+            temp.draw(context);
+        }
     },
 };
 

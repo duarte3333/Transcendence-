@@ -10,6 +10,8 @@ export class Paddle {
   y; //one of the vertexes
   centerX;
   centerY;
+  bounceX; // created to normalize bounce angle
+  bounceY;
   vx;
   vy;
   gapX;
@@ -25,14 +27,19 @@ export class Paddle {
   color;
   rectEdges = new Map();
 
-  constructor(map, index) {
+  constructor(map, index, numberOfPlayers, controlsList) {
     this.name = "paddle_" + index;
     this.type = "player";
     this.moveDown = false;
     this.moveUp = false;
     this.score = new Score();
     this.color = "black";
-    const edgeKey = "edge_" + (index * 2);
+    let edgeNumber;
+    if (numberOfPlayers != 2)
+      edgeNumber = index * 2;
+    else
+      edgeNumber = index * 2 - 1;
+    const edgeKey = "edge_" + (edgeNumber);
     this.edge = map.polygon.get(edgeKey);
     this.speed = this.edge.size / 70;
     if (!this.edge) {
@@ -45,9 +52,14 @@ export class Paddle {
     this.vx = Math.cos(this.angle);
     this.vy = Math.sin(this.angle);
     this.height = this.edge.size / 5;
-    this.width = this.height / 8;
-    this.moveUpKey = "w";
-    this.moveDownKey = "s";
+    this.width = this.height / 15;
+    if (this.width < 7)
+        this.width = 7;
+    if (this.vy < 0) {
+      [this.moveUpKey, this.moveDownKey] = controlsList;
+    } else {
+      [this.moveDownKey, this.moveUpKey] = controlsList;
+    }
     this.x = this.edge.x1 + (this.vx * (this.edge.size / 2));
     this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
     this.gapX = 0;
@@ -61,7 +73,6 @@ export class Paddle {
     for (let i = 1; i <= 4; i++) {
       let temp = new Edge();
       temp.setName("edge_" + i);
-      console.log(`player = ${this.name}, edge = ${temp.name}`);
       temp.setPoint1(x, y);
       if (i == 1) {
         x = x + this.width * Math.cos(this.edge.perpAngle);
@@ -84,7 +95,7 @@ export class Paddle {
       let deltaX = temp.x2 - temp.x1;
       let deltaY = temp.y2 - temp.y1;
       temp.setSize(Math.sqrt(deltaX * deltaX + deltaY * deltaY));
-      temp.setAngle(i * this.edge.perpAngle);
+      temp.setAngle(Math.atan2(deltaY, deltaX));
       temp.setperpAngle();
       temp.class = "wall";
       this.rectEdges.set(temp.name, temp);
@@ -92,6 +103,8 @@ export class Paddle {
     let temp = this.rectEdges.get("edge_2"); //get the center of rect by the oposit vertexes
     this.centerX = (this.x + temp.x2) / 2;
     this.centerY = (this.y + temp.y2) / 2;
+    this.bounceX = this.centerX + (Math.cos(this.edge.perpAngle + Math.PI) * 80);
+    this.bounceY = this.centerY + (Math.sin(this.edge.perpAngle + Math.PI) * 80);
   }
 
   updateRectMap() {
@@ -109,10 +122,8 @@ export class Paddle {
       } else if (i == 3) {
         x = x + this.width * Math.cos(this.edge.perpAngle + Math.PI * 1);
         y = y + this.width * Math.sin(this.edge.perpAngle + Math.PI * 1);
-        if (!this.gapX) {
-          this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
-          this.gapY = y - this.y;
-        }
+        this.gapX = x - this.x; //size of paddle in diagonal to check when to stop moving in move
+        this.gapY = y - this.y;
       } else if (i == 4) {
         x = x - this.height * Math.cos(this.edge.perpAngle + Math.PI * 1.5);
       y = y - this.height * Math.sin(this.edge.perpAngle + Math.PI * 1.5);
@@ -122,6 +133,8 @@ export class Paddle {
     let temp = this.rectEdges.get("edge_2"); //update the center of rect by the oposit vertexes
     this.centerX = (this.x + temp.x2) / 2;
     this.centerY = (this.y + temp.y2) / 2;
+    this.bounceX = this.centerX + (Math.cos(this.edge.perpAngle + Math.PI) * 80);
+    this.bounceY = this.centerY + (Math.sin(this.edge.perpAngle + Math.PI) * 80);
   }
 
   print() {
@@ -170,6 +183,8 @@ export class Paddle {
         } else {
           break ;
         }
+        this.x  = newX;
+        this.y = newY;
       }
       this.updateRectMap();
     } 
@@ -190,55 +205,18 @@ export class Paddle {
       this.updateRectMap();
     }
   }
-  checkColision(ball) {
+
+  checkColision(x, y, radius) {
     for (let i = 1; i <= 4; i++) {
       let temp = this.rectEdges.get("edge_" + i);
-      if (temp.isItIn(ball.x, ball.y, ball.radius))
+      if (temp.isItIn(x, y, radius))
         return temp;
     }
     return 0;
   }
 }
 
-
-export const playerPaddle = {
-    width: 10,
-    height: 100,
-    x: 0,
-    y: 0,
-    name: "player_1",
-    color: "black",
-    moveUp: false,
-    moveDown: false,
-    speed: 3,
-    score: new Score(),
-
-    draw: function (context) {
-        context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, this.width, this.height);
-    },
-  };
-
-
-export const aiPaddle = {
-    width: 10,
-    height: 100,
-    x: 0,
-    y: 0,
-    name: "player_2",
-    color: "black",
-    moveUp: false,
-    moveDown: false,
-    speed: 3,
-    score: new Score(),
-
-    draw: function (context) {
-        context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, this.width, this.height);
-    },
-  };
-
-  function isPointOnEdge(px, py, edge) {
+function isPointOnEdge(px, py, edge) {
     // Calculate the cross product to check for collinearity
     let crossProduct = (px - edge.x1) * (edge.y2 - edge.y1) - (py - edge.y1) * (edge.x2 - edge.x1);
     crossProduct = Math.abs(crossProduct);
@@ -259,68 +237,65 @@ export const aiPaddle = {
 }
 
 
-export function checkPlayers(ball, game) {
+export function checkPlayers(x, y, radius, game) {
   for (let i = 1; i <= game.numberOfPlayers; i++) {
     let temp = game.objects.get("paddle_" + i);
-    let edge = temp.checkColision(ball)
+    let edge = temp.checkColision(x, y, radius);
     if (edge)
       return {edge, temp};
   }
   return 0;
 }
 
-// needs to be redone
 export function bouncePlayers(ball, edge, player) {
+  // Calculate the difference in coordinates
+  let deltaX =  ball.x - player.bounceX;
+  let deltaY = ball.y - player.bounceY;
 
-  // Extract the ball's current speed
-  let vx = ball.speedX;
-  let vy = ball.speedY;
-  
-  // Calculate the normal vector components based on the edge angle
-  console.log(`player name: ${player.name}, edge hit: ${edge.name}, angle: ${edge.perpAngle}`);
-  console.log(`inicio ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}`)
-  let nx = Math.cos(edge.perpAngle);
-  let ny = Math.sin(edge.perpAngle);
-  
-  // Calculate the dot product of the velocity vector and the normal vector
-  let dotProduct = vx * nx + vy * ny;
-  
-  // Calculate the reflected velocity components
-  let vpx = vx - 2 * dotProduct * nx;
-  let vpy = vy - 2 * dotProduct * ny;
-  
-  // Calculate the distance from the ball to the center of the paddle
-  let distanceFromCenter = ball.y - player.centerY;
+  // Calculate the angle in radians using atan2
+  let angleRadians = Math.atan2(deltaY, deltaX);
 
-  // Normalize the distance to a range between -1 and 1
-  let normalizedDistance = distanceFromCenter / (player.height / 2);
-
-  // Adjust the bounce angle based on the distance from the center
-  let angleAdjustment = normalizedDistance * Math.PI / 4; // 45 degree max adjustment
-  let speedMultiplier = 1 + Math.abs(normalizedDistance) * 0.25; // Speed increases up to 50%
-
-  // Convert the reflection components to angle and speed
-  // ball.speed *= speedMultiplier;
-  let angle = Math.atan2(vpy, vpx);
-  if (angle > 0)
-      angle -= angleAdjustment;
+  let vpx = Math.cos(angleRadians);
+  let vpy = Math.sin(angleRadians);
+  
+  // Update the ball's direction
+  ball.speedX = vpx;
+  ball.speedY = vpy;
+  
+  //keep the ball from entering player paddle!
+  if (ball.x > player.centerX)
+    ball.x += 1;
   else
-      angle += angleAdjustment;
+    ball.x += -1; 
 
-  // Update the ball's speed and direction
-  ball.speedX = Math.cos(angle);
-  ball.speedY = Math.sin(angle);
-   
-   //keep the ball from entering player paddle!
-    if (ball.x > player.centerX)
-      ball.x += 1;
-    else
-      ball.x += -1; 
+  if (ball.y > player.centerY)
+    ball.y += 1;
+  else
+    ball.y += -1;
 
-    if (ball.y > player.centerY)
-      ball.y += 1;
-    else
-      ball.y += -1;
-      console.log(`fim ball x =  ${ball.x}, ball y =  ${ball.y}, ball speedx = ${ball.speedX},  ball speedy = ${ball.speedY}, ball angle = ${angle}`)
-     ball.updateLastHit(player.name);
+  ball.updateLastHit(player.name);
+}
+
+
+export function writePaddleNames(game) {
+  const canvas = document.getElementById("pongCanvas");
+  game.context.font = "30px Arial"; // Define a fonte e o tamanho
+  //add transparency to this text
+  game.context.fillStyle = "rgb(154, 153, 150)";
+
+  let centerXcanvas = canvas.width / 2;
+  let centerYcanvas = canvas.height / 2;
+  for (let i = 1; i <= game.numberOfPlayers; i++) {
+    let temp = game.objects.get("paddle_" + i);
+    let dirX = 0
+    let midpointx = (temp.centerX + centerXcanvas) / 2;
+    let midpointy = (temp.centerY + centerYcanvas) / 2;
+    let midpointxofmid = (temp.centerX + midpointx) / 2;
+    let midpointyofmid = (temp.centerY + midpointy) / 2;
+    let finalx = (temp.centerX + midpointxofmid) / 2;
+    let finaly = (temp.centerY + midpointyofmid) / 2;
+    if (temp.centerX > canvas.width / 2)
+      dirX = -125;
+    game.context.fillText(temp.name, finalx + dirX, finaly);
+  }
 }
