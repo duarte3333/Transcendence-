@@ -4,6 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User
 import json
 
+def test(request):
+    return render(request, 'test.html')
+
 def login_page(request):
     return render(request, 'index.html')
 
