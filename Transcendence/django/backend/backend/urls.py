@@ -13,22 +13,36 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# from django.contrib import admin
+# from login.views import login, login_page, register, register_page
+# from pong.views import pong, game
+# from django.urls import path, re_path
+# from django.shortcuts import redirect
+
+# urlpatterns = [
+#     path('admin/', admin.site.urls),
+#     path('register/', register_page),
+#     # path('', login_page, name="carla"),
+#     path('pong/', pong),
+#     path('game/', game),
+#     re_path(r'^.*$', login_page),  # Captura todas as URLs
+#     # path('*', login_page),
+#     # path('register/', register_page),
+
+#     # path('api/login/', login),
+#     # path('api/register/', register),
+# ]
+
+from login.views import login_view, logout_view, home_view
+from pong.views import game, pong
 from django.contrib import admin
-from login.views import login, login_page, register, register_page
-from pong.views import pong, game
-from django.urls import path, re_path
-from django.shortcuts import redirect
+from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register/', register_page),
-    # path('', login_page, name="carla"),
-    path('pong/', pong),
-    path('game/', game),
-    re_path(r'^.*$', login_page),  # Captura todas as URLs
-    # path('*', login_page),
-    # path('register/', register_page),
 
-    # path('api/login/', login),
-    # path('api/register/', register),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('home/', game, name='home'),
+    path('home/match', pong, name='pong'),
 ]

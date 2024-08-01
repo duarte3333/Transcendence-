@@ -59,16 +59,16 @@ export function createScoreBoard(numberOfPlayers) {
     // Setting up background images with transparency
     if (!(i % 2)) {
       row.style.backgroundImage = 
-          "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/vamo.png')";
+          "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/vamo.png')";
     } else if (!(i % 3)) {
         row.style.backgroundImage = 
-            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/lala.png')";
+            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala.png')";
     } else if (!(i % 4)) {
         row.style.backgroundImage = 
-            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/lala3.png')";
+            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala3.png')";
     } else {
         row.style.backgroundImage = 
-            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../img/lala2.png')";
+            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala2.png')";
     }
     row.style.position = 'relative';
     row.style.overflow = 'hidden';

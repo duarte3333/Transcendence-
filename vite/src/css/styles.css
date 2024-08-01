@@ -58,7 +58,7 @@ footer {
 }
 
 body {
-  /* background-image: url("../img/lala4.png") !important; */
+  /* background-image: url("/static/pong/img/lala4.png") !important; */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -78,7 +78,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid #000000; /* Light blue border */
-  /* background-image: url("../img/lisboa3.png") !important; */
+  /* background-image: url("/static/pong/img/lisboa3.png") !important; */
   /* background-color: #007bff; */
   background-size: cover;
   background-repeat: no-repeat;
@@ -97,7 +97,7 @@ body {
 }
 
 .navbar {
-  /* background-image: url(../img/como2.png) !important; */
+  /* background-image: url(/static/pong/img/como2.png) !important; */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -369,7 +369,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid #000000; /* Light blue border */
-  /* background-image: url("../img/lisboa3.png") !important; */
+  /* background-image: url("/static/pong/img/lisboa3.png") !important; */
   /* background-color: #007bff; */
   background-size: cover;
   background-repeat: no-repeat;

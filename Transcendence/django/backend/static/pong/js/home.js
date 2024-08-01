@@ -30,7 +30,8 @@ function nextPage(event, type) {
 	match.type = "button";
 	match.textContent = "Match";
 	match.addEventListener('click', () => {
-		tournamentStart(div, type);
+		// tournamentStart(div, type);
+		window.location.href = "/home/match";
 	});
 
 	const tournament = document.createElement('button');

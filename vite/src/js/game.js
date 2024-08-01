@@ -39,7 +39,7 @@ function resizeCanvas() {
 // }
 
 export class Game {
-  playerBanner = new Banner("../img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
+  playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
   objects = new Map();
   numCandies = 1;
   numberOfPlayers = 2;
@@ -88,8 +88,8 @@ export class Game {
 
   //ADD OBJECTS TO GAME
   addMap(map) {
-    map.img.src = "../img/lisboa3.png";
-    map.pattern.src = "../img/cobblestone.jpg"
+    map.img.src = "/static/pong/img/lisboa3.png";
+    map.pattern.src = "/static/pong/img/cobblestone.jpg"
     map.color =  "teal";
     map.radius = canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;

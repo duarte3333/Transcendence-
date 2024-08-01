@@ -1,55 +1,34 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import User
-import json
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 
-def login_page(request):
-    return render(request, 'index.html')
-
-@csrf_exempt
-def login(request) -> JsonResponse:
+def login_view(request):
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            username = data.get('username')
-            password = data.get('password')
-
-            return check_login(username, password)
-        except Exception as e:
-            return JsonResponse({'message': str(e)}, status=400)
-    return JsonResponse({'message': 'Invalid request', 'success': False}, status=405)
-
-def check_login(username:str, password:str) -> JsonResponse:
-    try:
-        user = User.objects.get(name=username)
-        if user.Password == password:
-            return JsonResponse({'message': 'Login successful', 'success': True}, status=200)
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect('home')  # Redirect to a home page or another page
+            else:
+                messages.error(request, "Invalid username or password.")
         else:
-            return JsonResponse({'message': 'Invalid password', 'success': False}, status=401)
-    except:
-        return JsonResponse({'message': 'User not found', 'success' : False}, status=404)
-    
-def register_page(request):
-    return render(request, 'register.html')
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login_test.html', {'form': form})
 
-@csrf_exempt
-def register(request) -> JsonResponse:
-    pass
-    # if request.method == 'POST':
-    #     try:
-    #         data = json.loads(request.body)
-    #         username = data.get('username')
-    #         password = data.get('password')
 
-    #         if User.objects.filter(name=username).exists():
-    #             return JsonResponse({'message': 'Username already exists', 'success': False}, status=401)
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have successfully logged out.")
+    return redirect('login')
 
-    #         user = User(name=username, Password=password)
-    #         user.save()
-    #         return JsonResponse({'message': 'User created successfully', 'success': True}, status=200)
-                
-    #     except Exception as e:
-    #         return JsonResponse({'message': str(e), 'success': False}, status=400)
-
-    # return JsonResponse({'message': 'Invalid request method', 'success': False}, status=405)
+@login_required
+def home_view(request):
+    return render(request, 'home_page.html')

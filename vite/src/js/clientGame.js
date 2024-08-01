@@ -27,7 +27,7 @@ resizeCanvas();
 
 export class ClientGame {
   
-//   playerBanner = new Banner("../img/banner.jpeg", "Player's Name");
+//   playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name");
   canvas = document.getElementById("clientPong");
   playerName;
   objects = new Map();
@@ -74,8 +74,8 @@ export class ClientGame {
 
   //ADD OBJECTS TO GAME
   addMap(map) {
-    map.img.src = "../img/lisboa3.png";
-    map.pattern.src = "../img/cobblestone.jpg"
+    map.img.src = "/static/pong/img/lisboa3.png";
+    map.pattern.src = "/static/pong/img/cobblestone.jpg"
     map.color =  "teal";
     map.radius = this.canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
