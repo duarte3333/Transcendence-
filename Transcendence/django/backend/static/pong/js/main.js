@@ -4,6 +4,8 @@
 // Import only the Bootstrap components we need
 // import { Popover } from "bootstrap";
 
+import { initializeWebSocket } from "./myWebSocket.js";
+
 // Create an example popover
 document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {
   new Popover(popover);
@@ -11,6 +13,10 @@ document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {
 
 //CHANGE THE PAGE
 document.addEventListener("DOMContentLoaded", (event) => {
+  const scopeType = 'chat'; 
+  const scopeId = 'general'; 
+  initializeWebSocket(scopeType, scopeId);
+  
   const loginButton = document.getElementById("loginButton");
 
   if (loginButton) {

@@ -7,21 +7,30 @@ logger = logging.getLogger(__name__)
 
 class GenericConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        # self.scope_type = self.scope["url_route"]["kwargs"]["scope_type"]
+        # self.scope_id = self.scope["url_route"]["kwargs"]["scope_id"]
+        # self.group_name = f'{self.scope_type}_{self.scope_id}'
         self.user = self.scope["user"]
-        self.scope_type = self.scope["url_route"]["kwargs"]["scope_type"]
-        self.scope_id = self.scope["url_route"]["kwargs"]["scope_id"]
-        self.group_name = f'{self.scope_type}_{self.scope_id}'
-    
-        if self.user.is_authenticated:
-            await self.channel_layer.group_add(
+        self.scope_type = 'chat'
+        self.scope_id = 'general'
+        self.group_name = 'math_1'
+
+        await self.channel_layer.group_add (
                 self.group_name,
                 self.channel_name
-            )
-            await self.accept()
-            logger.info(f'WebSocket connection accepted for {self.user.username}')
-        else:
-            self.close()
-            logger.warning('WebSocket connection closed due to unauthenticated user')
+        )
+        await self.accept()
+
+        # if self.user.is_authenticated:
+        #     await self.channel_layer.group_add(
+        #         self.group_name,
+        #         self.channel_name
+        #     )
+        #     await self.accept()
+        #     logger.info(f'WebSocket connection accepted for {self.user.username}')
+        # else:
+        #     self.close()
+        #     logger.warning('WebSocket connection closed due to unauthenticated user')
     #
 
     async def disconnect(self, code):
@@ -38,6 +47,13 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
 
         if message_type == 'chat':
             await ChatConsumer().receive(text_data)
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message_type 
+                }
+            )
         #elif message_type == 'game_GameConsumermove':
             #await ().receive(text_data)
         #elif message_type == 'game_stats':

@@ -45,11 +45,11 @@
 //     }
 // });  
 
-// //document.getElementById("closeChat").addEventListener("click", closeChat);
-// // document.getElementById("sendButton").addEventListener("click", sendMessage);
-// // document.getElementById("chatSidebar").addEventListener("click", selectChannel);
+// document.getElementById("closeChat").addEventListener("click", closeChat);
+// document.getElementById("sendButton").addEventListener("click", sendMessage);
+// document.getElementById("chatSidebar").addEventListener("click", selectChannel);
 
-import { initializeWebSocket, socket } from "./ myWebSocket";
+import { initializeWebSocket, socket } from "./myWebSocket.js";
 
 class Chat {
   constructor() {
@@ -59,18 +59,23 @@ class Chat {
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatBody = document.getElementById('chatBody');
     this.chatSideBar = document.getElementById('chatSideBar');
+
     this.playerForm = document.getElementById('playerForm');
 
     this.open = false;
 
     this.setupEventListeners();
     this.closeChat();
+    this.numberPlayers = 0;
   }
 
   setupEventListeners() {
-    this.chatButton.addEventListener('click', () => this.toggleChatWindow());
-    this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
-    this.playerForm.addEventListener('submit', (event) => this.generatePlayerButton(event));
+    if (this.chatButton)
+      this.chatButton.addEventListener('click', () => this.toggleChatWindow());
+    if (this.sendChatButton)
+      this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
+    if (this.playerForm)
+      this.playerForm.addEventListener('submit', (event) => this.handlePlayerFormSubmit(event));
     document.addEventListener('websocketData', (event) => this.handleWebSocketMessage(event));
   }
  
@@ -82,11 +87,11 @@ class Chat {
   }
 
   closeChat() {
-    this.chatWindow.style.display = "flex";
+    this.chatWindow.style.display = "none";
   }
 
   openChat() {
-    this.chatWindow.style.display = "none";
+    this.chatWindow.style.display = "flex";
   }
 
   sendChatMessage() {
@@ -100,12 +105,26 @@ class Chat {
     }
   }
 
-  generatePlayerButton(event) {
+  handlePlayerFormSubmit(event) {
     event.preventDefault();
     const numPlayers = document.getElementById("numPlayers").value;
-    this.chatSideBar.innerHTML = '<button onclick="selectChannel(\'general\')">General</button>';
+    const playerData = {
+      numPlayers: numPlayers
+      // Adicione outras informações que deseja coletar
+    };
+    document.getElementById("playerData").value = JSON.stringify(playerData);
+    this.generatePlayerButtons(numPlayers);
+  }
 
-    for (let i = 1; i <= numPlayers; i++) {
+  generatePlayerButtons(nPlayers) {
+    this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
+    const generalButton = document.createElement("button");
+    generalButton.innerText = "General";
+    generalButton.onclick = () => this.selectChannel('general');
+    if (this.chatSideBar)
+      this.chatSideBar.appendChild(generalButton);
+
+    for (let i = 1; i <= nPlayers; i++) {
       const button = document.createElement("button");
       button.innerText = `Player ${i}`;
       button.onclick = () => this.selectChannel(`player${i}`);

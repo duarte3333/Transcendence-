@@ -20,7 +20,7 @@ from django.urls import path, re_path
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('register/', register_page),
     # path('', login_page, name="carla"),
     path('pong/', pong),

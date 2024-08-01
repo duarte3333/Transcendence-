@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap w/ Vite - Pong 42</title>
     <link rel="stylesheet" href="{% static 'pong/css/styles.css' %}">
+
   </head>
   <!-- <style>
     [class*="col"] {
@@ -162,7 +163,7 @@
     <button id="chatButton" class="btn btn-primary" data-bs-toggle="button">Live Chat</button>
     <!-- Janela de Chat -->
     <div id="chatWindow" class="chat-window">
-      <div class="chat-sidebar" id="chatSidebar">
+      <div class="chat-sidebar" id="chatSideBar">
         <!-- Adicione mais botões conforme necessário -->
       </div>
       <div class="chat-main">
@@ -174,10 +175,18 @@
         </div>
         <div class="chat-footer">
           <input type="text" placeholder="Type a message..." id="chatInput" />
-          <button> Send </button>
+          <button id="sendChatButton"> Send </button>
         </div>
       </div>
     </div>
+
+    <form id="playerForm">
+      <p>Choose the number of players below</p>
+      <input type="number" id="numPlayers" name="numPlayers" min="0" max="100" autocomplete="off" required>
+      <div id="playerControls"></div>
+      <input type="hidden" id="playerData" name="playerData">
+      <input id="controlsButton" type="submit" value="Save Configuration">
+    </form>
 
     <!-- Footer Section -->
     <footer class="py-3 my-4">

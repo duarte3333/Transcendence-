@@ -1,6 +1,7 @@
 asgiref==3.8.1
 daphne
 channels
+channels_redis
 django
 postgres==4.0
 psycopg2-binary==2.9.9
