@@ -33,7 +33,7 @@ Including another URLconf
 #     # path('api/register/', register),
 # ]
 
-from login.views import login_view, logout_view, home_view
+from login.views import login_view, logout_view, register
 from pong.views import game, pong
 from django.contrib import admin
 from django.urls import path
@@ -41,8 +41,9 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('login/', login_view, name='login'),
+    path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', game, name='home'),
     path('home/match', pong, name='pong'),
+    path('register/', register, name='register'),
 ]

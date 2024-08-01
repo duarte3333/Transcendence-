@@ -4,7 +4,7 @@
         justify-content: center;
         align-items: center; 
         /* width: 32%; */
-        /* background-image: url("/static/images/registerimage3.jpg"); */
+        /* background-image: url('/static/login/images/loginbackground5-1.jpg'); */
         background-size: cover;
         height: 100vh; /* Ensure it takes full height */
         position: absolute; /* Position it absolutely */
@@ -23,7 +23,7 @@
         /* padding: 50px; */
         border: 1px solid #ccc;
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0);
+        background-color: rgba(255, 255, 255, 0.4);
         box-sizing: border-box;
         text-shadow: 
             2px 2px 0 white, 
@@ -78,11 +78,17 @@
     } 
 </style>
 
-<div id="register-body" class="register" style="display: none;">
-    <form class="register-card">
+<div id="register-body" class="register" style="display: none">
+    <!-- <form class="register-card">
         <input autocomplete="off" autofocus input type="text" id="register-user" placeholder="Username" name="username">
         <input autocomplete="off" autofocus input type="password" id="register-pass" placeholder="Password" name="password">
         <button id="temp" type="button">register</button>
         <button id="temp1" type="button">Register</button>
+    </form> -->
+    <form method="post" class="register-card">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+        <button id="login_B" type="button">Login</button>
     </form>
 </div>

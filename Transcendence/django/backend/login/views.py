@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from .forms import RegisterForm
 
 def login_view(request):
     if request.method == 'POST':
@@ -21,7 +23,7 @@ def login_view(request):
             messages.error(request, "Invalid username or password.")
     else:
         form = AuthenticationForm()
-    return render(request, 'login_test.html', {'form': form})
+    return render(request, 'index.html', {'form': form})
 
 
 def logout_view(request):
@@ -29,6 +31,13 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect('login')
 
-@login_required
-def home_view(request):
-    return render(request, 'home_page.html')
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')  # Redirect to a success page or home page
+    else:
+        form = RegisterForm()
+    return render(request, 'register.html', {'form': form})
