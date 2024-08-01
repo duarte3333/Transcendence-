@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   django_daphne:
     build: ./django
@@ -17,15 +15,20 @@ services:
     depends_on:
       - postgres
 
+    networks:
+      - backend
 
   postgres:
-    image: postgres:13.15
+    image: postgres:13
 
     env_file:
       - .env
 
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+
+    networks:
+      - backend
 
 
   nginx:
@@ -44,8 +47,13 @@ services:
     depends_on:
       - django_daphne
 
+    networks:
+      - backend
+
 
 volumes:
   static:
   postgres_data:
 
+networks:
+  backend:
