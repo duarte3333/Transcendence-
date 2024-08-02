@@ -20,6 +20,7 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
                 self.channel_name
         )
         await self.accept()
+        logger.info(f'WebSocket connection accepted for {str(self.user)}')
 
         # if self.user.is_authenticated:
         #     await self.channel_layer.group_add(
@@ -38,22 +39,28 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
             self.group_name,
             self.channel_name
         )
-        logger.info(f'WebSocket connection closed for {self.user.username}')
+        logger.info(f'WebSocket connection closed for {str(self.user)}')
     #
 
     async def receive(self, text_data):
+        logger.info(f'Received message: {text_data}')
+        print(f'Received message: {text_data}')
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
-
         if message_type == 'chat':
-            await ChatConsumer().receive(text_data)
+            # await ChatConsumer().receive(text_data)
             await self.channel_layer.group_send(
                 self.group_name,
                 {
                     'type': 'chat_message',
-                    'message': message_type 
+                    'message': message_type,
+                    'sender': text_data_json.get('sender')
                 }
             )
+        elif message_type == 'room_info':
+            num_players = text_data_json.get('numplayers')
+            players = text_data_json.get('players')
+            await self.handle_group_message(num_players, players)
         #elif message_type == 'game_GameConsumermove':
             #await ().receive(text_data)
         #elif message_type == 'game_stats':
@@ -62,8 +69,31 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
 
     async def chat_message(self, event):
         message = event['message']
+        sender = event.get('sender')
         await self.send(text_data=json.dumps({
             'type': 'chat_message',
-            'message': message
+            'message': message,
+            'sender': sender
         }))
+    #
+
+    async def handle_group_message(self, num_players, players):
+        logger.info(f'Handling game message with {num_players} players')
+        if num_players == len(players):
+            self.players = players
+            players_names = ', '.join([player['name'] for player in players])
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'room_info',
+                    'message': f'Room created with {players_names}',
+                    'players': players
+                }
+            )
+        #
 #
+
+
+
+
+

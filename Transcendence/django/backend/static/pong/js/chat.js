@@ -59,8 +59,8 @@ class Chat {
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatBody = document.getElementById('chatBody');
     this.chatSideBar = document.getElementById('chatSideBar');
-
     this.playerForm = document.getElementById('playerForm');
+    this.activePlayer = null;
 
     this.open = false;
 
@@ -96,12 +96,15 @@ class Chat {
 
   sendChatMessage() {
     const message = this.chatInput.value;
+    console.log("sendChatMessage: " + message);
     if (message && socket) {
       socket.send(JSON.stringify({
         'type': 'chat',
-        'message': message
+        'message': message,
+        'sender': this.activePlayer
       }));
       this.chatInput.value = '';
+      document.getElementById("chatBody").innerHTML = `${this.activePlayer}: ${message}`;
     }
   }
 
@@ -116,20 +119,46 @@ class Chat {
     this.generatePlayerButtons(numPlayers);
   }
 
+  //metodo temporario apenas para fazer um chat básico
+  sendBasicInfo(nPlayers) {
+    if (socket) {
+      const players = [];
+      for (let i = 1; i <= nPlayers; i++) {
+        players.push({id: `player_${i}`, name: `Player ${i}`});
+      } 
+      socket.send(JSON.stringify({
+        type: 'room_info',
+        'numplayers': nPlayers,
+        'players': players
+      }));
+      console.log("A seguinte mensagem foi enviada " + JSON.stringify({
+        type: 'room_info',
+        'numplayers': nPlayers,
+        'players': players
+      }));
+    }
+  }
+
   generatePlayerButtons(nPlayers) {
     this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
+    
+    //acrescenta o botão General
     const generalButton = document.createElement("button");
     generalButton.innerText = "General";
     generalButton.onclick = () => this.selectChannel('general');
-    if (this.chatSideBar)
-      this.chatSideBar.appendChild(generalButton);
+    this.chatSideBar.appendChild(generalButton);
 
     for (let i = 1; i <= nPlayers; i++) {
       const button = document.createElement("button");
       button.innerText = `Player ${i}`;
-      button.onclick = () => this.selectChannel(`player${i}`);
+      button.onclick = () => {
+        this.activePlayer = `Player${i}` 
+        this.selectChannel(`player${i}`);
+      }
       this.chatSideBar.appendChild(button);
     }
+    //Isso é temporário apenas enquanto não tenho acesso ao DB
+    this.sendBasicInfo(nPlayers);
   }
 
   selectChannel(channel) {
@@ -143,11 +172,6 @@ class Chat {
       this.appendChatMessage(data.message);
   }
 
-  appendChatMessage(message) {
-    const messageElement = document.createElement('div');
-    messageElement.textContent = message;
-    this.chatBody.appendChild(messageElement);
-  }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
