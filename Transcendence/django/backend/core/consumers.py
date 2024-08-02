@@ -53,7 +53,7 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
                 self.group_name,
                 {
                     'type': 'chat_message',
-                    'message': message_type,
+                    'message': text_data_json.get('message'),
                     'sender': text_data_json.get('sender')
                 }
             )
@@ -92,8 +92,3 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
             )
         #
 #
-
-
-
-
-
