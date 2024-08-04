@@ -1,4 +1,5 @@
 export let socket;
+export let channel_name;
 
 export function initializeWebSocket(scopeType, scopeId) {
     if (!socket) {
@@ -8,15 +9,24 @@ export function initializeWebSocket(scopeType, scopeId) {
 
         console.log("WebSocket URL:", wsUrl);
         socket = new WebSocket(wsUrl);
+        console.log("socket object" + socket.readyState + " socket url " + socket.url);
 
         socket.onopen = function() {
+            console.log("Channel name aberto: " + channel_name);
             console.log("WebSocket connection established");
         }
 
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            console.log("Message received: ", data);
-            handleWebSocketData(data);
+            console.log("Aquiii");
+            console.log(data);
+            if (data.type === 'connection_established' ) {
+                channel_name = data.name;
+                console.log("My channel name: ", data.name);
+            } else {
+                console.log("Message received: ", data);
+                handleWebSocketData(data);
+            }
         }
 
         socket.onclose = function(e) {

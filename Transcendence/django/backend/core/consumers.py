@@ -1,6 +1,6 @@
 import json
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import logging
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from chat.consumers import ChatConsumer
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,6 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
         # self.group_name = f'{self.scope_type}_{self.scope_id}'
         self.user = self.scope["user"]
         self.scope_type = 'chat'
-        self.scope_id = 'general'
         self.group_name = 'math_1'
 
         await self.channel_layer.group_add (
@@ -20,6 +19,11 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
                 self.channel_name
         )
         await self.accept()
+        await self.send(text_data=json.dumps({
+            'type': 'connection_established',
+            'name': self.channel_name
+        }))
+
         logger.info(f'WebSocket connection accepted for {str(self.user)}')
 
         # if self.user.is_authenticated:

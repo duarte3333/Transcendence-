@@ -287,6 +287,8 @@ class Chat {
 
   sendChatMessage() {
     const message = this.chatInput.value;
+
+
     if (message && socket) {
       socket.send(JSON.stringify({
         'type': 'chat_message',
@@ -397,6 +399,8 @@ class Chat {
       this.storeMessages(data.sender, message);
       this.appendChatMessage(message, data.sender.replace('Player', 'player_'));
       console.log("handleWebSocketMessage " + data.sender.replace('Player', 'player_'));
+    } else if (data.type === 'connection_established') {
+      console.log("handleWebSocketMessage channel_name: " + data.name);
     } else {
       console.error("Received unexpected message type:", data.type);
     }
