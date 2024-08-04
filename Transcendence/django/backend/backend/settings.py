@@ -42,6 +42,7 @@ CSRF_TRUSTED_ORIGINS = [
 INSTALLED_APPS = [
     'pong',
     'login',
+    'main',
     'channels',
     'corsheaders',
     'django.contrib.admin',
