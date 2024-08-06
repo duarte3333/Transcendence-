@@ -79,17 +79,25 @@ function generateFriendsList(event) {
 function addFriendInputCheck() {
 	const addFriendInput = document.getElementById("validationServer01");
 	const username = addFriendInput.value;
-	if (!users.find(user => user.username === username)) {
+
+	const userObject = users.find(user => user.username === username);
+
+	notFound.style.display = "none";
+	alreadyFriend.style.display = "none";
+
+	if (!userObject) {
 		let notFound = document.getElementById("notFound");
 		notFound.style.display = "block";
 	} else if (friends.find(user => user.username === username)) {
 		let alreadyFriend = document.getElementById("alreadyFriend");
 		alreadyFriend.style.display = "block";
-	} else { //ADD FRIEND
-
-		 const myModalElement = document.getElementById('addFriendModal');
-		 const myModal = bootstrap.Modal.getInstance(myModalElement) || new bootstrap.Modal(myModalElement);
-		 myModal.hide();
+	} else {
+		//ADD FRIEND
+		friends.push(userObject);
+		
+		const myModalElement = document.getElementById('addFriendModal');
+		const myModal = bootstrap.Modal.getInstance(myModalElement) || new bootstrap.Modal(myModalElement);
+		myModal.hide();
 	}
 }
 
