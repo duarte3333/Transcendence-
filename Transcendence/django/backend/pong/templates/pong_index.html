@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -5,7 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap w/ Vite - Pong 42</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="{% static 'pong/css/styles.css' %}">
   </head>
   <!-- <style>
     [class*="col"] {
@@ -18,7 +20,7 @@
     <nav class="navbar navbar-dark bg-dark" id="navbar">
       <div class="container-fluid">
         <div class="navbar-brand  ms-2"  href="#">
-          <img src="./img/42_Logo.png" alt="Logo" width="40" height="40" class="d-inline-block">
+          <img src="/static/pong/img/42_Logo.png" alt="Logo" width="40" height="40" class="d-inline-block">
           <span class="ms-2">
             Transcendence Pong
           </span>
@@ -184,11 +186,13 @@
   </body>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script type="module" src="./js/game.js"></script>
-  <script type="module" src="./js/main.js"></script>
-  <script type="module" src="./js/local_menu.js"></script>
-  <script type="module" src="./js/chat.js"></script>
-  <script type="module" src="./js/tournament.js"></script>
+  <script type="module" src="{% static 'pong/js/game.js' %}"></script>
+  <script type="module" src="{% static 'pong/js/main.js' %}"></script>
+  <script type="module" src="{% static 'pong/js/local_menu.js' %}"></script>
+  <script type="module" src="{% static 'pong/js/chat.js' %}"></script>
+  <script type="module" src="{% static 'pong/js/tournament.js' %}"></script>
+
+
 
   </body>
   </html>

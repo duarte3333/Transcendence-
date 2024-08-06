@@ -1,0 +1,59 @@
+services:
+  django_daphne:
+    build: ./django
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./django/backend/static:/app/static
+      - ./django/backend:/app
+
+    env_file:
+      - .env
+
+    depends_on:
+      - postgres
+
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:13
+
+    env_file:
+      - .env
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+    networks:
+      - backend
+
+
+  nginx:
+    build: ./nginx
+
+    ports:
+      - "8080:80"
+      - "443:443"
+      # - "443:443"
+
+    volumes:
+      - ./django/backend/static:/static
+      - ./ssl:/etc/nginx/ssl
+
+
+    depends_on:
+      - django_daphne
+
+    networks:
+      - backend
+
+
+volumes:
+  static:
+  postgres_data:
+
+networks:
+  backend:

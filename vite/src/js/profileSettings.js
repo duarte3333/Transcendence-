@@ -79,7 +79,7 @@ function changeText(event, type) {
 	completeButton.type = "button";
 	completeButton.innerHTML = `
 			<svg class="bi" width="16" height="16">
-				<image class="changeImg" width="16" height="16" xlink:href="../img/tick.png"></image>
+				<image class="changeImg" width="16" height="16" xlink:href="/static/pong/img/tick.png"></image>
 			</svg>
 	`;
 	completeButton.addEventListener('click', () => {
@@ -98,7 +98,6 @@ function completeChangeText(oldParent, div, type, inputID, buttonID) {
 	//update info latter on db
 	if (type != "password") {
 		const info = document.getElementById(type);
-		console.log(`info = ${info}, type = ${type}`);
 		if (info) {
 			info.textContent = input.value;
 		}
@@ -143,7 +142,7 @@ function changeImage(event, type) {
 	completeButton.type = "button";
 	completeButton.innerHTML = `
 			<svg class="bi" width="16" height="16">
-				<image class="changeImg" width="16" height="16" xlink:href="../img/tick.png"></image>
+				<image class="changeImg" width="16" height="16" xlink:href="/static/pong/img/tick.png"></image>
 			</svg>
 	`;
 	completeButton.addEventListener('click', () => {

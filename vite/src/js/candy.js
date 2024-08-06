@@ -3,7 +3,7 @@ import { Animation } from "./animation";
 const canvas = document.getElementById("pongCanvas");
 
 const candyImage = new Image();
-candyImage.src = '../img/ItemBoxSprite.png';
+candyImage.src = '/static/pong/img/ItemBoxSprite.png';
 // Handle image load error
 candyImage.onerror = function() {
   console.error("Failed to load the image.");
