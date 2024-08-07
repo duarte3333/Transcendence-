@@ -33,9 +33,8 @@ Including another URLconf
 #     # path('api/register/', register),
 # ]
 
-from login.views import login, login_view, logout_view, register
-from pong.views import game, pong
-from main.views import main_view
+from login.views import login_view, logout_view, register
+from pong.views import game, pong, navbar, settings, profile
 from django.contrib import admin
 from django.urls import path, re_path
 from django.shortcuts import redirect
@@ -43,8 +42,12 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/', login_view),
-    path('api/register/', register),
-    # path('api/register/', login_view),
-    re_path(r'^.*$', main_view)  # Captura todas as URLs
+    path('', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('home/', game, name='home'),
+    path('pong/index', pong, name='pong'),
+    path('register/', register, name='register'),
+    path('navbar/', navbar, name='navbar'),
+    path('settings/', settings, name='settings'),
+    path('profile/', profile, name='profile'),
 ]

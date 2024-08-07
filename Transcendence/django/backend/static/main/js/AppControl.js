@@ -75,6 +75,27 @@ export class AppControl {
     //     return (success);
     // }
 
+    // static async fetchApp(name) {
+    //     console.log("fetching " + name);
+    //     return (
+    //         await fetch('api' + name)
+    //         .then(app => app.text())
+    //         .then(app => {
+    //             const newdiv = document.createElement('div');
+    //             newdiv.innerHTML = app;
+    //             newdiv.id = name;
+    //             document.body.appendChild(newdiv);
+    //             return (newdiv);
+    //         })
+    //         .then(newdiv => this.executeScript(newdiv))
+    //         .then(() => {return true})
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             return (false);
+    //         })
+    //     );
+    // }
+
     static async fetchApp(name) {
         console.log("fetching " + name);
         try {
@@ -95,7 +116,8 @@ export class AppControl {
             return false;
         }
     }
-    
+
+
     static async executeScript(doc) {
         console.log("begin execution" + doc.id);
         const scripts = doc.querySelectorAll('script');

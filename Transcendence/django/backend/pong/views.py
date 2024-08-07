@@ -7,3 +7,12 @@ def pong(request):
 
 def game(request):
     return render(request, 'pong_home.html')
+
+def navbar(request):
+    return render (request, 'pong_navbar.html')
+
+def settings(request):
+    return render(request, 'pong_profileSettings.html')
+
+def profile(request):
+    return render(request, 'pong_profile.html')
