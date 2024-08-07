@@ -10,6 +10,11 @@ import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
 // import { Tournament } from "./tournament.js";
 
+import { socket } from "./myWebSocket.js";
+
+
+
+
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
 
@@ -75,7 +80,9 @@ export class Game {
     resizeCanvas();
     const temp = document.getElementById("scoreBoard");
     this.init();
-  } 
+    if (!socket)
+      initializeWebSocket();
+  }
 
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
@@ -129,19 +136,44 @@ export class Game {
     }
   }
 
+  sendPaddleUpdate(paddle, name) {
+    if (socket) {
+      console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
+      socket.send(JSON.stringify({
+        'type': 'paddle_update',
+        'paddle_x': paddle.x,
+        'paddle_y': paddle.y,
+        'sender': name
+      }))
+    } 
+  }
+  
+  sendBallUpdate(ball) {
+    if (socket) {
+      console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
+      socket.send(JSON.stringify({
+        'type': 'ball_update',
+        'ball_x': ball.x,
+        'ball_y': ball.y,
+      }))
+    }
+  } 
+  
   //UPDATE OBJECTS
   update() {
     const ball = this.objects.get("ball");
 
     //Update players paddle and ball
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let temp = this.objects.get("paddle_" + i);
-      temp.move();
+      let paddle = this.objects.get("paddle_" + i);
+      paddle.move();
       //send paddle info to client
-      this.client.updatePlayer(temp);
+      this.sendPaddleUpdate(paddle, "paddle_" + i);
+      this.client.updatePlayer(paddle);
     }
     ball.move(this);
     //send ball info to client
+    this.sendBallUpdate(ball);
     this.client.updateBall(ball);
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
@@ -171,8 +203,6 @@ export class Game {
 
     } 
     else if (this.finish) {
-      
-      
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
@@ -181,7 +211,7 @@ export class Game {
       gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
       this.context.fillStyle = gradient;
       this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
-      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadow
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
       //tell who wins
       this.context.font = "bold 30px Poppins, sans-serif";
       this.context.fillStyle = "black";

@@ -7,8 +7,9 @@ export class events {
     }
 
     setupControls() {
-        if (document.getElementById("keydown") == null)
-            console.log("tiago é maluco");
+        if (document.getElementById("keydown") == null) {
+            console.log("keydown está a ser chamado.");
+        }
         document.addEventListener("keydown", (event) => this.handleKeyDown(event));
         document.addEventListener("keyup", (event) => this.handleKeyUp(event));
     }

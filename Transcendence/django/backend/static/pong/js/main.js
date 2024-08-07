@@ -13,9 +13,7 @@ document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {
 
 //CHANGE THE PAGE
 document.addEventListener("DOMContentLoaded", (event) => {
-  const scopeType = 'chat'; 
-  const scopeId = 'general'; 
-  initializeWebSocket(scopeType, scopeId);
+  initializeWebSocket();
   
   const loginButton = document.getElementById("loginButton");
 

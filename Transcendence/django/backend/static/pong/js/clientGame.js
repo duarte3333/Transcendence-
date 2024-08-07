@@ -4,10 +4,9 @@ import { events } from "./events.js";
 import { Score } from "./score.js";
 import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
-import { createScoreBoard } from "./score.js";
 import { sleep } from "./auxFts.js";
+import { createScoreBoard } from "./score.js";
 import { Banner } from "./banner.js";
-
 
 function resizeCanvas() {
   const canvas = document.getElementById('clientPong');
@@ -26,13 +25,12 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 export class ClientGame {
-  
 //   playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name");
   canvas = document.getElementById("clientPong");
   playerName;
   objects = new Map();
   numCandies = 1;
-  numberOfPlayers = 2;
+  // numberOfPlayers = 2;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -61,7 +59,7 @@ export class ClientGame {
 	  // this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
-  } 
+  }
 
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
@@ -75,7 +73,7 @@ export class ClientGame {
   //ADD OBJECTS TO GAME
   addMap(map) {
     map.img.src = "/static/pong/img/lisboa3.png";
-    map.pattern.src = "/static/pong/img/cobblestone.jpg"
+    map.pattern.src = "/static/pong/img/cobblestone.jpg";
     map.color =  "teal";
     map.radius = this.canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
@@ -162,8 +160,7 @@ export class ClientGame {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
-    } 
-    else {
+    } else {
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
