@@ -30,17 +30,36 @@ export class PageManager {
     get(name) {
         return (this.#pageMap.get(name));
     }
-
-    load(name) {
-        let page = this.#pageMap.get(name);
-
-        if (!page && !AppControl.fetchElement(name)) {
+    
+    async load(name) {
+        if (!this.#pageMap.get(name) && !(await AppControl.fetchApp(name))) {
             console.log(`Could not load the page: ${name}`);
             return ;
         }
+        let page = this.#pageMap.get(name);
         page.display("block");
         this.#onScreen.add(page);
         this.#currentPage = window.location.pathname;
+    }
+
+    async highlight(name) {
+        this.#onScreen.forEach(page => {
+            page.display("none");
+        });
+        this.#onScreen.clear();
+
+        await AppControl.fetchElement(name);
+        if (this.#pageMap.get(name)) {
+            console.log("passed fetch app");
+            this.load(name);
+        }
+        else {
+            console.log("page " + this.#pageMap.get(name));
+            // this.load("/");
+            console.log(`The page ${name} does not exist`);
+        }
+        if (window.location.pathname !== name)
+            history.pushState({name: name}, '', name);
     }
 
     async urlLoad(name) {
@@ -48,10 +67,9 @@ export class PageManager {
             page.display("none");
         });
         this.#onScreen.clear();
-        this.#pageMap.clear();
-
-        await AppControl.fetchApp(name);
-        if (this.#pageMap.get(name)) {
+        // this.#pageMap.clear();
+    
+        if (this.#pageMap.get(name) || (await AppControl.fetchApp(name))) {
             console.log("passed fetch app");
             this.load(name);
         }

@@ -43,7 +43,8 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/login/', login_view),
+    path('api/', login_view),
+    path('api/register/', register),
     # path('api/register/', login_view),
     re_path(r'^.*$', main_view)  # Captura todas as URLs
 ]

@@ -27,76 +27,92 @@ export class AppControl {
     }
 
     static  fetchElement(name) {
-        var element = this.fetchFromServer(name);
-        if (element == null)
+        let success = this.fetchFromServer('api' + name).then(element => {
+            if (element == null) 
+                return (false);
+            document.body.appendChild(element);
+            return (this.executeScript().then(() => true));
+        }).catch(error => {
+            console.error('Error:', error);
             return (false);
-        console.log("fetchElement passed if.");
-        document.body.appendChild(element);
-        return (true);
+        }); 
+        return (success);
     }
+
+    // static async fetchApp(name) {
+    //     let success = this.fetchFromServer('api' + name).then(app => {
+    //         if (app == null) 
+    //             return (false);
+    //         // document.body.innerHTML = app;
+    //         document.body.appendChild(await app.text());
+    //         return (this.executeScript().then(() => {
+    //             // this.#removeAllScripts();
+    //             return (true);
+    //         }));
+    //     }).catch(error => {
+    //         console.error('Error:', error);
+    //         return (false);
+    //     });
+    //     return (success);
+    // }
+
+    // static async fetchApp(name) {
+    //     console.log("fetching");
+    //     let success = await fetch('api' + name)
+    //         .then(app => app.text())
+    //         .then(app => {
+    //             const newdiv = document.createElement('div');
+    //             newdiv.innerHTML = app;
+    //             newdiv.id = name;
+    //             this.executeScript(newdiv);
+    //             document.body.appendChild(newdiv);
+    //             return (true);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             return (false);
+    //         });
+    //     return (success);
+    // }
 
     static async fetchApp(name) {
-        var app = await this.fetchFromServer(name);
-        if (app == null) {
-            console.log("failed fetch");
-            return (false);
-        }
-        else {
-            console.log("app " + app);
-        }
-        console.log("fetchApp passed if.");
-        document.body.innerHTML = app;
-        return new Promise((resolve, reject) => {
-            const scripts = document.querySelectorAll('script');
-            scripts.forEach(script => {
-                const newScript = document.createElement('script');
-                if (script.src) {
-                    newScript.src = script.src;
-                    newScript.type = script.type;  // If script has a type (like module)
-                    script.onload = () => {
-                        console.log("Script loaded successfully.");
-                        resolve(true);
-                    };
-                    script.onerror = () => {
-                        console.log("Failed to load the script.");
-                        reject(false);
-                    };
-                    document.head.appendChild(newScript);
-                } else {
-                    newScript.textContent = script.textContent;
-                    document.body.appendChild(newScript);
-                }
-            });
-        });
-        // return new Promise((resolve, reject) => {
-        //     let script = document.createElement('script');
-        //     script.type = 'module';
-        //     script.src = '/static/login/js/login.js';
-        //     script.onload = () => {
-        //         console.log("Script loaded successfully.");
-        //         resolve(true);
-        //     };
-        //     script.onerror = () => {
-        //         console.log("Failed to load the script.");
-        //         reject(false);
-        //     };
-        //     document.body.appendChild(script);
-        // });
-    }
-
-    static async fetchFromServer(name) {
+        console.log("fetching " + name);
         try {
-            const response = await fetch("api/login/", { // Update to your desired endpoint
-                method: 'GET'
-            });
-            console.log("after fetch");
-            return (await response.text());
+            const response = await fetch('api' + name);
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            const app = await response.text();
+            const newdiv = document.createElement('div');
+            newdiv.innerHTML = app;
+            newdiv.id = name;
+            document.body.appendChild(newdiv);
+            
+            await this.executeScript(newdiv);
+            return true;
         } catch (error) {
             console.error('Error:', error);
-            return null;
+            return false;
         }
     }
     
+    static async executeScript(doc) {
+        console.log("begin execution" + doc.id);
+        const scripts = doc.querySelectorAll('script');
+        const scriptPromises = Array.from(scripts).map(script => {
+            return new Promise((resolve, reject) => {
+                const newScript = document.createElement('script');
+                newScript.src = script.src;
+                newScript.type = script.type;
+                newScript.onload = resolve;
+                newScript.onerror = reject;
+                document.head.appendChild(newScript);
+                script.parentNode.removeChild(script);
+            });
+        });
+        return (await Promise.all(scriptPromises));
+    }
+
     static register() {
         fetch("http://127.0.0.1:8000/api/register/", {
             method: 'POST',

@@ -1,3 +1,4 @@
+import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
 
 function secureElement(element) {
@@ -20,6 +21,5 @@ views.setElement("/register/", (state) => {
     secureElement("register-body").style.display = state;
 })
 .setEvents(
-    ["chat_button", "click", () => {views.load("chat")}],
-
+    ["chat_button", "click", () => {views.load("chat")}]
 );
