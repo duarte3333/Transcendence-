@@ -1,3 +1,17 @@
+import {views} from "../../main/js/main.js"
+// import {secureElement} from "../../main/js/main.js"
+
+views.setElement("/settings/", (state) => {
+	document.getElementById("settingsContainer").style.display = state;
+	document.getElementById('menuClose').click();
+	document.getElementsByClassName('active').classList.remove('active');
+})
+.setEvents();
+
+views.setElement("/navbar/", (state) => {
+})
+.setEvents();
+
 let users = [
     { username: "Antonio", status: "online" },
     { username: "Vasco", status: "offline" },
@@ -30,6 +44,13 @@ document.addEventListener('DOMContentLoaded', function() {
         notFound.style.display = "none";
         alreadyFriend.style.display = "none";
     });
+
+	const  settingsButton = document.getElementById("settingsButton");
+	settingsButton.addEventListener('click', () => {
+		console.log("deu");
+		views.unload("/navbar/")
+		views.urlLoad("/settings/")
+	});
 });
 
 
