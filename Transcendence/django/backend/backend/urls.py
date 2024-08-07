@@ -34,7 +34,7 @@ Including another URLconf
 # ]
 
 from login.views import login_view, logout_view, register
-from pong.views import game, pong
+from pong.views import game, pong, navbar, settings, profile
 from django.contrib import admin
 from django.urls import path
 
@@ -44,6 +44,9 @@ urlpatterns = [
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', game, name='home'),
-    path('home/match', pong, name='pong'),
+    path('pong/index', pong, name='pong'),
     path('register/', register, name='register'),
+    path('navbar/', navbar, name='navbar'),
+    path('settings/', settings, name='settings'),
+    path('profile/', profile, name='profile'),
 ]

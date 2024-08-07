@@ -3,7 +3,7 @@ export class Banner {
         this.img = new Image();
         this.img.src = imgPath;
 		this.imgProfile = new Image();
-		this.imgProfile.src = "/static/pong/img/p1.png";
+		this.imgProfile.src = "img/p1.png";
         this.playerName = playerName;
         this.playerNickname = playerNickname;
         this.playerStats = playerStats;
@@ -22,7 +22,7 @@ export class Banner {
         bannerContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.5)"; // Adds depth
 
         const profilePhoto = new Image();
-        profilePhoto.src = "/static/pong/img/p1.png"; // Path to the player's profile photo
+        profilePhoto.src = "img/p1.png"; // Path to the player's profile photo
         profilePhoto.alt = 'Player Profile';
         profilePhoto.style.width = "100px"; // Set the width as needed
         profilePhoto.style.height = "100px"; // Set the height as needed
