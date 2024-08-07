@@ -63,3 +63,7 @@ body {
 .image-end {
 	flex-shrink: 0;
 }
+
+#addFriend {
+	padding: 0px;
+}

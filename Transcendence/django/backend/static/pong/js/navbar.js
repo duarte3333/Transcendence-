@@ -49,13 +49,14 @@ function generateFriendsList(event) {
 		let li = document.createElement('li');
 
 		let div = document.createElement('div');
-		div.className = "dropdown-item lightGreyText d-flex align-items-center justify-content-between";
+		div.className = "dropdown-item lightGreyText d-flex align-items-center justify-content-between gap-2";
 
 		let span = document.createElement('span');
 		span.className = "text-start";
 		span.innerText = user.username;
 
 		let profileButton = document.createElement('button');
+		profileButton.style.padding = "0px";
 		profileButton.className = "btn d-flex align-items-center";
 		profileButton.innerHTML = `
 			<image height="16" width="16" src="/static/pong/img/account.png" style="filter: invert(1);"></image>
@@ -63,6 +64,7 @@ function generateFriendsList(event) {
 
 		let chatButton = document.createElement('button');
 		chatButton.className = "btn d-flex align-items-center";
+		chatButton.style.padding = "0px";
 		chatButton.innerHTML = `
 			<image height="16" width="16" src="/static/pong/img/chat.png" style="filter: invert(1);"></image>
 		`;
