@@ -27,20 +27,20 @@ export class AppControl {
     }
 
     static async fetchApp(name) {
-        let success = await fetch('api' + name).then(app => {
+        console.log(`fetching =${'api' + name} `);
+        let success = await fetch(name).then(app => {
             if (!app.ok)
                 throw new Error('Network response was not ok: ' + app.statusText);
-            app.text();
+            return (app.text());
         })
         .then(app => {
             const newdiv = document.createElement('div');
             newdiv.innerHTML = app;
-            newdiv.id = name;
-            newdiv.style.display = 'none';
             document.body.appendChild(newdiv);
-            this.#executeScript(newdiv)
-            return (true);
+            return (newdiv);
         })
+        .then(newdiv => this.#executeScript(newdiv))
+        .then(() => {return (true)})
         .catch(error => {
             console.error('Error:', error);
             return (false);

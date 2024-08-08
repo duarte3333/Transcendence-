@@ -11,52 +11,52 @@
 </head>
 <body id="body">
 	<!-- Navbar Section -->
-		<nav class="navbar navbar-dark bg-dark">
-			<div class="container-fluid">
-				<div class="navbar-brand  ms-2"  href="#">
-					<img src="/static/pong/img/42_Logo.png" alt="Logo" width="40" height="40" class="d-inline-block">
-					<span class="ms-2">
-						Transcendence Pong
-					</span>
+	<nav id="navbarBody" class="navbar navbar-dark bg-dark">
+		<div class="container-fluid">
+			<div class="navbar-brand  ms-2"  href="#">
+				<img src="/static/pong/img/42_Logo.png" alt="Logo" width="40" height="40" class="d-inline-block">
+				<span class="ms-2">
+					Transcendence Pong
+				</span>
+			</div>
+			<button id="menuOpen" class="navbar-toggler pauseGame noBorder" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+				<div class="offcanvas-header">
+					<h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
+					<button id="menuClose" type="button" class="btn-close btn-close-white noBorder" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 				</div>
-				<button id="menuOpen" class="navbar-toggler pauseGame noBorder" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-					<div class="offcanvas-header">
-						<h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
-						<button id="menuClose" type="button" class="btn-close btn-close-white noBorder" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-					</div>
-					<div class="offcanvas-body">
-						<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-							<li class="nav-item">
-							<button class="nav-link active" aria-current="page" href="#">Home</button>
-							</li>
-							<li class="nav-item">
-								<button id="friendsButton" class="btn nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-									Friends
-								</button>
-								<ul id="friendsDropdown" class="dropdown-menu">
-									<li>
-										<h6 class="dropdown-header d-flex align-items-center justify-content-between gap-3" style="font-size: 1.2rem;">User's Friends
-											<button id="addFriend" class="btn d-flex align-items-center" type="button" data-bs-toggle="modal" data-bs-target="#addFriendModal">
-												<image class="image-end" height="20" width="20" src="/static/pong/img/add.png" style="filter: invert(1);"></image>
-											</button>
-										</h6>
-									</li>
-								</ul>
-							</li>
-							<li class="nav-item">
-								<button id="profileButton" class="nav-link">Profile</button>
-							</li>
-							<li class="nav-item">
-								<button id="settingsButton" class="nav-link">Settings</button>
-							</li>
-						</ul>
-					</div>
+				<div class="offcanvas-body">
+					<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+						<li class="nav-item">
+						<button class="nav-link active" aria-current="page" href="#">Home</button>
+						</li>
+						<li class="nav-item">
+							<button id="friendsButton" class="btn nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Friends
+							</button>
+							<ul id="friendsDropdown" class="dropdown-menu">
+								<li>
+									<h6 class="dropdown-header d-flex align-items-center justify-content-between gap-3" style="font-size: 1.2rem;">User's Friends
+										<button id="addFriend" class="btn d-flex align-items-center" type="button" data-bs-toggle="modal" data-bs-target="#addFriendModal">
+											<image class="image-end" height="20" width="20" src="/static/pong/img/add.png" style="filter: invert(1);"></image>
+										</button>
+									</h6>
+								</li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link" >Profile</button>
+						</li>
+						<li class="nav-item">
+							<button id="settingsButton" class="nav-link" >Settings</a>
+						</li>
+					</ul>
 				</div>
 			</div>
-		</nav>
+		</div>
+	</nav>
 
 	<!-- Add friend modal -->
 	<div id="addFriendModal" class="modal fade" tabindex="-1" aria-labelledby="addFriendModalLabel" aria-hidden="true">
@@ -85,7 +85,6 @@
             </div>
         </div>
     </div>
-	{% include "pong_profileSettings.html" %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="module" src="{% static 'pong/js/navbar.js' %}"></script>
 

@@ -27,16 +27,30 @@ export class PageManager {
         return (page);
     }
 
+    // async get(name) {
+    //     let page = this.#pageMap.get(name);
+    //     if (page)
+    //         return (page);
+    //     if (!(await AppControl.fetchApp(name)))
+    //         return (new Page());
+    //     return (this.#pageMap.get(name));
+    // }
+
     get(name) {
         return (this.#pageMap.get(name));
     }
-    
+
+
     async load(name) {
         if (!this.#pageMap.get(name) && !(await AppControl.fetchApp(name))) {
             console.log(`Could not load the page: ${name}`);
             return ;
         }
         let page = this.#pageMap.get(name);
+        if (!page) {
+            console.log("not page")
+            return;
+        }
         page.display("block");
         this.#onScreen.add(page);
         this.#currentPage = window.location.pathname;

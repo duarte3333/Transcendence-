@@ -1,39 +1,22 @@
-document.addEventListener('DOMContentLoaded', function() {
-	const username = document.getElementById("changeUsername");
-	username.addEventListener('click', (event) => {
-		changeText(event, "username");
-	});
+import {views} from "../../main/js/main.js"
+// import {secureElement} from "../../main/js/main.js"	
 
-	const displayName = document.getElementById("changeDisplayName");
-	displayName.addEventListener('click', (event) => {
-		changeText(event, "displayName");
-	});
+// views.load("/navbar/");
+// views.unload("/navbar/");
 
-	const password = document.getElementById("changePassword");
-	password.addEventListener('click', (event) => {
-		changeText(event, "password");
-	});
-
-	const profilePicture = document.getElementById("changeProfilePicture");
-	profilePicture.addEventListener('click', (event) => {
-		changeImage(event, "profilePicture");
-	});
-
-	const profileBanner = document.getElementById("changeBanner");
-	profileBanner.addEventListener('click', (event) => {
-		changeImage(event, "profileBanner");
-	});
-
-	const upKey = document.getElementById("changeUpKey");
-	upKey.addEventListener('click', (event) => {
-		changeText(event, "upKey");
-	});
-
-	const downKey = document.getElementById("changeDownKey");
-	downKey.addEventListener('click', (event) => {
-		changeText(event, "downKey");
-	});
+views.setElement("/settings/", (state) => {
+	views.get("/navbar/").display(state);
+	document.getElementById("settingsContainer").style.display = state;
 })
+.setEvents(
+	[ "changeUsername", "click",  (event) => changeText(event, "username")],
+	[ "changeDisplayName", "click",  (event) => changeText(event, "displayName")],
+	[ "changePassword", "click",  (event) => changeText(event, "password")],
+	[ "changeProfilePicture", "click",  (event) => changeImage(event, "profilePicture")],
+	[ "changeBanner", "click",  (event) => changeImage(event, "profileBanner")],
+	[ "changeUpKey", "click",  (event) => changeText(event, "upKey")],
+	[ "changeDownKey", "click",  (event) => changeText(event, "downKey")]
+);
 
 //add a reset page so you can't change several properties at the same time
 function changeText(event, type) {

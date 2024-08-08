@@ -1,14 +1,26 @@
-document.addEventListener('DOMContentLoaded', function() {
-	const playOnline = document.getElementById("playOnline");
-	playOnline.addEventListener('click', (event) => {
-		nextPage(event, "playOnline");
-	});
+import {views} from "../../main/js/main.js"
+// import {secureElement} from "../../main/js/main.js"	
 
-	const playLocal = document.getElementById("playLocal");
-	playLocal.addEventListener('click', (event) => {
-		nextPage(event, "playLocal");
-	});
+views.setElement("/home/", (state) => {
+	views.get("/navbar/").display(state);
+	document.getElementById("homeBody").style.display = state;
 })
+.setEvents(
+	[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
+	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ]
+);
+
+// document.addEventListener('DOMContentLoaded', function() {
+// 	const playOnline = document.getElementById("playOnline");
+// 	playOnline.addEventListener('click', (event) => {
+// 		nextPage(event, "playOnline");
+// 	});
+
+// 	const playLocal = document.getElementById("playLocal");
+// 	playLocal.addEventListener('click', (event) => {
+// 		nextPage(event, "playLocal");
+// 	});
+// })
 
 function nextPage(event, type) {
 	const oldParent = event.target.closest('.displayDiv');

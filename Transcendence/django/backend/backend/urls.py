@@ -48,6 +48,7 @@ urlpatterns = [
     path('pong/index', pong, name='pong'),
     path('register/', register, name='register'),
     path('navbar/', navbar, name='navbar'),
+    path('api/settings/', settings, name='api/settings/'),
     path('settings/', settings, name='settings'),
     path('profile/', profile, name='profile'),
 ]
