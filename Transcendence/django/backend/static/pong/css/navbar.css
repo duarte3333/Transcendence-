@@ -1,6 +1,7 @@
-.container {
-	margin-top: 3rem;
+.navbar {
+	margin-bottom: 3rem;
 }
+
 
 .navbar-brand img {
 	filter: invert(1);

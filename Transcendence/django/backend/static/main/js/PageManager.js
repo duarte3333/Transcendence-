@@ -56,6 +56,18 @@ export class PageManager {
         this.#currentPage = window.location.pathname;
     }
 
+    async preLoad(name) {
+        if (!this.#pageMap.get(name) && !(await AppControl.fetchApp(name))) {
+            console.log(`Could not load the page: ${name}`);
+            return ;
+        }
+        if (!this.#pageMap.get(name)) {
+            console.log("not page")
+            return;
+        }
+    }
+
+
     async highlight(name) {
         this.#onScreen.forEach(page => {
             page.display("none");

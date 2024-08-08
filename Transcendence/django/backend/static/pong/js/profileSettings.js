@@ -1,11 +1,19 @@
 import {views} from "../../main/js/main.js"
 // import {secureElement} from "../../main/js/main.js"	
+import {sleep} from "./auxFts.js"
 
+// sleep(1000);
 // views.load("/navbar/");
-// views.unload("/navbar/");
+
+// .insertBefore(document.body.firstChild);
+// // sleep(1000);
+// // views.unload("/navbar/");
+// console.log("fetch script");
+// if (views.get("/settings/"))
+// 	throw new Error("Abort the script");  // This will stop further execution
 
 views.setElement("/settings/", (state) => {
-	views.get("/navbar/").display(state);
+	// views.get("/navbar/").display(state);
 	document.getElementById("settingsContainer").style.display = state;
 })
 .setEvents(
@@ -177,3 +185,5 @@ function completeChangeImage(oldParent, div, type, inputID, buttonID) {
 	const button = document.getElementById(buttonID);
 	button.remove();
 }
+
+views.load("/navbar/")

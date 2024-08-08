@@ -2,7 +2,7 @@ import {views} from "../../main/js/main.js"
 // import {secureElement} from "../../main/js/main.js"	
 
 views.setElement("/home/", (state) => {
-	views.get("/navbar/").display(state);
+	// views.get("/navbar/").display(state);
 	document.getElementById("homeBody").style.display = state;
 })
 .setEvents(
@@ -80,3 +80,5 @@ function goBack(div, oldParent) {
 	div.remove();
 	oldParent.style.setProperty('display', 'block', 'important');
 }
+
+views.load("/navbar/");

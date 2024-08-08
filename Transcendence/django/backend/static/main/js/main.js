@@ -10,5 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
         views.urlLoad(window.location.pathname);
     });
    
+    console.log("url first load." + window.location.pathname);
     views.urlLoad(window.location.pathname);
 });

@@ -128,3 +128,5 @@ function addFriendInputCheck() {
 // 	let modal = document.getElementById("addFriendModal");
 // 	modal.style.display = "flex";
 // }
+
+// document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
