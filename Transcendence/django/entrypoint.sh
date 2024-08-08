@@ -1,5 +1,7 @@
 #!/bin/sh
 
+./wait-for-it.sh db:5432 --
+
 python manage.py makemigrations pong
 python manage.py migrate --no-input
 

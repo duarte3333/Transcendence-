@@ -1,29 +1,22 @@
-document.addEventListener('DOMContentLoaded', function() {
-	const username = document.getElementById("changeUsername");
-	username.addEventListener('click', (event) => {
-		changeText(event, "username");
-	});
+import {views} from "../../main/js/main.js"
+// import {secureElement} from "../../main/js/main.js"	
 
-	const displayName = document.getElementById("changeDisplayName");
-	displayName.addEventListener('click', (event) => {
-		changeText(event, "displayName");
-	});
+// views.load("/navbar/");
+// views.unload("/navbar/");
 
-	const password = document.getElementById("changePassword");
-	password.addEventListener('click', (event) => {
-		changeText(event, "password");
-	});
-
-	const profilePicture = document.getElementById("changeProfilePicture");
-	profilePicture.addEventListener('click', (event) => {
-		changeImage(event, "profilePicture");
-	});
-
-	const profileBanner = document.getElementById("changeBanner");
-	profileBanner.addEventListener('click', (event) => {
-		changeImage(event, "profileBanner");
-	});
+views.setElement("/settings/", (state) => {
+	views.get("/navbar/").display(state);
+	document.getElementById("settingsContainer").style.display = state;
 })
+.setEvents(
+	[ "changeUsername", "click",  (event) => changeText(event, "username")],
+	[ "changeDisplayName", "click",  (event) => changeText(event, "displayName")],
+	[ "changePassword", "click",  (event) => changeText(event, "password")],
+	[ "changeProfilePicture", "click",  (event) => changeImage(event, "profilePicture")],
+	[ "changeBanner", "click",  (event) => changeImage(event, "profileBanner")],
+	[ "changeUpKey", "click",  (event) => changeText(event, "upKey")],
+	[ "changeDownKey", "click",  (event) => changeText(event, "downKey")]
+);
 
 //add a reset page so you can't change several properties at the same time
 function changeText(event, type) {
@@ -49,12 +42,18 @@ function changeText(event, type) {
 	if (type != "password")
 		input.type = 'text';
 	else
-		input.type = 'password'
+		input.type = 'password';
 	input.id = type + "input";
 	input.className = 'form-control';
-	input.placeholder = 'Username';
-	input.setAttribute('aria-label', 'Username');
+	input.setAttribute('aria-label', type);
 	input.setAttribute('aria-describedby', 'basic-addon1');
+	if (type == "upKey" || type == "downKey") {
+		input.readOnly = true;
+		input.addEventListener('keydown', function keyHandler(event) {
+            input.value = event.key;  // Capture the key
+            document.removeEventListener('keydown', keyHandler);  // Remove the event listener after capturing the key
+        });
+	}
 
 	//add finish button;
 	let completeButton = document.createElement('button');

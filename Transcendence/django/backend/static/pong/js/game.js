@@ -8,7 +8,7 @@ import { createScoreBoard } from "./score.js";
 import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
-// import { Tournament } from "./tournament.js";
+import { Tournament } from "./tournament.js";
 
 import { socket } from "./myWebSocket.js";
 
