@@ -9,7 +9,7 @@ services:
       - ./django/backend/static:/app/static
       - ./django/backend:/app
 
-    command: daphne -u /tmp/daphne.sock myproject.asgi:application
+    # command: daphne -u /tmp/daphne.sock myproject.asgi:application
 
     env_file:
       - .env
@@ -17,6 +17,7 @@ services:
     depends_on:
       - postgres
       - redis
+
     networks:
       - backend
 
@@ -42,7 +43,7 @@ services:
 
     ports:
       - "8080:80"    # Alterar porta HTTPS
-      - "8443:443"   # Alterar porta HTTPS
+      - "443:443"   # Alterar porta HTTPS
       # - "443:443"
 
     volumes:
