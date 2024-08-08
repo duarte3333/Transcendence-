@@ -40,18 +40,7 @@ from django.urls import path, re_path
 from django.shortcuts import redirect
 
 urlpatterns = [
-<<<<<<< HEAD
-    # path('admin/', admin.site.urls),
-    path('register/', register_page),
-    # path('', login_page, name="carla"),
-    path('pong/', pong),
-    path('game/', game),
-    re_path(r'^.*$', login_page),  # Captura todas as URLs
-    # path('*', login_page),
-    # path('register/', register_page),
-=======
     path('admin/', admin.site.urls),
->>>>>>> Teo
 
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
