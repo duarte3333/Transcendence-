@@ -35,6 +35,7 @@ Including another URLconf
 
 from login.views import login_view, logout_view, register
 from pong.views import game, pong, navbar, settings, profile
+from api.views import get_user
 from django.contrib import admin
 from django.urls import path, re_path
 from django.shortcuts import redirect
@@ -51,4 +52,6 @@ urlpatterns = [
     path('api/settings/', settings, name='api/settings/'),
     path('settings/', settings, name='settings'),
     path('profile/', profile, name='profile'),
+
+    path('api/requestUser/', get_user, name='get_user'),
 ]

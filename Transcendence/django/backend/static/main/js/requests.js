@@ -4,11 +4,11 @@ document.getElementById("requestButton").addEventListener("click", function() {
         username: document.getElementById("username").value
     };
     fetch('api/requestUser/', {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        // body: JSON.stringify(data),
     })
         .then(response => response.json()) 
         .then(data => {
