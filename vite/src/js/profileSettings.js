@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', function() {
 	profileBanner.addEventListener('click', (event) => {
 		changeImage(event, "profileBanner");
 	});
+
+	const upKey = document.getElementById("changeUpKey");
+	upKey.addEventListener('click', (event) => {
+		changeText(event, "upKey");
+	});
+
+	const downKey = document.getElementById("changeDownKey");
+	downKey.addEventListener('click', (event) => {
+		changeText(event, "downKey");
+	});
 })
 
 //add a reset page so you can't change several properties at the same time
@@ -49,12 +59,18 @@ function changeText(event, type) {
 	if (type != "password")
 		input.type = 'text';
 	else
-		input.type = 'password'
+		input.type = 'password';
 	input.id = type + "input";
 	input.className = 'form-control';
-	input.placeholder = 'Username';
-	input.setAttribute('aria-label', 'Username');
+	input.setAttribute('aria-label', type);
 	input.setAttribute('aria-describedby', 'basic-addon1');
+	if (type == "upKey" || type == "downKey") {
+		input.readOnly = true;
+		input.addEventListener('keydown', function keyHandler(event) {
+            input.value = event.key;  // Capture the key
+            document.removeEventListener('keydown', keyHandler);  // Remove the event listener after capturing the key
+        });
+	}
 
 	//add finish button;
 	let completeButton = document.createElement('button');
@@ -82,6 +98,7 @@ function completeChangeText(oldParent, div, type, inputID, buttonID) {
 	//update info latter on db
 	if (type != "password") {
 		const info = document.getElementById(type);
+		console.log(`info = ${info}, type = ${type}`);
 		if (info) {
 			info.textContent = input.value;
 		}
