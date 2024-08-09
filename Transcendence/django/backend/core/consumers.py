@@ -81,7 +81,6 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
         elif message_type == 'ball_update':
             await self.channel_layer.group_send(
                 self.group_name,
-                self.group_name,
                 {
                     'type': 'ball_update',
                     'ball_x': text_data_json.get('ball_x'),
