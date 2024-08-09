@@ -8,10 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bootstrap w/ Vite - Pong 42</title>
 <link rel="stylesheet" href="{% static 'pong/css/home.css' %}">
+<link rel="stylesheet" href="{% static 'pong/css/navbar.css' %}">
 </head>
 <body id="body">
 
-	{% include pong_teste.html %}
+	{% include 'pong_navbar.html' %}
 
 	<!-- Home page -->
 	<div id="homeBody" class="container main-content">

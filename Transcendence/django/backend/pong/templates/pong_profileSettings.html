@@ -8,8 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap w/ Vite - Pong 42</title>
     <link rel="stylesheet" href="{% static 'pong/css/profileSettings.css' %}">
+    <link rel="stylesheet" href="{% static 'pong/css/navbar.css' %}">
   </head>
   <body id="body"> 
+
+	  {% include 'pong_navbar.html' %}
+
 	  <!-- Profile Settings page -->
     <div id="settingsContainer" style="display: none;" class="container main-content" style="margin-top: 3rem;">
 		<div class="row justify-content-start"  style="margin-bottom: 2rem;">

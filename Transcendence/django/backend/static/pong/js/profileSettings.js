@@ -186,4 +186,4 @@ function completeChangeImage(oldParent, div, type, inputID, buttonID) {
 	button.remove();
 }
 
-views.load("/navbar/")
+// views.load("/navbar/")
