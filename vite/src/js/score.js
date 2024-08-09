@@ -124,7 +124,7 @@ export function updateScore(playerName, flag) {
 export function checkGameOver(numberOfPlayers) {
   for (let i = 1; i <= numberOfPlayers; i++) {
     const score = document.getElementById("playerScore_" + i);
-    if (score.textContent >= 5) {
+    if (score.textContent >= 2) {
       return i;
     }
   }
