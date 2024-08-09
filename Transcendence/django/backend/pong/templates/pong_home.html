@@ -11,6 +11,8 @@
 </head>
 <body id="body">
 
+	{% include pong_teste.html %}
+
 	<!-- Home page -->
 	<div id="homeBody" class="container main-content">
 		<div class="row justify-content-center align-items-center" style="margin-bottom: 5rem; margin-top: 4rem;">
@@ -27,12 +29,13 @@
 	</div>
 	
 	<!-- Footer Section  UPDATED -->
-	<footer class="py-3 my-4 fixed-footer">
+	<!-- <footer class="py-3 my-4 fixed-footer">
 		<p class="text-center text-muted">© The Best Transcendence of 2024, Inc</p>
-	</footer>
+	</footer> -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="module" src="{% static 'pong/js/home.js' %}"></script>
+<script type="module" src="{% static 'pong/js/navbar.js' %}"></script>
 
 </body>
 </html>

@@ -81,4 +81,4 @@ function goBack(div, oldParent) {
 	oldParent.style.setProperty('display', 'block', 'important');
 }
 
-views.load("/navbar/");
+// views.load("/navbar/");

@@ -8,7 +8,8 @@ views.setElement("/navbar/", (state) => {
 	}
 })
 .setEvents(
-	[ "settingsButton", "click", () => views.urlLoad("/settings/")]
+	[ "settingsButton", "click", () => views.urlLoad("/settings/")],
+	[ "homeButton", "click", () => views.urlLoad("/home/")]	
 );
 
 let users = [

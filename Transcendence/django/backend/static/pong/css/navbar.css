@@ -1,7 +1,15 @@
 .navbar {
-	margin-bottom: 3rem;
+	/* margin-bottom: 3rem; */
+	position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;            /* Full width */
+    z-index: 1000; 
 }
 
+.body {
+	position: relative;
+}
 
 .navbar-brand img {
 	filter: invert(1);
