@@ -1,29 +1,38 @@
-import { socket, channel_name } from "./myWebSocket.js";
+import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
 
-export const users = [
+// export const users = JSON.stringify([
+//   { username: "Liberal", status: "online" },
+//   { username: "Xaleira", status: "online" },
+//   { username: "Rubens", status: "online" },
+//   { username: "Duarte", status: "online" },
+//   { username: "Teo", status: "online" }
+// ]);
+
+export const users = JSON.stringify([
   { username: "Liberal", status: "online" },
-  { username: "Xaleira", status: "online" },
-  { username: "Rubens", status: "online" },
-  { username: "Duarte", status: "online" },
   { username: "Teo", status: "online" }
-];
+]);
+
+export const ActiveUser = JSON.stringify([
+  { username: "Liberal", status: "online" },
+]);
 
 class Chat {
-  constructor(number_players) {
+  constructor() {
     this.chatButton = document.getElementById('chatButton');
     this.chatWindow = document.getElementById('chatWindow');
     this.chatInput = document.getElementById('chatInput');
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatSideBar = document.getElementById('chatSideBar');
     // this.playerForm = document.getElementById('playerForm');
-    this.activePlayer = null;
+    this.SelectedPlayer = null;
     this.chatBody = null;
     this.open = false;
-    this.numberPlayers = number_players;
     this.messages = {};
+    this.general = {};
 
-    // this.setupEventListeners();
 
+    this.setupEventListeners();
     this.closeChat();
   }
 
@@ -32,9 +41,88 @@ class Chat {
       this.chatButton.addEventListener('click', () => this.toggleChatWindow());
     if (this.sendChatButton)
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
-    // this.handlePlayerFormSubmit();
+
+    this.setup();
+  }
+
+  async setup() {
+    while (socket.readyState !== WebSocket.OPEN) {
+      await new Promise(resolve => setTimeout(resolve, 5));
+    }
     this.generatePlayerButtons(users);
-    // socket.addEventListener('message', (event) => this.handleWebSocketMessage(event));
+  }
+
+  sendBasicInfo(length) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+
+      console.log("Mensagem que será enviada ao Backend: " + users);
+      socket.send(JSON.stringify({
+        type: 'room_info',
+        'numplayers': length,
+        'players': users
+      }));
+    }
+  }
+
+  generatePlayerButtons() {
+    this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
+
+    let JsonArray = JSON.parse(users);
+    let length = JsonArray.length;
+
+    let active = JSON.parse(ActiveUser);
+
+    // Acrescenta o botão General
+    const generalButton = document.createElement("button");
+    generalButton.innerText = "General";
+    generalButton.onclick = () => this.selectChannel('general');
+    this.chatSideBar.appendChild(generalButton);
+    const ChatBodyChild = document.createElement("div");
+    ChatBodyChild.id = `chatBody_general`;
+    ChatBodyChild.style.display = 'none';
+    chatBody.appendChild(ChatBodyChild);
+
+    //Coloca o botão dos chat para os users
+    for (let i = 0; i < length; i++) {
+
+      const player = JsonArray[i];
+      if (player.username !== active[0].username) {
+        const button = document.createElement("button");
+        
+        //colocarei aqui o nome do Validate User
+        button.innerText = player.username;
+        button.onclick = () => {
+          this.SelectedPlayer = player.username;
+          this.selectChannel(player.username);
+        };
+        this.chatSideBar.appendChild(button);
+  
+        // Cria um novo espaço de mensagens para cada jogador
+        const ChatBodyChild = document.createElement("div");
+        ChatBodyChild.id = `chatBody_${player.username}`;
+        ChatBodyChild.style.display = 'none';
+        chatBody.appendChild(ChatBodyChild);
+      }
+    }
+    this.sendBasicInfo(length);
+  }
+
+  selectChannel(channel) {
+
+    let showtext = "";
+    if (!this.messages[`chatBody_${channel}`])
+      this.messages[`chatBody_${channel}`] = [];
+    
+    for (let element of this.messages[`chatBody_${channel}`])
+      showtext += element.message;
+
+    console.log("-----------");
+    console.log(showtext);
+    console.log("-----------");
+    document.getElementById("chatBodyChildren").innerHTML = showtext;
+
+    document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
+    // this.loadMessages(channel);
   }
 
   toggleChatWindow() {
@@ -54,171 +142,112 @@ class Chat {
 
   sendChatMessage() {
     const message = this.chatInput.value;
+    if (message && socket && this.SelectedPlayer != null) {
+      
+      const User = JSON.parse(ActiveUser)[0].username;
 
-    if (message && socket) {
       socket.send(JSON.stringify({
         'type': 'chat_message',
         'message': message,
-        'sender': this.activePlayer
+        'sender': User,
+        'receiver': this.SelectedPlayer,
       }));
       this.chatInput.value = '';
-      const fullMessage = `${this.activePlayer}: ${message}`;
-      this.storeMessages(this.activePlayer, fullMessage);
-      const playerId = this.activePlayer.replace('Player', 'player_');
+      const fullMessage = `${User}: ${message + "<br>"}`;
+      
+      this.storeMessages(User, this.SelectedPlayer, fullMessage);
+
+      const playerId = this.SelectedPlayer.replace('Player', 'player_');
       this.appendChatMessage(fullMessage, playerId);
     }
   }
 
+  storeMessages(sender, receiver, message) {
+    // const p = player.replace('Player', 'player_');
+    const chatKey = `chatBody_${receiver}`;
+
+    if (!this.messages[chatKey])
+      this.messages[chatKey] = [];
+
+    this.messages[chatKey].push({receiver, message});
+
+    console.log("Messagens guardadas: " + JSON.stringify(this.messages));
+  }
+
   appendChatMessage(message, player) {
-    const chatBody = document.getElementById(`chatBody`);
+    const chatBodyChildren = document.getElementById("chatBodyChildren");
 
-    if (chatBody) {
-      const messageElement = document.createElement('div');
-      messageElement.textContent = message;
-      chatBody.appendChild(messageElement);
+    const line = message + '\n';
+    if (chatBodyChildren) {
+      chatBodyChildren.innerHTML += line;
     } else {
-      console.error(`chatBody_${player} not found`);
+      console.error(`chatBodyChildren not found for player: ${player}`);
     }
   }
 
-  handlePlayerFormSubmit(event) {
-    // event.preventDefault();
-    console.log("handlePlayerFormSubmit")
-    // const numPlayers = document.getElementById("numPlayers").value;
-    // const playerData = {
-    //   numPlayers: numPlayers
-    // };
-    //Aqui será enviada a requisição para o Backend sobre os users
-    document.getElementById("playerData").value = JSON.stringify(users);
-    this.numberPlayers = numPlayers;
-    this.generatePlayerButtons(numPlayers);
-  }
+  // loadMessages(player) {
+  //   const id = `chatBody_${player}`;
+  //   const messages = this.messages[id] || [];
 
-  sendBasicInfo(nPlayers) {
-    console.log("sendBasicInfo");
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      const players = [];
-      for (let i = 1; i <= nPlayers; i++) {
-        players.push({ id: `player_${i}`, name: nPlayers.name });
+  //   console.log("HERE I AM: " + JSON.stringify(messages));
 
-      }
-      console.log("Mensagem que será enviada ao Backend: " + players);
-      socket.send(JSON.stringify({
-        type: 'room_info',
-        'numplayers': nPlayers,
-        'players': players
-      }));
-    }
-    console.log("Terminei o SendBasicInfo");
-  }
+  //   const filteredMessages = messages.filter(msg => msg.receiver === player);
 
-  generatePlayerButtons(player) {
-    console.log("generatePlayerButtons");
-    this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
+  //   if (!this.lastLoadedMessageCount) {
+  //     this.lastLoadedMessageCount = {};
+  //   }
+  
+  //   if (this.lastLoadedMessageCount[id] !== filteredMessages.length) {
+  //     // Apenas esconde os outros contêineres, não limpa as mensagens
+  //     const allPlayerContainers = document.querySelectorAll('[id^="chatMessages_"]');
+  //     allPlayerContainers.forEach(container => {
+  //       container.style.display = 'none';
+  //     });
 
-    // Acrescenta o botão General
-    const generalButton = document.createElement("button");
-    generalButton.innerText = "General";
-    generalButton.onclick = () => this.selectChannel('general');
-    this.chatSideBar.appendChild(generalButton);
+  //     // Mostra o contêiner de mensagens para o jogador selecionado
+  //     const playerContainer = document.getElementById(`chatMessages_${player}`);
+  //     if (playerContainer) {
+  //       playerContainer.style.display = 'flex';
+  //     } else {
+  //       // Se o contêiner não existir, cria e adiciona as mensagens
+  //       filteredMessages.forEach(({ message }) => {
+  //           this.appendChatMessage(message, player);
+  //       });
+  //     }
 
-    for (let i = 1; i <= player.length; i++) {
-      const button = document.createElement("button");
-      button.innerText = player.username;
-      button.onclick = () => {
-        this.activePlayer = player.username;
-        this.selectChannel(player.username);
-      };
-      this.chatSideBar.appendChild(button);
-
-      // Cria um novo espaço de mensagens para cada jogador
-      const chatBody = document.createElement("div");
-      chatBody.id = `chatBody_player_${player.username}`;
-      chatBody.style.display = 'none';
-      document.body.appendChild(chatBody);
-    }
-
-    // Isso é temporário apenas enquanto não tenho acesso ao DB
-    this.sendBasicInfo(player.length);
-  }
-
-  selectChannel(channel) {
-    // Esconde todos os espaços de chat
-    if (this.chatBody)
-      this.chatBody.innerHTML = '';
-    for (let i = 1; i <= this.numberPlayers; i++) {
-      const chatBody = document.getElementById(`chatBody_player_${i}`);
-      if (chatBody) {
-        chatBody.style.display = 'none';
-      }
-    }
-
-    // Mostra o espaço de chat do canal selecionado
-    const chatBody = document.getElementById(`chatBody_${channel}`);
-    if (chatBody) {
-      chatBody.style.display = 'flex';
-      this.chatBody = chatBody;
-      console.log(`Channel switched to ${channel}`);
-    }
-
-    document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
-    this.loadMessages(channel);
-  }
+  //     // Atualiza o último comprimento carregado
+  //     this.lastLoadedMessageCount[id] = filteredMessages.length;
+  //   }
+  // }
 
   handleWebSocketMessage(event) {
     const data = JSON.parse(event.data);
+    const User = JSON.parse(ActiveUser)[0].username;
     if (data.type === 'chat_message') {
-      const message = `${data.sender}: ${data.message}`;
-      this.storeMessages(data.sender, message);
-      this.appendChatMessage(message, data.sender.replace('Player', 'player_'));
+      const message = `${User}: ${data.message}`;
+      this.storeMessages(User, data.sender, message);
+      this.appendChatMessage(message, User);
       console.log("handleWebSocketMessage " + data.sender.replace('Player', 'player_'));
     } 
-    else if (data.type === 'connection_established') {
-      console.log("handleWebSocketMessage channel_name: " + channel_name);
-    } 
-    else if (data.type === 'paddle_update') {
-      console.log("handleWebSocketMessage paddle_update: " + data.paddle_x + ", " + data.paddle_y);
-    } 
-    else if (data.type === 'ball_update') {
-      console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
-    } 
-    else if (data.type === 'ball_update') {
-      console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
-    }
+    // else if (data.type === 'connection_established') {
+    //   console.log("handleWebSocketMessage channel_name: " + channel_name);
+    // } 
+    // else if (data.type === 'paddle_update') {
+    //   console.log("handleWebSocketMessage paddle_update: " + data.paddle_x + ", " + data.paddle_y);
+    // } 
+    // else if (data.type === 'ball_update') {
+    //   console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
+    // } 
+    // else if (data.type === 'ball_update') {
+    //   console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
+    // }
     else {
       console.error("Received unexpected message type:", data.type);
-    }
-  }
-
-  storeMessages(player, message) {
-    const p = player.replace('Player', 'player_');
-    console.log("storeMessages " + p);
-    if (!this.messages[p])
-      this.messages[p] = [];
-    this.messages[p].push(message);
-  }
-
-  loadMessages(player) {
-    const id = player.replace('Player', 'player_');
-    this.chatBody.innerHTML = ''; 
-    const messages = this.messages[id] || [];
-    
-    // messages.forEach(message => this.appendChatMessage(message, id));
-    if (!this.lastLoadedMessageCount) {
-      this.lastLoadedMessageCount = {};
-    }
-  
-    if (this.lastLoadedMessageCount[id] !== messages.length && this.lastLoadedMessageCount[id] !== 0) {
-      this.chatBody.innerHTML = ''; // Limpa as mensagens atuais
-      messages.forEach(message => this.appendChatMessage(message, id));
-      this.lastLoadedMessageCount[id] = messages.length; // Atualiza o último comprimento carregado
     }
   }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  console.log("This is me: " + users.length);
-  new Chat(users.length);
-
-  // chat.generatePlayerButtons(3);
+  initializeWebSocket();
+  new Chat();
 })

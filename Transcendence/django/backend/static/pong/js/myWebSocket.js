@@ -14,24 +14,21 @@ export function initializeWebSocket() {
             console.log("socket object" + socket.readyState + " socket url " + socket.url);
 
         socket.onopen = function() {
-            console.log("WebSocket connection established");
-            socket.send(JSON.stringify({type: 'ping', message: 'Hello Server!'}));
-            // if (onOpenCallback) 
-            //     onOpenCallback();
+            console.log("WebSocket connection established. Status: " + socket.readyState);
         }
 
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            console.log("onmessage está a ser chamado aqui.");
-            console.log(data);
+            //console.log("onmessage está a ser chamado aqui.");
+            //console.log(data);
             if (data.type === 'connection_established' ) {
                 channel_name = data.name;
-                console.log("My channel name: ", data.name);
+                //console.log("My channel name: ", data.name);
             } else {
-                console.log("Message received: ", data);
+                //console.log("Message received: ", data);
                 handleWebSocketData(data);
             }
-            console.log("Channel name aberto: " + channel_name);
+            //console.log("Channel name aberto: " + channel_name);
         }
 
         socket.onclose = function(e) {

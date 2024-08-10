@@ -1,6 +1,9 @@
 FROM python:3.8-slim
 
-RUN apt-get update && apt-get install -y libpq-dev gcc && apt-get clean
+# Install necessary packages including netcat-openbsd
+RUN apt-get update && \
+    apt-get install -y libpq-dev gcc netcat-openbsd && \
+    apt-get clean
 
 RUN mkdir /app
 WORKDIR /app
