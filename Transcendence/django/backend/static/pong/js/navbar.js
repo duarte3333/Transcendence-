@@ -1,11 +1,14 @@
-import {views} from "../../main/js/main.js"
-// import {secureElement} from "../../main/js/main.js"	
+import { views } from "../../main/js/main.js";
 
 views.setElement("/navbar/", (state) => {
+	// console.log("1navbar " + state);
+	// console.log("2navbar style " + (document.getElementById("navbarBody").style.display = state));
 	document.getElementById("navbarBody").style.display = state;
+	// console.log("3navbar style after " + (document.getElementById("navbarBody").style.display = state));
 	if (state == "block") {
 		document.getElementById('menuClose').click();
 	}
+	// views.bind("/settings/").then(settings => settings.display(state));
 })
 .setEvents(
 	[ "settingsButton", "click", () => views.urlLoad("/settings/")]
@@ -26,7 +29,7 @@ let friends = [
 ];
 
 
-document.addEventListener('DOMContentLoaded', function() {
+// document.addEventListener('DOMContentLoaded', function() {
 	const friendsButton = document.getElementById("friendsButton");
 	friendsButton.addEventListener('click', generateFriendsList);
 
@@ -44,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alreadyFriend.style.display = "none";
     });
 
-});
+// });
 
 
 function generateFriendsList(event) {
@@ -124,9 +127,5 @@ function addFriendInputCheck() {
 	}
 }
 
-// function addFriend() {
-// 	let modal = document.getElementById("addFriendModal");
-// 	modal.style.display = "flex";
-// }
+document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
-// document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);

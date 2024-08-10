@@ -1,3 +1,5 @@
+import { views } from "./main.js";
+
 export class AppControl {
     constructor() {}
 
@@ -34,13 +36,17 @@ export class AppControl {
             return (app.text());
         })
         .then(app => {
+            const element = document.querySelector(`[page="${name}"]`);
+            if (element)
+                return (element);
             const newdiv = document.createElement('div');
             newdiv.innerHTML = app;
+            newdiv.setAttribute("page", name);
             document.body.appendChild(newdiv);
             return (newdiv);
         })
-        .then(newdiv => this.#executeScript(newdiv))
-        .then(() => {return (true)})
+        .then(async (newdiv) => await this.#executeScript(newdiv))
+        .then(() => { return (views.get(name)); })
         .catch(error => {
             console.error('Error:', error);
             return (false);
@@ -61,7 +67,7 @@ export class AppControl {
                 script.parentNode.removeChild(script);
             });
         });
-        return (await Promise.all(scriptPromises));
+        return (Promise.all(scriptPromises));
     }
 
 }

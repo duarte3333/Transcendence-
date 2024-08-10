@@ -12,6 +12,10 @@ export class Page {
         if (events) this.addEvents(events);
     }
 
+    getName() {
+        return (this.#name);
+    }
+
     setEvents(...events) {
         events.forEach(event => {
             if (!Array.isArray(event) || event.length !== 3) {
