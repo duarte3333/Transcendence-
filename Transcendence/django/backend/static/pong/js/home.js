@@ -2,7 +2,8 @@ import {views} from "../../main/js/main.js"
 // import {secureElement} from "../../main/js/main.js"	
 
 views.setElement("/home/", (state) => {
-	// views.get("/navbar/").display(state);
+	//caso de merda a visualizar mudar block para flex
+	views.get("/navbar/").display(state);
 	document.getElementById("homeBody").style.display = state;
 })
 .setEvents(
@@ -81,4 +82,4 @@ function goBack(div, oldParent) {
 	oldParent.style.setProperty('display', 'block', 'important');
 }
 
-views.load("/navbar/");
+// views.load("/navbar/");

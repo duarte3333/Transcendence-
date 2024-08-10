@@ -2,7 +2,6 @@
 	margin-bottom: 3rem;
 }
 
-
 .navbar-brand img {
 	filter: invert(1);
 }
@@ -11,21 +10,6 @@
 	display: block;
 	margin: auto;
 	filter: invert(1);
-}
-
-html, body {
-    height: 100%;
-    margin: 0;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.main-content {
-    flex-grow: 1;
 }
 
 
