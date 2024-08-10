@@ -5,15 +5,13 @@ export function initializeWebSocket() {
     if (!socket) {
         const protocol = 'wss://';
         const host = window.location.host;
-        const port = "8000"
+        // const port = "8000"
 
-        const wsUrl = `${protocol}${host}:${port}/ws/`;
-        // const wsUrl = `${protocol}${host}/ws/`;
-
-
-        console.log("WebSocket URL:", wsUrl);
+        // const wsUrl = `${protocol}${host}:${port}/ws/`;
+        const wsUrl = `${protocol}${host}/ws/`;
         socket = new WebSocket(wsUrl);
-        console.log("socket object" + socket.readyState + " socket url " + socket.url);
+        if (socket)
+            console.log("socket object" + socket.readyState + " socket url " + socket.url);
 
         socket.onopen = function() {
             console.log("WebSocket connection established");

@@ -7,27 +7,30 @@ logger = logging.getLogger(__name__)
 
 class GenericConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        logger.info("\n\n\n\nprimeiro")
         # self.scope_type = self.scope["url_route"]["kwargs"]["scope_type"]
         # self.scope_id = self.scope["url_route"]["kwargs"]["scope_id"]
         # self.group_name = f'{self.scope_type}_{self.scope_id}'
-        self.user = self.scope["user"]
-        self.scope_type = 'chat'
-        self.group_name = 'math_1'
+        # self.user = self.scope["user"]
+        # self.scope_type = 'chat'
+        # self.group_name = 'math_1'
 
-        await self.channel_layer.group_add (
-                self.group_name,
-                self.channel_name
-        )
-        print("\n\n\n\nantes do accept()")
+        logger.info("\n\n\n\nsegundo")
+
+        # await self.channel_layer.group_add (
+        #         self.group_name,
+        #         self.channel_name
+        # )
+        logger.info("\n\n\n\nterceiro")
 
         await self.accept()
         # await self.send(text_data=json.dumps({
         #     'type': 'connection_established',
         #     'name': self.channel_name
         # }))
-        print("\n\n\n\nWebSocket connection accepted for {str(self.user)}")
+        logger.info("\n\n\n\nWebSocket connection accepted for {str(self.user)}")
 
-        logger.info(f'WebSocket connection accepted for {str(self.user)}') 
+        logger.info(f'WebSocket connection accepted') 
 
         # if self.user.is_authenticated:
         #     await self.channel_layer.group_add(

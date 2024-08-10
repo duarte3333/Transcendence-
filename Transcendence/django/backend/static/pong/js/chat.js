@@ -172,13 +172,20 @@ class Chat {
       this.storeMessages(data.sender, message);
       this.appendChatMessage(message, data.sender.replace('Player', 'player_'));
       console.log("handleWebSocketMessage " + data.sender.replace('Player', 'player_'));
-    } else if (data.type === 'connection_established') {
+    } 
+    else if (data.type === 'connection_established') {
       console.log("handleWebSocketMessage channel_name: " + channel_name);
-    } else if (data.type === 'paddle_update') {
+    } 
+    else if (data.type === 'paddle_update') {
       console.log("handleWebSocketMessage paddle_update: " + data.paddle_x + ", " + data.paddle_y);
-    } else if (data.type === 'ball_update') {
+    } 
+    else if (data.type === 'ball_update') {
       console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
-    } else {
+    } 
+    else if (data.type === 'ball_update') {
+      console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
+    }
+    else {
       console.error("Received unexpected message type:", data.type);
     }
   }
