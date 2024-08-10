@@ -1,20 +1,29 @@
-import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
+import { socket, channel_name } from "./myWebSocket.js";
+
+export const users = [
+  { username: "Liberal", status: "online" },
+  { username: "Xaleira", status: "online" },
+  { username: "Rubens", status: "online" },
+  { username: "Duarte", status: "online" },
+  { username: "Teo", status: "online" }
+];
 
 class Chat {
-  constructor() {
+  constructor(number_players) {
     this.chatButton = document.getElementById('chatButton');
     this.chatWindow = document.getElementById('chatWindow');
     this.chatInput = document.getElementById('chatInput');
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatSideBar = document.getElementById('chatSideBar');
-    this.playerForm = document.getElementById('playerForm');
+    // this.playerForm = document.getElementById('playerForm');
     this.activePlayer = null;
     this.chatBody = null;
     this.open = false;
-    this.numberPlayers = 0;
+    this.numberPlayers = number_players;
     this.messages = {};
-    
-    this.setupEventListeners();
+
+    // this.setupEventListeners();
+
     this.closeChat();
   }
 
@@ -23,9 +32,9 @@ class Chat {
       this.chatButton.addEventListener('click', () => this.toggleChatWindow());
     if (this.sendChatButton)
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
-    if (this.playerForm)
-      this.playerForm.addEventListener('submit', (event) => this.handlePlayerFormSubmit(event));
-    socket.addEventListener('message', (event) => this.handleWebSocketMessage(event));
+    // this.handlePlayerFormSubmit();
+    this.generatePlayerButtons(users);
+    // socket.addEventListener('message', (event) => this.handleWebSocketMessage(event));
   }
 
   toggleChatWindow() {
@@ -73,31 +82,38 @@ class Chat {
   }
 
   handlePlayerFormSubmit(event) {
-    event.preventDefault();
-    const numPlayers = document.getElementById("numPlayers").value;
-    const playerData = {
-      numPlayers: numPlayers
-    };
-    document.getElementById("playerData").value = JSON.stringify(playerData);
+    // event.preventDefault();
+    console.log("handlePlayerFormSubmit")
+    // const numPlayers = document.getElementById("numPlayers").value;
+    // const playerData = {
+    //   numPlayers: numPlayers
+    // };
+    //Aqui será enviada a requisição para o Backend sobre os users
+    document.getElementById("playerData").value = JSON.stringify(users);
     this.numberPlayers = numPlayers;
     this.generatePlayerButtons(numPlayers);
   }
 
   sendBasicInfo(nPlayers) {
-    if (socket) {
+    console.log("sendBasicInfo");
+    if (socket && socket.readyState === WebSocket.OPEN) {
       const players = [];
       for (let i = 1; i <= nPlayers; i++) {
-        players.push({ id: `player_${i}`, name: `player_${i}` });
+        players.push({ id: `player_${i}`, name: nPlayers.name });
+
       }
+      console.log("Mensagem que será enviada ao Backend: " + players);
       socket.send(JSON.stringify({
         type: 'room_info',
         'numplayers': nPlayers,
         'players': players
       }));
     }
+    console.log("Terminei o SendBasicInfo");
   }
 
-  generatePlayerButtons(nPlayers) {
+  generatePlayerButtons(player) {
+    console.log("generatePlayerButtons");
     this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
 
     // Acrescenta o botão General
@@ -106,24 +122,24 @@ class Chat {
     generalButton.onclick = () => this.selectChannel('general');
     this.chatSideBar.appendChild(generalButton);
 
-    for (let i = 1; i <= nPlayers; i++) {
+    for (let i = 1; i <= player.length; i++) {
       const button = document.createElement("button");
-      button.innerText = `player_${i}`;
+      button.innerText = player.username;
       button.onclick = () => {
-        this.activePlayer = `player_${i}`;
-        this.selectChannel(`player_${i}`);
+        this.activePlayer = player.username;
+        this.selectChannel(player.username);
       };
       this.chatSideBar.appendChild(button);
 
       // Cria um novo espaço de mensagens para cada jogador
       const chatBody = document.createElement("div");
-      chatBody.id = `chatBody_player_${i}`;
+      chatBody.id = `chatBody_player_${player.username}`;
       chatBody.style.display = 'none';
       document.body.appendChild(chatBody);
     }
 
     // Isso é temporário apenas enquanto não tenho acesso ao DB
-    this.sendBasicInfo(nPlayers);
+    this.sendBasicInfo(player.length);
   }
 
   selectChannel(channel) {
@@ -194,7 +210,8 @@ class Chat {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  new Chat();
+  console.log("This is me: " + users.length);
+  new Chat(users.length);
+
+  // chat.generatePlayerButtons(3);
 })
-
-

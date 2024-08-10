@@ -1,5 +1,7 @@
 services:
   django_daphne:
+    container_name: django_daphne 
+
     build: ./django
 
     ports:
@@ -22,6 +24,8 @@ services:
       - backend
 
   postgres:
+    container_name: postgres
+    
     image: postgres:13
 
     env_file:
@@ -34,11 +38,16 @@ services:
       - backend
 
   redis:
+    container_name: redis
+
     image: redis:alpine
+    
     ports:
       - "6379:6379"
 
   nginx:
+    container_name: nginx
+
     build: ./nginx
 
     ports:

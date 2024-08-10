@@ -18,13 +18,16 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
                 self.group_name,
                 self.channel_name
         )
-        await self.accept()
-        await self.send(text_data=json.dumps({
-            'type': 'connection_established',
-            'name': self.channel_name
-        }))
+        print("\n\n\n\nantes do accept()")
 
-        logger.info(f'WebSocket connection accepted for {str(self.user)}')
+        await self.accept()
+        # await self.send(text_data=json.dumps({
+        #     'type': 'connection_established',
+        #     'name': self.channel_name
+        # }))
+        print("\n\n\n\nWebSocket connection accepted for {str(self.user)}")
+
+        logger.info(f'WebSocket connection accepted for {str(self.user)}') 
 
         # if self.user.is_authenticated:
         #     await self.channel_layer.group_add(
@@ -89,6 +92,8 @@ class GenericConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
         #
+        elif message_type == 'ping':
+            pass
         #elif message_type == 'game_GameConsumermove':
             #await ().receive(text_data)
         #elif message_type == 'game_stats':

@@ -34,10 +34,10 @@ Including another URLconf
 # ]
 
 from login.views import login_view, logout_view, register
+from chat.views import chat
 from pong.views import game, pong, navbar, settings, profile
 from django.contrib import admin
 from django.urls import path, re_path
-from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -51,4 +51,5 @@ urlpatterns = [
     path('api/settings/', settings, name='api/settings/'),
     path('settings/', settings, name='settings'),
     path('profile/', profile, name='profile'),
+    path('chat/', chat, name="chat"),
 ]

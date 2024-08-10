@@ -5,7 +5,11 @@ export function initializeWebSocket() {
     if (!socket) {
         const protocol = 'wss://';
         const host = window.location.host;
-        const wsUrl = `${protocol}${host}/ws/`;
+        const port = "8000"
+
+        const wsUrl = `${protocol}${host}:${port}/ws/`;
+        // const wsUrl = `${protocol}${host}/ws/`;
+
 
         console.log("WebSocket URL:", wsUrl);
         socket = new WebSocket(wsUrl);
@@ -13,6 +17,9 @@ export function initializeWebSocket() {
 
         socket.onopen = function() {
             console.log("WebSocket connection established");
+            socket.send(JSON.stringify({type: 'ping', message: 'Hello Server!'}));
+            // if (onOpenCallback) 
+            //     onOpenCallback();
         }
 
         socket.onmessage = function(e) {
