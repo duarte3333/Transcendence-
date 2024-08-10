@@ -9,7 +9,17 @@ views.setElement("/navbar/", (state) => {
 })
 .setEvents(
 	[ "settingsButton", "click", () => views.urlLoad("/settings/")],
-	[ "homeButton", "click", () => views.urlLoad("/home/")]	
+	[ "homeButton", "click", () => views.urlLoad("/home/")],
+	[ "friendsButton", "click", () => generateFriendsList()],
+	[ "addFriendFinal", "click", () => addFriendInputCheck()],
+	[ "addFriend", "click", () => {
+		const addFriendInputField = document.getElementById("validationServer01");
+        addFriendInputField.value = ''; // Clear the input field
+        const notFound = document.getElementById("notFound");
+        const alreadyFriend = document.getElementById("alreadyFriend");
+        notFound.style.display = "none";
+        alreadyFriend.style.display = "none";
+	}],
 );
 
 let users = [
@@ -27,29 +37,28 @@ let friends = [
 ];
 
 
-document.addEventListener('DOMContentLoaded', function() {
-	const friendsButton = document.getElementById("friendsButton");
-	friendsButton.addEventListener('click', generateFriendsList);
+// document.addEventListener('DOMContentLoaded', function() {
+// 	const friendsButton = document.getElementById("friendsButton");
+// 	friendsButton.addEventListener('click', generateFriendsList);
 
-	const addFriendInput = document.getElementById("addFriendFinal");
-	addFriendInput.addEventListener('click', addFriendInputCheck);
+// 	const addFriendInput = document.getElementById("addFriendFinal");
+// 	addFriendInput.addEventListener('click', addFriendInputCheck);
 
 	
-    const addFriend = document.getElementById('addFriend');
-    addFriend.addEventListener('click', function() {
-        const addFriendInputField = document.getElementById("validationServer01");
-        addFriendInputField.value = ''; // Clear the input field
-        const notFound = document.getElementById("notFound");
-        const alreadyFriend = document.getElementById("alreadyFriend");
-        notFound.style.display = "none";
-        alreadyFriend.style.display = "none";
-    });
+//     const addFriend = document.getElementById('addFriend');
+//     addFriend.addEventListener('click', function() {
+//         const addFriendInputField = document.getElementById("validationServer01");
+//         addFriendInputField.value = ''; // Clear the input field
+//         const notFound = document.getElementById("notFound");
+//         const alreadyFriend = document.getElementById("alreadyFriend");
+//         notFound.style.display = "none";
+//         alreadyFriend.style.display = "none";
+//     });
 
-});
+// });
 
 
-function generateFriendsList(event) {
-
+function generateFriendsList() {
 
 	let friendsList = document.getElementById("friendsList");
 	if (!friendsList) {
