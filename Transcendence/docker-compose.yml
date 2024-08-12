@@ -54,7 +54,7 @@ services:
     build: ./nginx
 
     ports:
-      - "80:80"    # Alterar porta HTTPS
+      - "8080:8080"    # Alterar porta HTTPS
       - "443:443"   # Alterar porta HTTPS
 
     volumes:
