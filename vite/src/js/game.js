@@ -85,9 +85,15 @@ export class Game {
   }
 
   addMap(map) {
+<<<<<<< HEAD
+    map.img.src = "/static/pong/img/lisboa3.png";
+    map.pattern.src = "/static/pong/img/cobblestone.jpg"
+    map.color =  "teal";
+=======
     map.img.src = "../img/lisboa3.png";
     map.pattern.src = "../img/cobblestone.jpg";
     map.color = "teal";
+>>>>>>> 8acc0f87600628b1a4a79fe7b3f7d6a3a606849c
     map.radius = canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
     map.size = canvas.width;

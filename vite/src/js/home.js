@@ -54,7 +54,7 @@ function nextPage(event, type) {
 	back.className = "d-flex justify-content-center";
 	back.innerHTML = `
 		<button id="${type}button" class="btn btn-dark rounded-circle p-2 lh-1 changeButton" type="button" style="font-size: 100%">
-        	<svg class="bi" width="20" height="20"><image class="iconImg" width="20" height="20" xlink:href="../img/return.png"></image></svg>
+        	<svg class="bi" width="20" height="20"><image class="iconImg" width="20" height="20" xlink:href="/static/pong/img/return.png"></image></svg>
         </button>
 	`;
 	

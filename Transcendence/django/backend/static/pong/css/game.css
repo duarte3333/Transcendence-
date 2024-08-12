@@ -1,0 +1,115 @@
+.container {
+	margin-top: 3rem;
+}
+
+.navbar-brand img {
+	filter: invert(1);
+  }
+
+.bodyBtns {
+	font-size: 1.5rem;
+}
+
+.iconImg {
+	display: block;
+	margin: auto;
+	filter: invert(1);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+#menuOpen {
+	--bs-navbar-color: rgba(255, 255, 255, 0);
+}
+
+#friendsList {
+	--bs-dropdown-header-color: #5e8f1e;
+	--bs-dropdown-bg: #313131;
+	--bs-dropdown-link-active-color: #575757;
+	--bs-dropdown-link-hover-bg:  #575757;
+	--bs-dropdown-link-active-bg: transparent;
+	--bs-dropdown-link-hover-color: white;
+}
+
+.lightGreyText {
+	color: #aaaaaa;
+}
+
+.dropdown-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.text-start {
+	flex-grow: 1;
+}
+
+.image-end {
+	flex-shrink: 0;
+}
+ 
+/* local menu styles: */
+
+.configure_players {
+	margin: 20px auto;
+	padding: 20px;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	max-width: 600px;
+  }
+  .configure_players h1 {
+	text-align: center;
+	margin-bottom: 20px;
+  }
+  .configure_players form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+  }
+  .configure_players label, 
+  .configure_players input {
+	width: 100%;
+	max-width: 400px;
+	margin: 10px 0;
+	padding: 10px;
+	border: 1px solid #000000;
+	border-radius: 4px;
+  }
+  .configure_players input[type="number"]::-webkit-outer-spin-button,
+  .configure_players input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+  }
+  .configure_players input[type="number"] {
+	-moz-appearance: textfield;
+  }
+  .configure_players input[type="submit"] {
+	background-color: #000000;
+	color: #fff;
+	border: none;
+	cursor: pointer;
+  }
+  .configure_players input[type="submit"]:hover {
+	background-color: #000000;
+  }
+

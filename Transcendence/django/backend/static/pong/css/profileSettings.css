@@ -1,0 +1,49 @@
+.rowNormal {
+	margin-bottom: 1.5rem;
+	padding-top: 1rem;
+}
+
+.changeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* #settingsContainer {
+    margin-top: 8rem;
+} */
+
+.changeImg {
+	display: block;
+	margin: auto;
+	filter: invert(1);
+}
+
+.navbar-brand img {
+	filter: invert(1);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+#menuOpen {
+	--bs-navbar-color: rgba(255, 255, 255, 0);
+}

@@ -1,0 +1,44 @@
+.container {
+	margin-top: 3rem;
+}
+
+.bodyBtns {
+	font-size: 1.5rem !important;
+}
+
+.iconImg {
+	display: block;
+	margin: auto;
+	filter: invert(1);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+.lightGreyText {
+	color: #aaaaaa;
+}
+
+.text-start {
+	flex-grow: 1;
+}
+
+.image-end {
+	flex-shrink: 0;
+}
+
+#homeBody {
+	margin-top: 2.5rem;
+}

@@ -1,0 +1,54 @@
+.navbar {
+	margin-bottom: 3rem;
+}
+
+.navbar-brand img {
+	filter: invert(1);
+}
+
+.iconImg {
+	display: block;
+	margin: auto;
+	filter: invert(1);
+}
+
+
+#menuOpen {
+	--bs-navbar-color: rgba(255, 255, 255, 0);
+}
+
+.noBorder {
+	border: 0 !important;
+	--bs-btn-close-focus-shadow: rgba(0,0,0,0);
+}
+
+#friendsDropdown {
+	--bs-dropdown-header-color: #5e8f1e;
+	--bs-dropdown-bg: #313131;
+	--bs-dropdown-link-active-color: #575757;
+	--bs-dropdown-link-hover-bg:  #575757;
+	--bs-dropdown-link-active-bg: transparent;
+	--bs-dropdown-link-hover-color: white;
+}
+
+.lightGreyText {
+	color: #aaaaaa;
+}
+
+.dropdown-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.text-start {
+	flex-grow: 1;
+}
+
+.image-end {
+	flex-shrink: 0;
+}
+
+#addFriend {
+	padding: 0px;
+}
