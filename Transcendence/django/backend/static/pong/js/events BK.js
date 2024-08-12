@@ -3,17 +3,12 @@ export class events {
         this.game = game; 
         this.setupControls();
         this.initializeUIButtons();
-        // this.initializeTournament();
+        this.initializeTournament();
     }
 
     setupControls() {
         document.addEventListener("keydown", (event) => this.handleKeyDown(event));
         document.addEventListener("keyup", (event) => this.handleKeyUp(event));
-    }
-
-    removeControls() {
-        document.removeEventListener("keydown", (event) => this.handleKeyDown(event));
-        document.removeEventListener("keyup", (event) => this.handleKeyUp(event));
     }
 
     handleKeyDown(event) {
@@ -100,29 +95,29 @@ export class events {
         });
     }
 
-    // initializeTournament()  {
-    //     const addPlayerButton = document.getElementById('add-player');
-    //     const playerNameInput = document.getElementById('player-name');
-    //     const playerList = document.getElementById('player-list');
-    //     const startTournamentButton = document.getElementById('start-tournament');
+    initializeTournament()  {
+        const addPlayerButton = document.getElementById('add-player');
+        const playerNameInput = document.getElementById('player-name');
+        const playerList = document.getElementById('player-list');
+        const startTournamentButton = document.getElementById('start-tournament');
 
-    //     addPlayerButton.addEventListener('click', () => {
-    //         const playerName = this.playerNameInput.value.trim();
-    //         if (playerName) {
-    //             this.game.tournament.players.push(playerName);
-    //             const li = document.createElement('li');
-    //             li.textContent = playerName;
-    //             playerList.appendChild(li);
-    //             playerNameInput.value = '';
-    //         }
-    //     });
+        addPlayerButton.addEventListener('click', () => {
+            const playerName = this.playerNameInput.value.trim();
+            if (playerName) {
+                this.game.tournament.players.push(playerName);
+                const li = document.createElement('li');
+                li.textContent = playerName;
+                playerList.appendChild(li);
+                playerNameInput.value = '';
+            }
+        });
     
-    //     startTournamentButton.addEventListener('click', () => {
-    //         if (this.game.tournament.players.length < 2) {
-    //             alert('Please add at least two players.');
-    //             return;
-    //         }
-    //         this.game.tournament.generateBracket(this.game.tournament.players);
-    //     });
-    // }
+        startTournamentButton.addEventListener('click', () => {
+            if (this.game.tournament.players.length < 2) {
+                alert('Please add at least two players.');
+                return;
+            }
+            this.game.tournament.generateBracket(this.game.tournament.players);
+        });
+    }
 }

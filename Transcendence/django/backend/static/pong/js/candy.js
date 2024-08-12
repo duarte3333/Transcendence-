@@ -1,4 +1,4 @@
-import { Animation } from "./animation";
+import { Animation } from "./animation.js";
 
 const canvas = document.getElementById("pongCanvas");
 
