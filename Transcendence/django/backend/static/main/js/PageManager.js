@@ -27,30 +27,27 @@ export class PageManager {
         return (page);
     }
 
-    // async get(name) {
-    //     let page = this.#pageMap.get(name);
-    //     if (page)
-    //         return (page);
-    //     if (!(await AppControl.fetchApp(name)))
-    //         return (new Page());
-    //     return (this.#pageMap.get(name));
-    // }
-
     get(name) {
         return (this.#pageMap.get(name));
     }
 
+    async bind(name) {
+        if (this.#pageMap.get(name))
+            return (this.#pageMap.get(name));
+        return (AppControl.fetchApp(name));
+    }
 
     async load(name) {
-        if (!this.#pageMap.get(name) && !(await AppControl.fetchApp(name))) {
-            console.log(`Could not load the page: ${name}`);
-            return ;
-        }
-        let page = this.#pageMap.get(name);
+        // if (!this.#pageMap.get(name) && !()) {
+        //     console.log(`Could not load the page: ${name}`);
+        //     return ;
+        // }
+        const page = this.#pageMap.get(name) || await AppControl.fetchApp(name)
         if (!page) {
             console.log("not page")
             return;
         }
+        console.log("loading " + name);
         page.display("block");
         this.#onScreen.add(page);
         this.#currentPage = window.location.pathname;
@@ -67,47 +64,22 @@ export class PageManager {
         }
     }
 
-
-    async highlight(name) {
-        this.#onScreen.forEach(page => {
-            page.display("none");
-        });
-        this.#onScreen.clear();
-
-        await AppControl.fetchElement(name);
-        if (this.#pageMap.get(name)) {
-            console.log("passed fetch app");
-            this.load(name);
-        }
-        else {
-            console.log("page " + this.#pageMap.get(name));
-            // this.load("/");
-            console.log(`The page ${name} does not exist`);
-        }
-        if (window.location.pathname !== name)
-            history.pushState({name: name}, '', name);
-    }
-
     async urlLoad(name) {
-        this.#onScreen.forEach(page => {
+        for await (const page of this.#onScreen)
             page.display("none");
-        });
         this.#onScreen.clear();
-        // this.#pageMap.clear();
     
         if (this.#pageMap.get(name) || (await AppControl.fetchApp(name))) {
-            console.log("passed fetch app");
-            this.load(name);
+            // console.log("put on screen " + name);
+            await this.load(name);
         }
         else {
-            console.log("page " + this.#pageMap.get(name));
             // this.load("/");
             console.log(`The page ${name} does not exist`);
         }
         if (window.location.pathname !== name)
             history.pushState({name: name}, '', name);
     }
-    
 
     unload(name) {
         let page = this.#pageMap.get(name);
@@ -127,6 +99,27 @@ export class PageManager {
         });
     }
 }
+
+
+    // async highlight(name) {
+    //     this.#onScreen.forEach(page => {
+    //         page.display("none");
+    //     });
+    //     this.#onScreen.clear();
+
+    //     await AppControl.fetchElement(name);
+    //     if (this.#pageMap.get(name)) {
+    //         console.log("passed fetch app");
+    //         this.load(name);
+    //     }
+    //     else {
+    //         console.log("page " + this.#pageMap.get(name));
+    //         // this.load("/");
+    //         console.log(`The page ${name} does not exist`);
+    //     }
+    //     if (window.location.pathname !== name)
+    //         history.pushState({name: name}, '', name);
+    // }
 
 // setCurrent(page) {
     //     history.pushState({page: page}, '', page);

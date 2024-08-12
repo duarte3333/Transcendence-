@@ -23,7 +23,8 @@ let user = {
 
 views.setElement("/settings/", (state) => {
 	//caso de merda a visualizar mudar block para flex
-	views.get("/navbar/").display(state);
+	views.bind("/navbar/").
+		then(navbar => navbar.display(state));
 	document.getElementById("settingsContainer").style.display = state;
 	loadProfileSettings();
 	highlightButtonNavbar("settings");
