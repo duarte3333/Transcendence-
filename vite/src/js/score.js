@@ -124,7 +124,11 @@ export function updateScore(playerName, flag) {
 export function checkGameOver(numberOfPlayers) {
   for (let i = 1; i <= numberOfPlayers; i++) {
     const score = document.getElementById("playerScore_" + i);
-    if (score.textContent >= 2) {
+    if (score.textContent >= 1) {
+      const score1 = document.getElementById("playerScore_1");
+      const score2 = document.getElementById("playerScore_2");
+      score1.textContent = 0;
+      score2.textContent = 0;
       return i;
     }
   }

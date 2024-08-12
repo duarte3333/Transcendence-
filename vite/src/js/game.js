@@ -75,6 +75,7 @@ export class Game {
 
   cleanup() {
     clearInterval(this.gameLoop);
+    this.events.removeControls();
     this.gameLoop = null;
     this.objects.clear();
     this.finish = false;
@@ -167,6 +168,7 @@ export class Game {
   }
 
   displayGameOver() {
+    // this.cleanup();
     this.context.font = "bold 40px Poppins, sans-serif";
     this.context.fillStyle = "black";
     this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
@@ -187,9 +189,11 @@ export class Game {
     this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
 
     document.getElementById("game").style.display = "none";
-document.getElementById("gameForm").style.display = "block";
+    document.getElementById("gameForm").style.display = "block";
     this.winnerName = this.paddleNames[this.winner - 1];
-    console.log("Game acabouuu");
+    this.events.removeControls();
+    clearInterval(this.gameLoop);
+    console.log("Game::Game acabouuu");
 
   }
 

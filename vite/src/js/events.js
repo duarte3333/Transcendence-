@@ -11,6 +11,12 @@ export class events {
         document.addEventListener("keyup", (event) => this.handleKeyUp(event));
     }
 
+    removeControls() {
+        console.log("CHAMOU")
+        document.removeEventListener("keydown", (event) => this.handleKeyDown(event));
+        document.removeEventListener("keyup", (event) => this.handleKeyUp(event));
+    }
+
     handleKeyDown(event) {
         for (let i = 1; i <= this.game.numberOfPlayers; i++) {
             let temp = this.game.objects.get("paddle_" + i);

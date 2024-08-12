@@ -36,7 +36,7 @@ export class Match {
     if (controls) {
       game = new Game(this.numPlayers, controls);
     }
-    while (this.winner === null) {
+    while (this.winner === null || this.winner === undefined) {
       this.winner = game.winnerName;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
