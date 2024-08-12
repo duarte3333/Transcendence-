@@ -137,7 +137,7 @@ function addFriendInputCheck() {
 	}
 }
 
-document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
+// document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
 // document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
