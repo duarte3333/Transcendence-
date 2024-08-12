@@ -1,4 +1,5 @@
 import { Match } from "./match";
+import { Banner } from "./banner";
 
 export class Tournament {
     numPlayers = 2;
@@ -35,6 +36,11 @@ export class Tournament {
 		document.getElementById('nameForm').style.display = 'none';
 		document.getElementById('gameForm').style.display = 'none';
 		document.getElementById('game').style.display = 'none';
+        winnerBanner = document.getElementById('winnerBanner');
+        winnerBanner.style.display = 'block';
+        winnerBanner.innerHTML = `${this.playerNames[0]} wins the tournament!`;
+        //make the banner in the middle of the screen
+        winnerBanner.style.fontSize = '30px';
         console.log(this.playerNames)
 
     }
