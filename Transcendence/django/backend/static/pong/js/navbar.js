@@ -158,3 +158,4 @@ export function highlightButtonNavbar(page) {
 	else if (page == "profile")
 		document.getElementById("profileButton").className = "nav-link active";
 }
+
