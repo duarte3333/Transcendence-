@@ -1,8 +1,9 @@
 export let theNames = []; // para usar no botao submit controls
-export let controls = {};
+
 
 export function displayExtendedForm(names, numberOfPlayers) {
     return new Promise((resolve) => {
+        const controls = {};
         const playerControls = document.getElementById('playerControls');
         const numPlayers = numberOfPlayers;
         playerControls.innerHTML = '';
@@ -35,8 +36,6 @@ export function displayExtendedForm(names, numberOfPlayers) {
         const controlsButton = document.getElementById('controlsButton');
         let allFilled = false;
         controlsButton.addEventListener('click', (event) => {
-            console.log("clicked controls button");
-            console.log(theNames);
             event.preventDefault();  // Prevent the default form submission
             const keysSet = new Set();
 
@@ -68,8 +67,7 @@ export function displayExtendedForm(names, numberOfPlayers) {
             if (allFilled) {
                 const form = document.getElementById("gameForm");
                 form.style.display = "none";
-                console.log("criei o game com os dados");
-                resolve(true);
+                resolve(controls);
             }
         });
     });

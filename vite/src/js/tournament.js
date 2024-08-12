@@ -27,25 +27,25 @@ export class Tournament {
     }
 
     async startTournament() {
-        console.log("Tournament::Starting tournament");
         this.shuffleNames();
         while (this.playerNames.length > 1) {
-            console.log("Tournament::Scheduling next round" + this.playerNames);
             await this.scheduleNextRound();
         }
         console.log(`Tournament::Player ${this.playerNames[0]} wins the tournament!`);
+		document.getElementById('nameForm').style.display = 'none';
+		document.getElementById('gameForm').style.display = 'none';
+		document.getElementById('game').style.display = 'none';
         console.log(this.playerNames)
 
     }
 
     async scheduleNextRound() {
         const nextRoundPlayers = [];
-        console.log("Tournament::Scheduling next round");
         // Process all matches in the current round
         while (this.playerNames.length > 1) {
             const player1 = this.playerNames.shift();
             const player2 = this.playerNames.shift();
-
+            console.log("=====Game Between===== ", [player1, player2])
             const match = new Match("local", "tournament", 2, [player1, player2], player1);
             let winner =  await match.startLocalMatch();
             console.log("Tournament::winner", winner);

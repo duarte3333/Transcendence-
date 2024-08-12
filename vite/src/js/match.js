@@ -1,5 +1,4 @@
 import { displayExtendedForm } from "./controlsForm";
-import { controls } from "./controlsForm";
 import { Game } from "./game";
 
 export class Match {
@@ -29,10 +28,8 @@ export class Match {
   }
 
   async startLocalMatch() {
-    console.log("Match::entrou no display extended form");
-    await displayExtendedForm(this.players, this.numPlayers);
+    const controls = await displayExtendedForm(this.players, this.numPlayers);
     let game;
-    console.log("Match::after displayextended:");
     if (controls) {
       game = new Game(this.numPlayers, controls);
     }
@@ -40,7 +37,6 @@ export class Match {
       this.winner = game.winnerName;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    console.log("Match::Acabou Match");
     console.log("Match::Winner is: " + this.winner);
     return this.winner;
   }

@@ -1,10 +1,9 @@
 import { Ball } from "./ball.js";
 import { Candy } from "./candy.js";
 import { events } from "./events.js";
-import { Score, checkGameOver } from "./score.js";
+import { Score, checkGameOver, createScoreBoard, clearScoreBoard } from "./score.js";
 import { map } from "./map.js";
 import { Paddle, writePaddleNames } from "./paddles.js";
-import { createScoreBoard } from "./score.js";
 import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
@@ -42,6 +41,7 @@ export class Game {
     this.paddleNames = [];
     this.gameLoop = null;
     this.loser = null;
+    console.log("GAME BETWEEN", controlsList);
 
     console.log("Game constructor");
     //console.log(controlsList);
@@ -192,7 +192,10 @@ export class Game {
     document.getElementById("gameForm").style.display = "block";
     this.winnerName = this.paddleNames[this.winner - 1];
     this.events.removeControls();
+    clearScoreBoard();
+    this.playerBanner.clearBanner();
     clearInterval(this.gameLoop);
+
     console.log("Game::Game acabouuu");
 
   }

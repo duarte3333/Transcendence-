@@ -25,8 +25,12 @@ export class Score {
 
 }
 
+let h3 = null;
+let rows = [];
+let scoreboardContainer = null;
+
 export function createScoreBoard(numberOfPlayers) {
-  const scoreboardContainer = document.getElementById('scoreBoard');
+  scoreboardContainer = document.getElementById('scoreBoard');
   scoreboardContainer.classList.add('overflow-hidden');
   scoreboardContainer.style.paddingTop = "2%";
   scoreboardContainer.style.paddingLeft = "0%";
@@ -39,7 +43,7 @@ export function createScoreBoard(numberOfPlayers) {
   scoreboardContainer.style.justifyContent = "flex-start";
 
 
-  const h3 = document.createElement('h3');
+  h3 = document.createElement('h3');
   h3.classList.add('centered-text');
   h3.textContent = "ScoreBoard";
   scoreboardContainer.appendChild(h3);
@@ -47,6 +51,7 @@ export function createScoreBoard(numberOfPlayers) {
   sleep(100);
   for (let i = 1; i <= numberOfPlayers; i++) {
     const row = document.createElement('div');
+    rows.push(row);
     row.classList.add('row', 'centerAll');
     row.style.borderBottom = "2px solid #000000";
     row.style.width = "100%";
@@ -109,6 +114,12 @@ export function createScoreBoard(numberOfPlayers) {
     row.appendChild(col3);
     scoreboardContainer.appendChild(row);
   }
+}
+
+export function clearScoreBoard() {
+  if (h3) h3.remove() 
+  rows.forEach(row => row.remove());
+  rows = [];
 }
 
 

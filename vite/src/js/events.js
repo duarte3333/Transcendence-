@@ -12,7 +12,6 @@ export class events {
     }
 
     removeControls() {
-        console.log("CHAMOU")
         document.removeEventListener("keydown", (event) => this.handleKeyDown(event));
         document.removeEventListener("keyup", (event) => this.handleKeyUp(event));
     }
