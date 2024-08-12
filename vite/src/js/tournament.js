@@ -48,6 +48,7 @@ export class Tournament {
 
             const match = new Match("local", "tournament", 2, [player1, player2], player1);
             let winner =  await match.startLocalMatch();
+            console.log("Tournament::winner", winner);
             nextRoundPlayers.push(winner);
         }
 

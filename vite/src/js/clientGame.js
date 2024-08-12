@@ -47,11 +47,11 @@ export class ClientGame {
   //INITIALIZE GAME
   constructor(numPlayers, controlsList, playerName) {
     console.log("Client Game constructor");
-    console.log(controlsList);
+    //console.log(controlsList);
     this.numberOfPlayers = numPlayers;
 	  this.playerName = playerName;
     this.paddleNames = Object.keys(controlsList);
-    console.log(this.paddleNames);
+    //console.log(this.paddleNames);
 	  const row = document.getElementById("clientGame");
     //row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
@@ -59,8 +59,8 @@ export class ClientGame {
   }
   
   setupGame(controlsList) {
-    console.log("Setting up client game");
-    console.log(controlsList);
+    //console.log("Setting up client game");
+    //console.log(controlsList);
     this.addMap(map);
     this.addPaddles(controlsList);
     this.addBall();
@@ -77,7 +77,7 @@ export class ClientGame {
       // console.log(`fps = ${this.fps}`);
       this.fps = 0;
     }, 1000);
-    console.log("Client Game initialized");
+    //console.log("Client Game initialized");
   }
 
   //ADD OBJECTS TO GAME
@@ -96,12 +96,12 @@ export class ClientGame {
   }
 
   addPaddles(controlsList) {
-    console.log("Adding paddles");
-    console.log(controlsList);
+    //console.log("Adding paddles");
+    //console.log(controlsList);
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      console.log(this.paddleNames[i-1]);
-      console.log(controlsList[this.paddleNames[i-1]]);
+      //console.log(this.paddleNames[i-1]);
+      //console.log(controlsList[this.paddleNames[i-1]]);
       let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]);
       // temp.print();
       temp.draw(this.context);

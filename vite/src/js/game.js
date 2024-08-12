@@ -44,7 +44,7 @@ export class Game {
     this.loser = null;
 
     console.log("Game constructor");
-    console.log(controlsList);
+    //console.log(controlsList);
 
     this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
