@@ -140,3 +140,21 @@ function addFriendInputCheck() {
 // }
 
 // document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
+
+
+export function highlightButtonNavbar(page) {
+	const lastPageElements = document.getElementsByClassName("active");
+
+	//needs to be converted to an array so it can use forEach
+    if (lastPageElements.length > 0) {
+		Array.from(lastPageElements).forEach(page => page.className = "nav-link");
+    } else {
+        console.log("No active page found.");
+    }
+	if (page == "home")
+		document.getElementById("homeButton").className = "nav-link active";
+	else if (page == "settings")
+		document.getElementById("settingsButton").className = "nav-link active";
+	else if (page == "profile")
+		document.getElementById("profileButton").className = "nav-link active";
+}

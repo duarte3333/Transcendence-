@@ -1,4 +1,5 @@
 import {views} from "../../main/js/main.js"
+import { highlightButtonNavbar } from "./navbar.js";
 // import {secureElement} from "../../main/js/main.js"	
 import {sleep} from "./auxFts.js"
 
@@ -25,6 +26,7 @@ views.setElement("/settings/", (state) => {
 	views.get("/navbar/").display(state);
 	document.getElementById("settingsContainer").style.display = state;
 	loadProfileSettings();
+	highlightButtonNavbar("settings");
 })
 .setEvents(
 	[ "changeUsername", "click",  (event) => changeText(event, "username")],

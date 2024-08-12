@@ -1,4 +1,5 @@
 import {views} from "../../main/js/main.js"
+import { highlightButtonNavbar } from "./navbar.js";
 
 let user = {
     username: "teo123",
@@ -20,8 +21,8 @@ views.setElement("/profile/", (state) => {
 	//caso de merda a visualizar mudar block para flex
 	views.get("/navbar/").display(state);
 	document.getElementById("profileBody").style.display = state;
-
 	loadProfile();
+	highlightButtonNavbar("profile");
 })
 .setEvents(
 	[ "matchHistoryButton", "click",  (event) => showMatchHistory(event)]
