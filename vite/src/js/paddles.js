@@ -3,6 +3,7 @@ import {Edge} from "./map.js";
 
 export class Paddle {
   name;
+  displayName
   type;
   width;
   height;
@@ -27,8 +28,9 @@ export class Paddle {
   color;
   rectEdges = new Map();
 
-  constructor(map, index, numberOfPlayers, controlsList) {
+  constructor(map, index, numberOfPlayers, controlsList, name) {
     this.name = "paddle_" + index;
+    this.displayName = name;
     this.type = "player";
     this.moveDown = false;
     this.moveUp = false;
@@ -296,6 +298,6 @@ export function writePaddleNames(game) {
     let finaly = (temp.centerY + midpointyofmid) / 2;
     if (temp.centerX > canvas.width / 2)
       dirX = -125;
-    game.context.fillText(temp.name, finalx + dirX, finaly);
+    game.context.fillText(temp.displayName, finalx + dirX, finaly);
   }
 }

@@ -1,3 +1,4 @@
+export let theTournament = null;
 document.addEventListener('DOMContentLoaded', function() {
 	const playOnline = document.getElementById("playOnline");
 	playOnline.addEventListener('click', (event) => {
@@ -8,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	playLocal.addEventListener('click', (event) => {
 		nextPage(event, "playLocal");
 	});
+
 })
 
 function nextPage(event, type) {
@@ -30,17 +32,20 @@ function nextPage(event, type) {
 	match.type = "button";
 	match.textContent = "Match";
 	match.addEventListener('click', () => {
-		tournamentStart(div, type);
+		//document.getElementById('homePage').style.display = 'none';
+        //document.getElementById('nameForm').style.display = 'block';
 	});
 
 	const tournament = document.createElement('button');
 	tournament.className = "btn btn-outline-dark w-25 bodyBtns";
 	tournament.type = "button";
-	tournament.textContent = "Tournament";
-	tournament.addEventListener('click', () => {
-		tournamentStart(div, type);
-	});
-
+	tournament.textContent = "Tournament";	
+	// tournament.addEventListener('click', () => {
+	// 	document.getElementById('homePage').style.display = 'none';
+	// 	if (type === "playLocal") {
+    //     	document.getElementById('nameForm').style.display = 'block';
+	// 	}
+	// });
 
 	const rowBack = document.createElement('div');
 	rowBack.className = "row d-flex align-items-center";
@@ -62,6 +67,7 @@ function nextPage(event, type) {
 	document.getElementById(`${type}button`).addEventListener('click', () => {
 		goBack(div, oldParent);
 	});
+	
 }
 
 function goBack(div, oldParent) {
