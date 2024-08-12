@@ -35,6 +35,22 @@ export class Tournament {
 		document.getElementById('nameForm').style.display = 'none';
 		document.getElementById('gameForm').style.display = 'none';
 		document.getElementById('game').style.display = 'none';
+
+        // Create a new element to display the winner
+        const winnerDisplay = document.createElement('div');
+        winnerDisplay.style.textAlign = 'center';
+        winnerDisplay.style.marginTop = '50px';
+        winnerDisplay.style.fontSize = '30px';
+        winnerDisplay.style.fontWeight = 'bold';
+        winnerDisplay.style.color = 'grey';
+        winnerDisplay.style.padding = '20px';
+        winnerDisplay.style.border = '3px solid black';
+        winnerDisplay.style.borderRadius = '10px';
+        winnerDisplay.style.backgroundColor = '#f0f0f0';
+        winnerDisplay.innerHTML = `🏆 Player <span style="color: blue;">${this.playerNames[0]}</span> wins the tournament! 🏆`;
+
+        // Append the winner display to the body or a specific container
+        document.body.appendChild(winnerDisplay);
         console.log(this.playerNames)
 
     }
@@ -48,6 +64,7 @@ export class Tournament {
             console.log("=====Game Between===== ", [player1, player2])
             const match = new Match("local", "tournament", 2, [player1, player2], player1);
             let winner =  await match.startLocalMatch();
+            document.getElementById("gameForm").style.display = "block";
             console.log("Tournament::winner", winner);
             nextRoundPlayers.push(winner);
         }

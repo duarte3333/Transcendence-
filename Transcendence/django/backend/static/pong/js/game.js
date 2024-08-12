@@ -152,6 +152,8 @@ export class Game {
   }
 
   draw() {
+    if (this.pause && this.finish)
+      return;
     this.fps++;
     if (!this.pause && !this.finish) {
       this.update();
@@ -161,6 +163,7 @@ export class Game {
       });
 
     } else if (this.finish) {
+      this.pause = true;
       this.displayGameOver();
     } else if (this.pause) {
       this.displayPaused();
@@ -169,6 +172,8 @@ export class Game {
 
   displayGameOver() {
     // this.cleanup();
+   
+
     this.context.font = "bold 40px Poppins, sans-serif";
     this.context.fillStyle = "black";
     this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
@@ -185,18 +190,20 @@ export class Game {
     this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
     this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
     this.context.fillStyle = gradient;
-    this.context.fillText(`Player ${this.winner} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    console.log("Game::Game over, winner is: " + this.paddleNames[this.winner - 1]);
+    this.context.fillText(`Player ${this.paddleNames[this.winner - 1]} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
     this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
 
-    document.getElementById("game").style.display = "none";
-    document.getElementById("gameForm").style.display = "block";
-    this.winnerName = this.paddleNames[this.winner - 1];
-    this.events.removeControls();
-    clearScoreBoard();
-    this.playerBanner.clearBanner();
-    clearInterval(this.gameLoop);
+    setTimeout(function () { 
+      this.winnerName = this.paddleNames[this.winner - 1];
+      document.getElementById("game").style.display = "none";
+      this.events.removeControls();
+      clearScoreBoard();
+      this.playerBanner.clearBanner();
+      clearInterval(this.gameLoop);
+      console.log("Game::Game acabouuu");
 
-    console.log("Game::Game acabouuu");
+    }.bind(this), 3000);
 
   }
 
