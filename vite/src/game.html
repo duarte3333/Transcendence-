@@ -10,7 +10,7 @@
 <body id="body">
     
     <!-- Name form -->
-	<div id="nameForm" style="display: none;" class="container">
+	<div id="nameForm" class="container">
         <h1 class="display-1 text-center">Enter Player Names</h1>
         <form id="playerNamesForm" class="card">
             <div class="card-body">
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Game form-->
-	<div class="configure_players" id="gameForm">
+	<div class="configure_players" style="display: none;" id="gameForm">
 		<h1 class="display-1" style="font-size: 3rem;" >Configure Players</h1>
 		<form id="playerForm"> 
 			<!-- <p>Choose the number of players bellow</p> -->
@@ -68,9 +68,7 @@
 	  </div>
 </html>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script type="module" src="./js/controlsForm.js"></script>
 <script type="module" src="./js/namesForm.js"></script>
-<script type="module" src="./js/game.js"></script>
 <script type="module" src="./js/main.js"></script>
 <script>
     function generateInputFields() {

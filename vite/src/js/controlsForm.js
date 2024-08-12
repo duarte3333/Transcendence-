@@ -3,7 +3,6 @@ export let controls = {};
 
 export function displayExtendedForm(names, numberOfPlayers) {
     return new Promise((resolve) => {
-        console.log("entrou no display extended form");
         const playerControls = document.getElementById('playerControls');
         const numPlayers = numberOfPlayers;
         playerControls.innerHTML = '';

@@ -187,6 +187,7 @@ export class Game {
     this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
 
     document.getElementById("game").style.display = "none";
+document.getElementById("gameForm").style.display = "block";
     this.winnerName = this.paddleNames[this.winner - 1];
     console.log("Game acabouuu");
 

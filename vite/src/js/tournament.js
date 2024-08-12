@@ -7,10 +7,10 @@ export class Tournament {
 
     constructor(number, names) {
         if (!number || !names)
-            console.log("deu merda") 
+            console.log("Error") 
         this.numPlayers = number;
         this.playerNames = names;
-        console.log("Entrei no torneio " + this.playerNames);
+        console.log("Tournament::Entrei no torneio " + this.playerNames);
         console.log(this.playerNames);
         this.startTournament();
     }
@@ -27,27 +27,27 @@ export class Tournament {
     }
 
     async startTournament() {
-        console.log("Starting tournament");
+        console.log("Tournament::Starting tournament");
         this.shuffleNames();
         while (this.playerNames.length > 1) {
-            console.log("Scheduling next round" + this.playerNames);
+            console.log("Tournament::Scheduling next round" + this.playerNames);
             await this.scheduleNextRound();
         }
-        console.log(`Player ${this.playerNames[0]} wins the tournament!`);
+        console.log(`Tournament::Player ${this.playerNames[0]} wins the tournament!`);
         console.log(this.playerNames)
 
     }
 
     async scheduleNextRound() {
         const nextRoundPlayers = [];
-        console.log("Scheduling next round");
+        console.log("Tournament::Scheduling next round");
         // Process all matches in the current round
         while (this.playerNames.length > 1) {
             const player1 = this.playerNames.shift();
             const player2 = this.playerNames.shift();
 
             const match = new Match("local", "tournament", 2, [player1, player2], player1);
-            let winner =  await match.getWinner();
+            let winner =  await match.startLocalMatch();
             nextRoundPlayers.push(winner);
         }
 
@@ -58,6 +58,5 @@ export class Tournament {
 
         // Set up for the next round
         this.playerNames = await nextRoundPlayers;
-        console.log("END OF SCHENEXTROUND");
     }
 }

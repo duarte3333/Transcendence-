@@ -1,13 +1,12 @@
 import { displayExtendedForm } from "./controlsForm";
 import { controls } from "./controlsForm";
 import { Game } from "./game";
-import { sleep } from "./auxFts";
 
 export class Match {
 
   constructor(type, gameType, nPlayers, listPlayers, host) {
 
-    console.log("Match created");
+    console.log("Match::Match created");
     this.type = type; //online or local
     this.gameType = gameType; //match or tournament
     this.numPlayers = nPlayers;
@@ -18,8 +17,7 @@ export class Match {
     this.winner = null;
 
     if (type == "local") { 
-      console.log("Local Match");
-      this.startLocalMatch();
+      //this.startLocalMatch();
 
     } else if (type == "online") {
       //send msg to backend to inform it that match was created with this players and who the host is
@@ -31,29 +29,19 @@ export class Match {
   }
 
   async startLocalMatch() {
+    console.log("Match::entrou no display extended form");
     await displayExtendedForm(this.players, this.numPlayers);
-    console.log("after displayextended:");
+    let game;
+    console.log("Match::after displayextended:");
     if (controls) {
       game = new Game(this.numPlayers, controls);
-      console.log("THE Winner is: " + game.winner);
     }
-
     while (this.winner === null) {
       this.winner = game.winnerName;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-
-    console.log("Acabou Match");
-    console.log("Winner is: " + this.winner);
-  }
-
-  async getWinner() {
-    while (this.winner === null) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-  
-    console.log("getWinner: " + this.winner);
+    console.log("Match::Acabou Match");
+    console.log("Match::Winner is: " + this.winner);
     return this.winner;
   }
-
 }
