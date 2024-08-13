@@ -59,17 +59,17 @@ class Chat {
     this.generatePlayerButtons(users);
   }
 
-  // sendBasicInfo(length) {
-  //   if (socket && socket.readyState === WebSocket.OPEN) {
+  sendBasicInfo(length) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
 
-  //     console.log("Mensagem que será enviada ao Backend: " + users);
-  //     socket.send(JSON.stringify({
-  //       type: 'room_info',
-  //       'numplayers': length,
-  //       'players': users
-  //     }));
-  //   }
-  // }
+      console.log("Mensagem que será enviada ao Backend: " + users);
+      socket.send(JSON.stringify({
+        type: 'room_info',
+        'numplayers': length,
+        'players': users
+      }));
+    }
+  }
 
   generatePlayerButtons() {
     this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
