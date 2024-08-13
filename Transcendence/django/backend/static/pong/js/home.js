@@ -28,11 +28,13 @@ views.setElement("/home/", (state) => {
 function nextPage(event, type) {
 	console.log("type == " + type);
 	const oldParent = event.target.closest('.displayDiv');
-    if (!oldParent) return;
+    if (!oldParent) 
+		return;
 	oldParent.style.setProperty('display', 'none', 'important');
 
 	const container = event.target.closest('.container');
-	if (!container) return;
+	if (!container) 
+		return;
 
 	const div = document.createElement('div');
 	div.id = type +  "div";

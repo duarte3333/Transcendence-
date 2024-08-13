@@ -1,5 +1,7 @@
 services:
   django_daphne:
+    container_name: django_daphne 
+
     build: ./django
 
     ports:
@@ -9,16 +11,21 @@ services:
       - ./django/backend/static:/app/static
       - ./django/backend:/app
 
+    # command: daphne -u /tmp/daphne.sock myproject.asgi:application
+
     env_file:
       - .env
 
     depends_on:
       - postgres
+      - redis
 
     networks:
       - backend
 
   postgres:
+    container_name: postgres
+    
     image: postgres:13
 
     env_file:
@@ -30,14 +37,25 @@ services:
     networks:
       - backend
 
+  redis:
+    container_name: redis
+
+    image: redis:alpine
+
+    networks:
+      - backend
+    
+    ports:
+      - "6379:6379"
 
   nginx:
+    container_name: nginx
+
     build: ./nginx
 
     ports:
-      - "8080:80"
-      - "443:443"
-      # - "443:443"
+      - "8080:8080"    # Alterar porta HTTPS
+      - "443:443"   # Alterar porta HTTPS
 
     volumes:
       - ./django/backend/static:/static
