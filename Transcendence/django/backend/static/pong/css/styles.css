@@ -58,11 +58,7 @@ footer {
 }
 
 body {
-<<<<<<< HEAD
   /* background-image: url("./static/pong/img/lala4.png") !important; */
-=======
-  /* background-image: url("/static/pong/img/lala4.png") !important; */
->>>>>>> origin/game
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -82,11 +78,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid #000000; /* Light blue border */
-<<<<<<< HEAD
   /* background-image: url("./static/pong/img/lisboa3.png") !important; */
-=======
-  /* background-image: url("/static/pong/img/lisboa3.png") !important; */
->>>>>>> origin/game
   /* background-color: #007bff; */
   background-size: cover;
   background-repeat: no-repeat;
@@ -105,11 +97,7 @@ body {
 }
 
 .navbar {
-<<<<<<< HEAD
   /* background-image: url(./static/pong/img/como2.png) !important; */
-=======
-  /* background-image: url(/static/pong/img/como2.png) !important; */
->>>>>>> origin/game
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -381,11 +369,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid #000000; /* Light blue border */
-<<<<<<< HEAD
   /* background-image: url("./static/pong/img/lisboa3.png") !important; */
-=======
-  /* background-image: url("/static/pong/img/lisboa3.png") !important; */
->>>>>>> origin/game
   /* background-color: #007bff; */
   background-size: cover;
   background-repeat: no-repeat;
