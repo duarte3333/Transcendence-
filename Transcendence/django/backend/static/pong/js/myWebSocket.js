@@ -61,7 +61,9 @@ function handleWebSocketData(data) {
         const storedHash = localStorage.getItem(`${sender}_${receiver}_chatHash`);
 
         if (hash === storedHash) {
-            window.chat.storeMessages(sender, receiver, message);
+            console.log("handleWebSocketData() messages: " + message);
+            window.chat.storeMessages(sender, receiver, hash, message);
+            window.chat.addToMessagesHistory(storedHash, message);
             window.chat.appendChatMessage(message, sender);
         }
         else {

@@ -59,6 +59,10 @@ class Chat {
   }
 
   createAndStoreHash(speaker, audience, context) {
+
+    console.log("createAndStoreHash() speaker " + speaker);
+    console.log("createAndStoreHash() audience" + audience);
+
     this.chatHash = createChatHash(speaker, audience, context);
     localStorage.setItem(`${speaker}_${audience}_chatHash`, this.chatHash);
   }
@@ -96,7 +100,6 @@ class Chat {
     ChatBodyChild.id = `chatBody_${User}`;
     ChatBodyChild.style.display = 'none';
     chatBody.appendChild(ChatBodyChild);
-
   }
 
   generatePlayerButtons() {
@@ -164,11 +167,10 @@ class Chat {
         User = JSON.parse(ActiveUser)[0].username;
       }
 
-      
       console.log("this.speaker " + User);
       console.log("this.SelectedPlayer " + this.SelectedPlayer);
 
-
+      localStorage.clear();
       const hashkey = `${User}_${this.SelectedPlayer}_chatHash`;
       let hash = localStorage.getItem(hashkey);
       
@@ -194,25 +196,20 @@ class Chat {
       this.addToMessagesHistory(hash, fullMessage);  // Adiciona ao Map
 
       const playerId = this.SelectedPlayer.replace('Player', 'player_');
-      this.appendChatMessage(fullMessage, playerId);
+
+      this.appendChatMessage(fullMessage, this.SelectedPlayer);
     } else {
       console.error("sendChatMessage() Message not sent: invalid conditions.");
     }
   }
 
   storeMessages(sender, receiver, hash, message) {
-    // const p = player.replace('Player', 'player_');
-    const chatKey = `chatBody_${sender}_${receiver}`;
+    if (!this.messagesHistory.has(hash)) {
+      this.messagesHistory.set(hash, []);
+    }
 
-    if (!this.messages[chatKey])
-      this.messages[chatKey] = [];
-
-    this.messages[chatKey].push({sender, receiver, message});
-
-    this.messages[chatKey].forEach((msg, index) => {
-      console.log(
-        `storeMessages() Message ${index + 1} \n: Sender: ${msg.sender},\n Receiver: ${msg.receiver}, \n Message: ${msg.message}, \n Hash: ${hash}`
-      );
+    this.messagesHistory.get(hash).forEach((msg, index) => {
+      console.log(`Message ${index + 1}: ${msg}`);
     });
   }
 
@@ -228,17 +225,19 @@ class Chat {
   } 
 
   appendChatMessage(message, player) {
-    const chatBodyChildren = document.getElementById("chatBodyChildren");
+    console.log(`appendChatMessage() chatBody_${player}`);
+    const chatBodyChildren = document.getElementById(`chatBody_${player}`);
 
     const line = message + '\n';
     if (chatBodyChildren) {
-      chatBodyChildren.innerHTML += line;
+      chatBodyChildren.innerHTML += `<div>${line}</div>`;
+      // chatBodyChildren.style.display = 'flex';
+      chatBodyChildren.style.flexDirection = 'column';
     } else {
       console.error(`chatBodyChildren not found for player: ${player}`);
     }
   }
 }
-
 
 
 // Para solucionar o caso de usuários iguais terem o mesmo hash, eu poderei
@@ -255,7 +254,9 @@ function djb2Hash(str) {
 }
 
 export function createChatHash(speaker, audience, context) {
-  const usernamesContext = speaker.concat("_", audience, "_", context);
+  const names = [speaker, audience].sort();
+  
+  const usernamesContext = `${names.join("_")}_${context})`;
 
   const hash = djb2Hash(usernamesContext);
 

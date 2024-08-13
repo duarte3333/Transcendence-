@@ -242,7 +242,7 @@ class GenericConsumer(AsyncWebsocketConsumer):
 
         # Enviar a mensagem para o grupo do destinatário
         await self.channel_layer.group_send(
-            hash_value,
+            f'chat_{receiver}',
             {
                 'type': 'chat_message',
                 'message': message,
