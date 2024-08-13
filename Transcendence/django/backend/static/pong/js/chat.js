@@ -40,18 +40,27 @@ class Chat {
     this.messages = {};
     this.General = {};
 
+
+    this.chatHash = null;
     this.messagesHistory = new Map();
+    // this.connectWebSocket();
 
     this.setupEventListeners();
     this.closeChat();
   }
 
+  
   setupEventListeners() {
     if (this.chatButton)
       this.chatButton.addEventListener('click', () => this.toggleChatWindow());
     if (this.sendChatButton)
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
     this.setup();
+  }
+
+  createAndStoreHash(speaker, audience, context) {
+    this.chatHash = createChatHash(speaker, audience, context);
+    localStorage.setItem(`${speaker}_${audience}_chatHash`, this.chatHash);
   }
 
   async setup() {
@@ -73,22 +82,25 @@ class Chat {
     }
   }
 
-  createGeneralButton() {
-    const GeneralButton = document.createElement("button");
-    GeneralButton.innerText = "General";
-    GeneralButton.onclick = () => {
-      this.SelectedPlayer = 'General';
-      this.selectChannel('General');
-    }
-    this.chatSideBar.appendChild(GeneralButton);
+  createButtonsOnChat(User) {
+    const button = document.createElement("button");
+        
+    button.innerText = User;
+    button.onclick = () => {
+      this.SelectedPlayer = User;
+      this.selectChannel(User);
+    };
+    this.chatSideBar.appendChild(button);
+
     const ChatBodyChild = document.createElement("div");
-    ChatBodyChild.id = `chatBody_General`;
+    ChatBodyChild.id = `chatBody_${User}`;
     ChatBodyChild.style.display = 'none';
     chatBody.appendChild(ChatBodyChild);
+
   }
 
   generatePlayerButtons() {
-    this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
+    this.chatSideBar.innerHTML = '';
 
     let JsonArray = JSON.parse(ActiveUser);
     let length = JsonArray.length;
@@ -100,26 +112,11 @@ class Chat {
     } else {
       User = JSON.parse(test)[0].username;
     }
+    this.createButtonsOnChat("General");
 
-    // Acrescenta o botão General
-    this.createGeneralButton();
+    for (let i = 0; i < length; i++)
+      this.createButtonsOnChat(User);
 
-    //Coloca o botão dos chat para os users
-    for (let i = 0; i < length; i++) {
-      const button = document.createElement("button");
-        
-      button.innerText = User;
-      button.onclick = () => {
-        this.SelectedPlayer = User;
-        this.selectChannel(User);
-      };
-      this.chatSideBar.appendChild(button);
-
-      const ChatBodyChild = document.createElement("div");
-      ChatBodyChild.id = `chatBody_${User}`;
-      ChatBodyChild.style.display = 'none';
-      chatBody.appendChild(ChatBodyChild);
-    }
     this.sendBasicInfo(length);
   }
 
@@ -130,14 +127,13 @@ class Chat {
 
     for (let element of this.messages[`chatBody_${channel}`])
       showtext += element.message;
-    
-    console.log("--SeletectChannel---------");
-    console.log(showtext);
-    console.log("-----------");
+    console.log(this.SelectedPlayer);
+    // console.log("--SeletectChannel---------");
+    // console.log(showtext);
+    // console.log("-----------");
     document.getElementById("chatBodyChildren").innerHTML = showtext;
     
     document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
-    // this.loadMessages(channel);
     console.log("SelectChannel() " + this.SelectedPlayer);
   }
 
@@ -158,9 +154,8 @@ class Chat {
 
   sendChatMessage() {
     const message = this.chatInput.value;
-    console.log
     if (message && socket && this.SelectedPlayer != null) {
-      
+
       let User;
 
       if (this.SelectedPlayer === 'Liberal') {
@@ -169,16 +164,34 @@ class Chat {
         User = JSON.parse(ActiveUser)[0].username;
       }
 
-      socket.send(JSON.stringify({
-        'type': 'chat_message',
-        'message': message,
-        'sender': User,
-        'receiver': this.SelectedPlayer,
-      }));
-      this.chatInput.value = '';
-      const fullMessage = `${User}: ${message + "<br>"}`;
       
-      this.storeMessages(User, this.SelectedPlayer, fullMessage);
+      console.log("this.speaker " + User);
+      console.log("this.SelectedPlayer " + this.SelectedPlayer);
+
+
+      const hashkey = `${User}_${this.SelectedPlayer}_chatHash`;
+      let hash = localStorage.getItem(hashkey);
+      
+      if (hash == undefined) {
+        this.createAndStoreHash(User, this.SelectedPlayer, 'chat');
+        hash = localStorage.getItem(hashkey);
+      }
+      this.chatHash = hash;
+      console.log("this.chatHash() Hash: " + this.chatHash);
+      if (message && socket && hash != null) {
+        socket.send(JSON.stringify({
+          'type': 'chat_message',
+          'message': message,
+          'sender': User,
+          'receiver': this.SelectedPlayer,
+          'hash': hash
+        }));
+        this.chatInput.value = '';
+      }
+
+      const fullMessage = `${User}: ${message + "<br>"}`;
+      this.storeMessages(User, this.SelectedPlayer, hash, fullMessage);
+      this.addToMessagesHistory(hash, fullMessage);  // Adiciona ao Map
 
       const playerId = this.SelectedPlayer.replace('Player', 'player_');
       this.appendChatMessage(fullMessage, playerId);
@@ -187,23 +200,32 @@ class Chat {
     }
   }
 
-  storeMessages(sender, receiver, message) {
+  storeMessages(sender, receiver, hash, message) {
     // const p = player.replace('Player', 'player_');
-    const chatKey = `chatBody_${receiver}`;
+    const chatKey = `chatBody_${sender}_${receiver}`;
 
     if (!this.messages[chatKey])
       this.messages[chatKey] = [];
 
     this.messages[chatKey].push({sender, receiver, message});
-    
-    console.log("storeMessages()Test content: " + JSON.stringify(this.messages));
 
     this.messages[chatKey].forEach((msg, index) => {
       console.log(
-        `storeMessages() Message ${index + 1} stored: Sender: ${msg.sender}, Receiver: ${msg.receiver}, Message: ${msg.message}`
+        `storeMessages() Message ${index + 1} \n: Sender: ${msg.sender},\n Receiver: ${msg.receiver}, \n Message: ${msg.message}, \n Hash: ${hash}`
       );
     });
   }
+
+  addToMessagesHistory(hash, message) {
+    if (!this.messagesHistory.has(hash)) {
+      this.messagesHistory.set(hash, []);
+    }
+    this.messagesHistory.get(hash).push(message);
+    console.log(`Added to messagesHistory: Hash ${hash}, Message: ${message}`);
+    this.messagesHistory.get(hash).forEach((msg, index) => {
+      console.log(`Message ${index + 1}: ${msg}`);
+    });
+  } 
 
   appendChatMessage(message, player) {
     const chatBodyChildren = document.getElementById("chatBodyChildren");
@@ -215,7 +237,29 @@ class Chat {
       console.error(`chatBodyChildren not found for player: ${player}`);
     }
   }
-  
+}
+
+
+
+// Para solucionar o caso de usuários iguais terem o mesmo hash, eu poderei
+//acrescentar a esse hash o email do user. Assim garantimos que enquanto o 
+//user estiver logado ele terá acesso aos chatPrivados que ele tinha na 
+//sessão anterior.
+
+function djb2Hash(str) {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) + hash) + str.charCodeAt(i); // hash * 33 + c
+  }
+  return hash >>> 0; // Converte para um número não negativo de 32 bits
+}
+
+export function createChatHash(speaker, audience, context) {
+  const usernamesContext = speaker.concat("_", audience, "_", context);
+
+  const hash = djb2Hash(usernamesContext);
+
+  return hash.toString(16);
 }
 
 document.addEventListener("DOMContentLoaded", function() {

@@ -11,8 +11,10 @@ export function initializeWebSocket(username) {
         const wsUrl = `${protocol}${host}/ws/${username}/`;
 
         socket = new WebSocket(wsUrl);
-        if (socket)
+        if (socket) {
             console.log("socket object" + socket.readyState + " socket url " + socket.url);
+            window.chatSocket = socket;
+        }
 
         socket.onopen = function() {
             console.log("WebSocket connection established. Status: " + socket.readyState);
@@ -48,12 +50,23 @@ export function initializeWebSocket(username) {
 
 
 function handleWebSocketData(data) {
-    console.log("Message received from server:", data);
+    console.log("handleWebSocketData() Message received from server:", data);
 
     if (data.type === 'chat_message') {
         const message = `${data.sender}: ${data.message}<br>`;
-        window.chat.storeMessages(data.sender, data.receiver, message);
-        window.chat.appendChatMessage(message, data.sender);
+        const hash = data.hash;
+        const sender = data.sender;
+        const receiver = data.receiver;
+
+        const storedHash = localStorage.getItem(`${sender}_${receiver}_chatHash`);
+
+        if (hash === storedHash) {
+            window.chat.storeMessages(sender, receiver, message);
+            window.chat.appendChatMessage(message, sender);
+        }
+        else {
+            console.error("Hash mismatch: Mensagem recebida para um hash desconhecido:", hash);
+        }
     } else {
         console.error("Unexpected message type received:", data.type);
     }

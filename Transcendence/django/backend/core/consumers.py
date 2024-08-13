@@ -229,46 +229,41 @@ class GenericConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
+        hash_value = text_data_json.get('hash')
 
         if message_type == 'chat_message':
-            logger.info(f'Received message: {text_data}')
-            await self.handle_chat_message(text_data_json)
+            logger.info(f'Received message: {text_data} e do hash ${hash_value}')
+            await self.handle_chat_message(text_data_json, hash_value)
 
-    async def handle_chat_message(self, data):
+    async def handle_chat_message(self, data, hash_value):
         message = data.get('message')
         sender = data.get('sender')
         receiver = data.get('receiver')
 
         # Enviar a mensagem para o grupo do destinatário
         await self.channel_layer.group_send(
-            f'chat_{receiver}',
+            hash_value,
             {
                 'type': 'chat_message',
                 'message': message,
-                'sender': sender
+                'sender': sender,
+                'receiver': receiver,
+                'hash': hash_value
             }
         )
 
     async def chat_message(self, event):
         message = event['message']
         sender = event['sender']
+        receiver = event['receiver']
+        hash_value = event['hash']
 
         # Enviar a mensagem para o WebSocket
         await self.send(text_data=json.dumps({
             'type': 'chat_message',
             'message': message,
-            'sender': sender
+            'sender': sender,
+            'receiver': receiver,
+            'hash': hash_value
         }))
-
-
-
-
-
-
-
-
-
-
-
-
 
