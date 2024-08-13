@@ -4,11 +4,13 @@ import { AppControl } from "./AppControl.js";
 export class PageManager {
     #pageMap;
     #onScreen;
+    #onDom;
     #currentPage;
 
     constructor(current) {
         this.#pageMap = new Map();
         this.#onScreen = new Set();
+        this.#onDom = new Set();
         this.#currentPage = "current";
     }
 
@@ -28,24 +30,15 @@ export class PageManager {
     }
 
     get(name) {
+        console.log("getting view " + name);
         return (this.#pageMap.get(name));
     }
 
-    async bind(name) {
-        if (this.#pageMap.get(name))
-            return (this.#pageMap.get(name));
-        return (AppControl.fetchApp(name));
-    }
-
-    async load(name) {
-        // if (!this.#pageMap.get(name) && !()) {
-        //     console.log(`Could not load the page: ${name}`);
-        //     return ;
-        // }
-        const page = this.#pageMap.get(name) || await AppControl.fetchApp(name)
+    show(name) {
+        const page = this.#pageMap.get(name);
         if (!page) {
             console.log("not page")
-            return;
+            return ;
         }
         console.log("loading " + name);
         page.display("block");
@@ -54,6 +47,8 @@ export class PageManager {
     }
 
     async preLoad(name) {
+        if (this.#pageMap.get(name))
+            return (this.#pageMap.get(name));
         if (!this.#pageMap.get(name) && !(await AppControl.fetchApp(name))) {
             console.log(`Could not load the page: ${name}`);
             return ;
@@ -64,24 +59,42 @@ export class PageManager {
         }
     }
 
+    #domLoad(element) {
+        console.log("trye appending " + element);
+
+        if (document.querySelector(`[page="${element}"]`))
+            return ;
+        const page = this.#pageMap.get(element);
+        console.log("appending " + element);
+        document.body.appendChild(page.getHtml());
+        this.#onDom.add(page);
+    }
+
     async urlLoad(name) {
-        for await (const page of this.#onScreen)
+        for (const page of this.#onScreen) {
             page.display("none");
+            document.body.removeChild(page.getHtml());
+        }
         this.#onScreen.clear();
     
-        if (this.#pageMap.get(name) || (await AppControl.fetchApp(name))) {
-            // console.log("put on screen " + name);
-            await this.load(name);
+        document.body.innerHTML = "";
+        let child;
+        let familyTree = [name];
+        while (child = familyTree.pop()) {
+            if (!this.#pageMap.get(child) && !(await AppControl.fetchApp(child))) {
+                console.log(`The page ${child} does not exist`);
+                return ;
+            }
+            this.#domLoad(child);
+            if (child == name)
+                familyTree = [...this.#pageMap.get(name).getFamilyTree()];
         }
-        else {
-            // this.load("/");
-            console.log(`The page ${name} does not exist`);
-        }
+        this.show(name);
         if (window.location.pathname !== name)
             history.pushState({name: name}, '', name);
     }
 
-    unload(name) {
+    hide(name) {
         let page = this.#pageMap.get(name);
 
         if (!page) {

@@ -35,6 +35,7 @@ Including another URLconf
 
 from login.views import login_view, logout_view, register
 from pong.views import game, pong, navbar, settings, profile
+from main.views import main_view
 from django.contrib import admin
 from django.urls import path, re_path
 from django.shortcuts import redirect
@@ -42,13 +43,15 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('home/', game, name='home'),
-    path('pong/index', pong, name='pong'),
-    path('register/', register, name='register'),
-    # path('navbar/', navbar, name='navbar'),
-    path('api/settings/', settings, name='api/settings/'),
-    path('settings/', settings, name='settings'),
-    path('profile/', profile, name='profile'),
+    path('api/', login_view, name='login'),
+    path('api/logout/', logout_view, name='logout'),
+    path('api/home/', game, name='home'),
+    path('api/pong/index', pong, name='pong'),
+    path('api/register/', register, name='register'),
+    path('api/navbar/', navbar, name='navbar'),
+    path('api/api/settings/', settings, name='api/settings/'),
+    path('api/settings/', settings, name='settings'),
+    path('api/profile/', profile, name='profile'),
+    re_path(r'^.*$', main_view)  # Captura todas as URLs
+
 ]
