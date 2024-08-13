@@ -7,31 +7,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap w/ Vite - Pong 42</title>
-    <link rel="stylesheet" href="{% static 'pong/css/profileSettings.css' %}">
+    <link rel="stylesheet" href="{% static 'pong/css/onlineTournament.css' %}">
     <link rel="stylesheet" href="{% static 'pong/css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'pong/css/footer.css' %}">
 </head>
 <body id="body"> 
 
-  {% include 'pong_navbar.html' %}
+    {% include 'pong_navbar.html' %}
 
+    <div class="lobby-container">
+        <h1>Tournament Lobby</h1>
+        <div id="playerList" class="player-list">
+            <!-- Player names will be added here -->
+        </div>
+        <button id="addPlayerBtn" class="add-player-btn">+</button>
+        <button id="startTournamentBtn" class="start-tournament-btn">Start Tournament</button>
+    </div>
 
-  <div class="container main-content" style="margin-top: 3rem;">
-    <div class="row justify-content-start"  style="margin-bottom: 2rem;">
-        <div class="col">
-            <h1>Online Tournament</h1>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span id="closePopup" class="close-popup">&times;</span>
+            <h2>Invite Player</h2>
+            <input type="text" id="playerNameInput" placeholder="Enter player name">
+            <button id="invitePlayerBtn" class="invite-player-btn">Invite</button>
         </div>
     </div>
-    <div class="col">
-      <h2>Current Tournament</h2>
-    </div>  
-  </div>
 
      
-  {% include 'pong_footer.html' %}
+    {% include 'pong_footer.html' %}
   
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script type="module" src="{% static 'pong/js/profileSettings.js' %}"></script>
+<script type="module" src="{% static 'pong/js/onlineTournament.js' %}"></script>
 <script type="module" src="{% static 'pong/js/navbar.js' %}"></script>
 
 </body>
