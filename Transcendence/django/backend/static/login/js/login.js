@@ -6,7 +6,7 @@ function secureElement(element) {
     if (found)
         return (found);
     console.log(element + "Not found");
-    return (new document.createElement("div"));
+    return (document.createElement("div"));
 }
 
 views.setElement("/", (state) => {
@@ -14,12 +14,17 @@ views.setElement("/", (state) => {
 })
 .setEvents(
     ["login_B", "click", () => {views.urlLoad("/home/")}],
-    ["register_B", "click", () => views.urlLoad("/register/")]
+    ["register_B", "click", () => registerLoad()]
 );
 
-views.setElement("/register/", (state) => {
-    secureElement("register-body").style.display = state;
-})
-.setEvents(
-    ["chat_button", "click", () => {views.load("chat")}]
-);
+function registerLoad() {
+    const loginBody = document.getElementById("login-body")
+    if (loginBody) {
+        loginBody.setAttribute("style", "display: none !important;");
+    }
+    const registerBody = document.getElementById("registerBody")
+    if (registerBody) {
+        registerBody.setAttribute("style", "display: flex !important;");
+    }
+}
+
