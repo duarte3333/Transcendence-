@@ -6,10 +6,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm
 from login.models import PongUser
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import json
 
-@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         try:
@@ -32,51 +30,11 @@ def login_view(request):
     else:
         return render(request, 'index.html')
 
-
-    # if request.method == 'POST':
-    #     form = AuthenticationForm(request, data=request.POST)
-    #     if form.is_valid():
-    #         username = form.cleaned_data.get('username')
-    #         password = form.cleaned_data.get('password')
-    #         user = authenticate(request, username=username, password=password)
-    #         if user is not None:
-    #             login(request, user)
-    #             messages.info(request, f"You are now logged in as {username}.")
-    #             return redirect('home')  # Redirect to a home page or another page
-    #         else:
-    #             messages.error(request, "Invalid username or password.")
-    #     else:
-    #         messages.error(request, "Invalid username or password.")
-    # else:
-    #     form = AuthenticationForm()
-    # return render(request, 'index.html', {'form': form})
-
-# def login_view(request):
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request, data=request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 messages.info(request, f"You are now logged in as {username}.")
-#                 return redirect('home')  # Redirect to a home page or another page
-#             else:
-#                 messages.error(request, "Invalid username or password.")
-#         else:
-#             messages.error(request, "Invalid username or password.")
-#     else:
-#         form = AuthenticationForm()
-#     return render(request, 'index.html', {'form': form})
-
-
 def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect('login')
 
-@csrf_exempt
 def register(request):
     if request.method == 'POST':
         try:

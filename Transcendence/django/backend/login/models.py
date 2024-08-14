@@ -21,10 +21,10 @@ class PongUser(AbstractUser):
     banner_picture = models.ImageField(upload_to='banner_pictures/', blank=True, null=True)
     down_key = models.CharField(max_length=1, blank=True, null=True)
     up_key = models.CharField(max_length=1, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, unique=True)
 
     first_name = None
     last_name = None
-    email = None
     date_joined = None
     last_login = None
 

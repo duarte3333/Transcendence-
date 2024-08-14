@@ -1,6 +1,21 @@
 import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function secureElement(element) {
     var found = document.getElementById(element);
     if (found)
@@ -45,7 +60,8 @@ function loginPost() {
     fetch('api/login/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify(data),
     })
@@ -88,7 +104,8 @@ function registerPost() {
     fetch('api/register/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify(data)
     })

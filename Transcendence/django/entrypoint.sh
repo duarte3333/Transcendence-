@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python manage.py makemigrations pong
+python manage.py makemigrations
 python manage.py migrate --no-input
 
 #comment the following line to run the server in production
