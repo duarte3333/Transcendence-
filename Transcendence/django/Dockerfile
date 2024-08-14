@@ -11,8 +11,9 @@ COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 
 COPY ./entrypoint.sh /
-COPY ./wait-for-it.sh /
+# COPY ./wait-for-it.sh /
 
+# RUN chmod +x /wait-for-it.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
