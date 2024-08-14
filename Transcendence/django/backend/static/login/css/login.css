@@ -1,0 +1,78 @@
+.login {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    /* width: 50%; Left half of the screen */
+    /* background-image: url('/static/images/loginbackground5-1.jpg'); */
+    height: 100vh; /* Ensure it takes full height */
+    position: absolute; /* Position it absolutely */
+    left: 0;
+    }
+
+    .login-card {
+        /* margin-top: 45px; */
+        /* position: relative; */
+        padding-top: 10%;
+        padding-bottom: 10%;
+        padding-left: 10%;
+        padding-right: 10%;
+        /* padding: 50px; */
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.4);
+        box-sizing: border-box;
+        text-shadow: 
+            2px 2px 0 white, 
+            -2px -2px 0 white,
+            -2px 2px 0 white, 
+            2px -2px 0 white,
+            2px 0 0 white,
+            0 2px 0 white,
+            -2px 0 0 white,
+            0 -2px 0 white;
+    }
+
+    .login-card h2 {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .login-card form {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-card input[type="text"],
+    .login-card input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        
+    }
+
+    .login-card button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        border: none;
+        border-radius: 50px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .login-card button + button {
+        margin-top: 20px; /* Adjust this value to control the spacing */
+    }
+
+    .login-card button:hover {
+        background-color: #0056b3;
+    } 
+
+.noTextShadow {
+	text-shadow: none;
+}

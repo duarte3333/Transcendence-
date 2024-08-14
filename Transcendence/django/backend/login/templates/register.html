@@ -1,18 +1,17 @@
-<div id="registerBody" class="container" style="display: none;">
-    <form method="post" class="login-card w-75">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <p class="display-5 text-center" style="text-shadow: none; padding-bottom: 1rem;">Register</p>
-        <div class="col-sm-6">
-            <label for="firstName" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" placeholder="" value="" required="">
-            <div class="invalid-feedback">
-              Username already taken.
-            </div>
-          </div>
-        <!-- <input autocomplete="off" autofocus input type="text" id="username" placeholder="Username" name="username">
-        <input autocomplete="off" autofocus input type="password" id="password" placeholder="Password" name="password">
-        <button type="submit">Login</button>
-        <button id="register_B" type="button">Register</button> -->
-    </form>
+<div id="registerBody" class="login d-flex justify-content-start" style="display: none !important;">
+    <div class="col-5 d-flex justify-content-start" style="margin-left: 4rem;">
+        <form method="post" class="login-card">
+            {% csrf_token %}
+            <!-- {{ form.as_p }} -->
+            <p class="display-5 text-center" style="text-shadow: none; padding-bottom: 1rem;">Register</p>
+            <div id="errors" class="invalid-feedback noTextShadow">Error.</div>
+            <label class="noTextShadow">Username</label>
+            <input autocomplete="off" autofocus input type="text" id="usernameR" placeholder="" name="username">
+            <label class="noTextShadow">Password</label>
+            <input autocomplete="off" autofocus input type="password" id="passwordR" placeholder="" name="password">
+            <label class="noTextShadow">Display Name</label>
+            <input autocomplete="off" autofocus input type="text" id="displayNameR" placeholder="" name="displayName" >
+            <button id="registerFinal" type="button" style="margin-top: 1rem;">Register</button>
+        </form>
+    </div>
 </div>
