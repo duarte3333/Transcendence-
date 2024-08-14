@@ -54,7 +54,14 @@ function handleWebSocketData(data) {
         const message = `${data.sender}: ${data.message}<br>`;
         window.chat.storeMessages(data.sender, data.receiver, message);
         window.chat.appendChatMessage(message, data.sender);
-    } else {
+    } 
+    else if (data.type === 'paddle_update') {
+        console.log("handleWebSocketMessage paddle_update: " + data.paddle_x + ", " + data.paddle_y);
+    }  
+    else if (data.type === 'ball_update') {
+      console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
+    } 
+    else {
         console.error("Unexpected message type received:", data.type);
     }
 }
@@ -63,3 +70,30 @@ function handleWebSocketData(data) {
 //     const event = new CustomEvent('websocketData', { detail: data });
 //     document.dispatchEvent(event);
 // }
+
+
+//   handleWebSocketMessage(event) {
+//     // const data = JSON.parse(event.data);
+//     // const User = JSON.parse(ActiveUser)[0].username;
+//     if (data.type === 'chat_message') {
+//       const message = `${User}: ${data.message}`;
+//       this.storeMessages(User, data.sender, message);
+//       this.appendChatMessage(message, User);
+//       console.log("handleWebSocketMessage " + data.sender.replace('Player', 'player_'));
+//     } 
+//     else if (data.type === 'connection_established') {
+//       console.log("handleWebSocketMessage channel_name: " + channel_name);
+//     } 
+//     else if (data.type === 'paddle_update') {
+//       console.log("handleWebSocketMessage paddle_update: " + data.paddle_x + ", " + data.paddle_y);
+//     } 
+//     else if (data.type === 'ball_update') {
+//       console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
+//     } 
+//     else if (data.type === 'ball_update') {
+//       console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
+//     }
+//     else {
+//       console.error("Received unexpected message type:", data.type);
+//     }
+//   }

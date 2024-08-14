@@ -226,13 +226,60 @@ class GenericConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+    # async def receive(self, text_data):
+    #     text_data_json = json.loads(text_data)
+    #     message_type = text_data_json.get('type')
+
+    #     if message_type == 'chat_message':
+    #         logger.info(f'Received message: {text_data}')
+    #         await self.handle_chat_message(text_data_json)
+
     async def receive(self, text_data):
+        logger.info(f'Received message: {text_data}')
+        print(f'Received message: {text_data}')
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
-
-        if message_type == 'chat_message':
+        #
+        if message_type == 'chat':
+            # await ChatConsumer().receive(text_data)
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'chat_message',
+                    'message': text_data_json.get('message'),
+                    'sender': text_data_json.get('sender')
+                }
+            )
+        #
+        elif message_type == 'room_info':
+            num_players = text_data_json.get('numplayers')
+            players = text_data_json.get('players')
+            await self.handle_group_message(num_players, players)
+        #
+        elif message_type == 'paddle_update':
             logger.info(f'Received message: {text_data}')
-            await self.handle_chat_message(text_data_json)
+            print(f'Received message: {text_data}')
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'paddle_update',
+                    'paddle_x': text_data_json.get('paddle_x'),
+                    'paddle_y': text_data_json.get('paddle_y'),
+                    'sender': text_data_json.get('sender')
+                }
+            )
+        #
+        elif message_type == 'ball_update':
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'ball_update',
+                    'ball_x': text_data_json.get('ball_x'),
+                    'ball_y': text_data_json.get('ball_y'),
+                }
+            )
+        #
+
 
     async def handle_chat_message(self, data):
         message = data.get('message')
@@ -259,6 +306,29 @@ class GenericConsumer(AsyncWebsocketConsumer):
             'message': message,
             'sender': sender
         }))
+
+    async def paddle_update(self, event):
+        paddle_x = event['paddle_x']
+        paddle_y = event['paddle_y']
+        sender = event['sender']
+        await self.send(text_data=json.dumps({
+            'type': 'paddle_update',
+            'paddle_x': paddle_x,
+            'paddle_y': paddle_y,
+            'sender': sender
+        }))
+    #
+
+    async def ball_update(self, event):
+        ball_x = event['ball_x']
+        ball_y = event['ball_y']
+        await self.send(text_data=json.dumps({
+            'type': 'ball_update',
+            'ball_x': ball_x,
+            'ball_y': ball_y,
+        }))
+    #
+
 
 
 

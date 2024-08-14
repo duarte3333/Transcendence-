@@ -9,7 +9,7 @@ import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
 import { Tournament } from "./tournament.js";
 
-import { socket } from "./myWebSocket.js";
+import { initializeWebSocket, socket } from "./myWebSocket.js";
 
 
 
@@ -51,7 +51,7 @@ export class Game {
 
     console.log("Game constructor");
     //console.log(controlsList);
-
+    
     this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
     const row = document.getElementById("game");
@@ -60,7 +60,7 @@ export class Game {
     this.setupGame(controlsList);
   }
 
-  setupGame(controlsList) {
+  async setupGame(controlsList) {
     this.addMap(map);
     this.addPaddles(controlsList);
     this.addBall();
@@ -68,9 +68,11 @@ export class Game {
     createScoreBoard(this.numberOfPlayers);
     this.playerBanner.createBanner();
     resizeCanvas();
+    initializeWebSocket();
+    while (socket.readyState !== WebSocket.OPEN) {
+      await new Promise(resolve => setTimeout(resolve, 5));
+    }
     this.init();
-    if (!socket)
-      initializeWebSocket();
   }
 
   init() {
@@ -168,6 +170,7 @@ export class Game {
     }
     ball.move(this);
     //send ball info to client
+    this.sendBallUpdate(ball);
     this.client.updateBall(ball);
 
     for (let i = 1; i <= this.numCandies; i++) {
