@@ -1,72 +1,63 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const playerNameInput = document.getElementById('player-name');
-    const addPlayerButton = document.getElementById('add-player');
-    const playerList = document.getElementById('player-list');
-    const startTournamentButton = document.getElementById('start-tournament');
-    const bracket = document.getElementById('bracket');
+import { Match } from "./match.js";
 
-    let players = [];
+export class Tournament {
+    numPlayers = 2;
+    playerNames = [];
+    winners = [];
 
-    addPlayerButton.addEventListener('click', () => {
-        const playerName = playerNameInput.value.trim();
-        if (playerName) {
-            players.push(playerName);
-            const li = document.createElement('li');
-            li.textContent = playerName;
-            playerList.appendChild(li);
-            playerNameInput.value = '';
-        }
-    });
-
-    startTournamentButton.addEventListener('click', () => {
-        if (players.length < 2) {
-            alert('Please add at least two players.');
-            return;
-        }
-        generateBracket(players);
-    });
-
-    function generateBracket(players) {
-        bracket.innerHTML = '';
-        let rounds = [];
-
-        while (players.length > 1) {
-            const round = [];
-            while (players.length > 1) {
-                const player1 = players.shift();
-                const player2 = players.length ? players.shift() : 'BYE';
-                round.push([player1, player2]);
-            }
-            rounds.push(round);
-            players = round.map(match => match[0]); // Winners move to the next round
-        }
-
-        displayBracket(rounds);
+    constructor(number, names) {
+        if (!number || !names)
+            console.log("Error") 
+        this.numPlayers = number;
+        this.playerNames = names;
+        console.log("Tournament::Entrei no torneio " + this.playerNames);
+        console.log(this.playerNames);
+        this.startTournament();
     }
 
-    function displayBracket(rounds) {
-        rounds.forEach((round, index) => {
-            const roundDiv = document.createElement('div');
-            roundDiv.className = 'round';
-            roundDiv.innerHTML = `<h3>Round ${index + 1}</h3>`;
-            round.forEach(match => {
-                const matchDiv = document.createElement('div');
-                matchDiv.className = 'match-up';
-                matchDiv.innerHTML = `<div>${match[0]}</div><div>vs</div><div>${match[1]}</div>`;
-                roundDiv.appendChild(matchDiv);
-            });
-            bracket.appendChild(roundDiv);
-        });
+    shuffleNames() {
+        let currentIndex = this.playerNames.length, randomIndex;
 
-        const finalMatch = rounds[rounds.length - 1][0];
-        const finalDiv = document.createElement('div');
-        finalDiv.className = 'round';
-        finalDiv.innerHTML = `<h3>Final</h3>
-                              <div class="match-up">
-                                  <div>${finalMatch[0]}</div>
-                                  <div>vs</div>
-                                  <div>${finalMatch[1]}</div>
-                              </div>`;
-        bracket.appendChild(finalDiv);
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            [this.playerNames[currentIndex], this.playerNames[randomIndex]] = [this.playerNames[randomIndex], this.playerNames[currentIndex]];
+        }
     }
-});
+
+    async startTournament() {
+        this.shuffleNames();
+        while (this.playerNames.length > 1) {
+            await this.scheduleNextRound();
+        }
+        console.log(`Tournament::Player ${this.playerNames[0]} wins the tournament!`);
+		document.getElementById('nameForm').style.display = 'none';
+		document.getElementById('gameForm').style.display = 'none';
+		document.getElementById('game').style.display = 'none';
+        console.log(this.playerNames)
+
+    }
+
+    async scheduleNextRound() {
+        const nextRoundPlayers = [];
+        // Process all matches in the current round
+        while (this.playerNames.length > 1) {
+            const player1 = this.playerNames.shift();
+            const player2 = this.playerNames.shift();
+            console.log("=====Game Between===== ", [player1, player2])
+            const match = new Match("local", "tournament", 2, [player1, player2], player1);
+            let winner =  await match.startLocalMatch();
+            console.log("Tournament::winner", winner);
+            nextRoundPlayers.push(winner);
+        }
+
+        // If there's an odd player out, they automatically advance to the next round
+        if (this.playerNames.length === 1) {
+            nextRoundPlayers.push(this.playerNames.shift());
+        }
+
+        // Set up for the next round
+        this.playerNames = await nextRoundPlayers;
+    }
+}

@@ -39,3 +39,33 @@
 	padding-top: 1rem;
 	padding-bottom: 1rem;
 }
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+.row-matchHistory {
+	background-color: #e3e2e282;
+	border-radius: 10px;
+	margin-bottom: 1rem;
+	/* padding-left: 35px;
+	padding-right: 35px; */
+}
+
+#matchHistory {
+	margin-left: 2rem;
+	margin-right: 2rem;
+	margin-bottom: 1rem;
+	display: none;
+}

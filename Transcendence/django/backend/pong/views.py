@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 def pong(request):
     return render(request, 'pong_index.html')
 
-def game(request):
+def home(request):
     return render(request, 'pong_home.html')
 
 def navbar(request):
@@ -16,3 +16,6 @@ def settings(request):
 
 def profile(request):
     return render(request, 'pong_profile.html')
+
+def tournamentLocal(request):
+    return render(request, 'pong_game.html')

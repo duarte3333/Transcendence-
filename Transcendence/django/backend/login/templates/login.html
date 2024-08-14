@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% load static %}    
 
 
@@ -82,17 +83,29 @@
 
 <div id="login-body" class="login" style="display: none;">
     <form class="login-card">
+=======
+<div id="login-body" class="login d-flex" style="display: none;">
+    <!-- <form class="login-card">
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
         <input autocomplete="off" autofocus input type="text" id="username" placeholder="Username" name="username">
         <input autocomplete="off" autofocus input type="password" id="password" placeholder="Password" name="password">
         <button id="login_B" type="button">Login</button>
         <button id="register_B" type="button">Register</button>
         <button id="chat_B" type="button">chat</button>
+<<<<<<< HEAD
         <button id="requestButton" type="button">Request</button>
     </form>
     <form method="post" class="login-card">
+=======
+    </form> -->
+    <form method="post" class="login-card w-75">
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
+        <!-- {{ form.as_p }} -->
+        <p class="display-5 text-center" style="text-shadow: none; padding-bottom: 1rem;">Log in</p>
+        <input autocomplete="off" autofocus input type="text" id="username" placeholder="Username" name="username">
+        <input autocomplete="off" autofocus input type="password" id="password" placeholder="Password" name="password">
+        <button id="login_B" type="button">Login</button>
         <button id="register_B" type="button">Register</button>
     </form>
 </div>

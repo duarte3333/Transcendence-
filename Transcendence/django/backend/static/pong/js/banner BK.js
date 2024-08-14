@@ -7,11 +7,6 @@ export class Banner {
         this.playerName = playerName;
         this.playerNickname = playerNickname;
         this.playerStats = playerStats;
-
-        this.profilePhoto;
-        this.nameText;
-        this.nicknameText;
-        this.statsText;
     }
 
     createBanner() {
@@ -65,23 +60,9 @@ export class Banner {
         statsText.style.borderRadius = "10px";
         statsText.style.fontSize = "0.8rem";
 
-        this.profilePhoto = profilePhoto;
-        this.nameText = nameText;
-        this.nicknameText = nicknameText;
-        this.statsText = statsText;
-
         bannerContainer.appendChild(profilePhoto);
         bannerContainer.appendChild(nameText);
         bannerContainer.appendChild(nicknameText);
         bannerContainer.appendChild(statsText);
-    }
-
-    clearBanner()
-    {
-        const bannerContainer = document.getElementById('banner');
-        bannerContainer.removeChild(this.profilePhoto);
-        bannerContainer.removeChild(this.nameText);
-        bannerContainer.removeChild(this.nicknameText);
-        bannerContainer.removeChild(this.statsText);
     }
 }

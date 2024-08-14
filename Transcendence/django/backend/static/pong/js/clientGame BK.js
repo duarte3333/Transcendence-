@@ -4,9 +4,10 @@ import { events } from "./events.js";
 import { Score } from "./score.js";
 import { map } from "./map.js";
 import { Paddle } from "./paddles.js"
-import { sleep } from "./auxFts.js";
 import { createScoreBoard } from "./score.js";
+import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
+
 
 function resizeCanvas() {
   const canvas = document.getElementById('clientPong');
@@ -25,12 +26,13 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 export class ClientGame {
+  
 //   playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name");
   canvas = document.getElementById("clientPong");
   playerName;
   objects = new Map();
   numCandies = 1;
-  // numberOfPlayers = 2;
+  numberOfPlayers = 2;
   pause = false;
   speed = 2.5;
   isScoring = false;
@@ -39,17 +41,11 @@ export class ClientGame {
   candies = [];
   fps = 0;
   ball = new Ball();
-  paddleNames = [];
-
 
   //INITIALIZE GAME
   constructor(numPlayers, controlsList, playerName) {
-    console.log("Client Game constructor");
-    //console.log(controlsList);
     this.numberOfPlayers = numPlayers;
 	  this.playerName = playerName;
-    this.paddleNames = Object.keys(controlsList);
-    //console.log(this.paddleNames);
 	  const row = document.getElementById("clientGame");
     //row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
@@ -57,8 +53,6 @@ export class ClientGame {
   }
   
   setupGame(controlsList) {
-    //console.log("Setting up client game");
-    //console.log(controlsList);
     this.addMap(map);
     this.addPaddles(controlsList);
     this.addBall();
@@ -67,7 +61,7 @@ export class ClientGame {
 	  // this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
-  }
+  } 
 
   init() {
     setInterval(this.draw.bind(this), 1000 / 60);
@@ -75,13 +69,13 @@ export class ClientGame {
       // console.log(`fps = ${this.fps}`);
       this.fps = 0;
     }, 1000);
-    //console.log("Client Game initialized");
+    console.log("Client Game initialized");
   }
 
   //ADD OBJECTS TO GAME
   addMap(map) {
     map.img.src = "/static/pong/img/lisboa3.png";
-    map.pattern.src = "/static/pong/img/cobblestone.jpg";
+    map.pattern.src = "/static/pong/img/cobblestone.jpg"
     map.color =  "teal";
     map.radius = this.canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
@@ -94,13 +88,9 @@ export class ClientGame {
   }
 
   addPaddles(controlsList) {
-    //console.log("Adding paddles");
-    //console.log(controlsList);
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      //console.log(this.paddleNames[i-1]);
-      //console.log(controlsList[this.paddleNames[i-1]]);
-      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]);
+      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[`Player${i}`]);
       // temp.print();
       temp.draw(this.context);
       this.objects.set(temp.name, temp);
@@ -172,7 +162,8 @@ export class ClientGame {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
-    } else {
+    } 
+    else {
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 

@@ -1,13 +1,16 @@
 import {views} from "../../main/js/main.js"
+import { highlightButtonNavbar } from "./navbar.js";
 // import {secureElement} from "../../main/js/main.js"	
 
 views.setElement("/home/", (state) => {
+	//caso de merda a visualizar mudar block para flex
 	views.get("/navbar/").display(state);
 	document.getElementById("homeBody").style.display = state;
+	highlightButtonNavbar("home");
 })
 .setEvents(
 	[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
-	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ]
+	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ],
 );
 
 // document.addEventListener('DOMContentLoaded', function() {
@@ -23,6 +26,7 @@ views.setElement("/home/", (state) => {
 // })
 
 function nextPage(event, type) {
+	console.log("type == " + type);
 	const oldParent = event.target.closest('.displayDiv');
     if (!oldParent) 
 		return;
@@ -41,20 +45,22 @@ function nextPage(event, type) {
 
 	const match = document.createElement('button');
 	match.className = "btn btn-outline-dark w-25 bodyBtns";
+	match.id = "button_1";
 	match.type = "button";
 	match.textContent = "Match";
-	match.addEventListener('click', () => {
-		tournamentStart(div, type);
-	});
+	if (type == "playOnline")
+		match.addEventListener('click', onlineMatch);
+	rowButtons.appendChild(match);
 
 	const tournament = document.createElement('button');
 	tournament.className = "btn btn-outline-dark w-25 bodyBtns";
+	tournament.id = "button_2";
 	tournament.type = "button";
 	tournament.textContent = "Tournament";
 	tournament.addEventListener('click', () => {
-		tournamentStart(div, type);
+		// tournamentStart(div, type);
 	});
-
+	rowButtons.appendChild(tournament);
 
 	const rowBack = document.createElement('div');
 	rowBack.className = "row d-flex align-items-center";
@@ -68,8 +74,6 @@ function nextPage(event, type) {
 	`;
 	
 	rowBack.appendChild(back);
-	rowButtons.appendChild(match);
-	rowButtons.appendChild(tournament);
 	div.appendChild(rowButtons);
 	div.appendChild(rowBack);
 	container.appendChild(div);
@@ -82,3 +86,38 @@ function goBack(div, oldParent) {
 	div.remove();
 	oldParent.style.setProperty('display', 'block', 'important');
 }
+<<<<<<< HEAD
+=======
+
+function onlineMatch() {
+
+	const button_1 = document.getElementById("button_1");
+	const button_2 = document.getElementById("button_2");
+
+	button_1.innerText = "Normal";
+	button_2.innerText = "Fun";
+
+	button_1.removeEventListener("click", onlineMatch);
+	// button_2.removeEventListener("click", playOnlineTournament());
+
+	button_1.addEventListener("click", (event) => {
+		playOnlineMatch(event, "Normal");
+	});
+	button_2.addEventListener("click", (event) => {
+		playOnlineMatch(event, "Fun");
+	});
+}
+
+function playOnlineMatch(event, type) {
+	const container = event.target.closest('.container');
+	if (!container) return;
+	container.innerHTML = `<div class="row justify-content-center align-items-center" style="margin-bottom: 7rem; margin-top: 3rem;">
+	<h5 class="display-1 text-center" style="font-size:3.5rem">Searching for an opponent...</h5>
+	</div>
+	<div class="row justify-content-center align-items-center">
+		<div class="spinner-border text-primary" role="status"></div>
+	</div>`;
+
+	//request match to backend aqui
+}
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6

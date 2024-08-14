@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% load static %}
 
 <style id="register-style">
@@ -93,4 +94,22 @@
         <button type="submit">Register</button>
         <button id="login_B" type="button">Login</button>
     </form>
+=======
+<div id="registerBody" class="login d-flex justify-content-start" style="display: none !important;">
+    <div class="col-5 d-flex justify-content-start" style="margin-left: 4rem;">
+        <form method="post" class="login-card">
+            {% csrf_token %}
+            <!-- {{ form.as_p }} -->
+            <p class="display-5 text-center" style="text-shadow: none; padding-bottom: 1rem;">Register</p>
+            <div id="errors" class="invalid-feedback noTextShadow">Error.</div>
+            <label class="noTextShadow">Username</label>
+            <input autocomplete="off" autofocus input type="text" id="usernameR" placeholder="" name="username">
+            <label class="noTextShadow">Password</label>
+            <input autocomplete="off" autofocus input type="password" id="passwordR" placeholder="" name="password">
+            <label class="noTextShadow">Display Name</label>
+            <input autocomplete="off" autofocus input type="text" id="displayNameR" placeholder="" name="displayName" >
+            <button id="registerFinal" type="button" style="margin-top: 1rem;">Register</button>
+        </form>
+    </div>
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
 </div>

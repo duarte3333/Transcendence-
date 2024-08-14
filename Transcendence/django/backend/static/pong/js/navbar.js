@@ -1,14 +1,28 @@
-import {views} from "../../main/js/main.js"
-// import {secureElement} from "../../main/js/main.js"	
+import { views } from "../../main/js/main.js";
 
 views.setElement("/navbar/", (state) => {
+	// console.log("1navbar " + state);
+	// console.log("2navbar style " + (document.getElementById("navbarBody").style.display = state));
 	document.getElementById("navbarBody").style.display = state;
+	// console.log("3navbar style after " + (document.getElementById("navbarBody").style.display = state));
 	if (state == "block") {
 		document.getElementById('menuClose').click();
 	}
+	// views.bind("/settings/").then(settings => settings.display(state));
 })
 .setEvents(
-	[ "settingsButton", "click", () => views.urlLoad("/settings/")]
+	[ "settingsButton", "click", () => views.urlLoad("/settings/")],
+	[ "homeButton", "click", () => views.urlLoad("/home/")],
+	[ "friendsButton", "click", () => generateFriendsList()],
+	[ "addFriendFinal", "click", () => addFriendInputCheck()],
+	[ "addFriend", "click", () => {
+		const addFriendInputField = document.getElementById("validationServer01");
+        addFriendInputField.value = ''; // Clear the input field
+        const notFound = document.getElementById("notFound");
+        const alreadyFriend = document.getElementById("alreadyFriend");
+        notFound.style.display = "none";
+        alreadyFriend.style.display = "none";
+	}],
 );
 
 let users = [
@@ -26,29 +40,28 @@ let friends = [
 ];
 
 
-document.addEventListener('DOMContentLoaded', function() {
-	const friendsButton = document.getElementById("friendsButton");
-	friendsButton.addEventListener('click', generateFriendsList);
+// document.addEventListener('DOMContentLoaded', function() {
+// 	const friendsButton = document.getElementById("friendsButton");
+// 	friendsButton.addEventListener('click', generateFriendsList);
 
-	const addFriendInput = document.getElementById("addFriendFinal");
-	addFriendInput.addEventListener('click', addFriendInputCheck);
+// 	const addFriendInput = document.getElementById("addFriendFinal");
+// 	addFriendInput.addEventListener('click', addFriendInputCheck);
 
 	
-    const addFriend = document.getElementById('addFriend');
-    addFriend.addEventListener('click', function() {
-        const addFriendInputField = document.getElementById("validationServer01");
-        addFriendInputField.value = ''; // Clear the input field
-        const notFound = document.getElementById("notFound");
-        const alreadyFriend = document.getElementById("alreadyFriend");
-        notFound.style.display = "none";
-        alreadyFriend.style.display = "none";
-    });
+//     const addFriend = document.getElementById('addFriend');
+//     addFriend.addEventListener('click', function() {
+//         const addFriendInputField = document.getElementById("validationServer01");
+//         addFriendInputField.value = ''; // Clear the input field
+//         const notFound = document.getElementById("notFound");
+//         const alreadyFriend = document.getElementById("alreadyFriend");
+//         notFound.style.display = "none";
+//         alreadyFriend.style.display = "none";
+//     });
 
-});
+// });
 
 
-function generateFriendsList(event) {
-
+function generateFriendsList() {
 
 	let friendsList = document.getElementById("friendsList");
 	if (!friendsList) {
@@ -124,7 +137,25 @@ function addFriendInputCheck() {
 	}
 }
 
-// function addFriend() {
-// 	let modal = document.getElementById("addFriendModal");
-// 	modal.style.display = "flex";
-// }
+// document.body.insertBe	fore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
+
+// document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
+
+
+export function highlightButtonNavbar(page) {
+	const lastPageElements = document.getElementsByClassName("active");
+
+	//needs to be converted to an array so it can use forEach
+    if (lastPageElements.length > 0) {
+		Array.from(lastPageElements).forEach(page => page.className = "nav-link");
+    } else {
+        console.log("No active page found.");
+    }
+	if (page == "home")
+		document.getElementById("homeButton").className = "nav-link active";
+	else if (page == "settings")
+		document.getElementById("settingsButton").className = "nav-link active";
+	else if (page == "profile")
+		document.getElementById("profileButton").className = "nav-link active";
+}
+

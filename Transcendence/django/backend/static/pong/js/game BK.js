@@ -1,17 +1,14 @@
 import { Ball } from "./ball.js";
 import { Candy } from "./candy.js";
 import { events } from "./events.js";
-import { Score, checkGameOver, createScoreBoard, clearScoreBoard } from "./score.js";
+import { Score, checkGameOver } from "./score.js";
 import { map } from "./map.js";
-import { Paddle, writePaddleNames } from "./paddles.js";
+import { Paddle, writePaddleNames } from "./paddles.js"
+import { createScoreBoard } from "./score.js";
 import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
-
-import { socket } from "./myWebSocket.js";
-
-
-
+import { Tournament } from "./tournament.js";
 
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
@@ -26,39 +23,48 @@ function resizeCanvas() {
   scoreBoard.style.height = `${width}px`;
 }
 
+// function resizeCanvas() {
+//   const canvas = document.getElementById('clientPong');
+//   const banner = document.getElementById('banner');
+//   //const scoreBoard = document.getElementById('scoreBoard');
+  
+  
+//   const width = window.innerWidth;  // More reliable measurement of the viewport width
+//   canvas.width = width;  // Set the canvas width to fill the container or viewport
+//   canvas.height = width;  // Maintain a 1:1 aspect ratio for the canvas
+
+//   const heightProportion = width / 5;  // Example proportion based on design needs
+//   banner.style.height = `${heightProportion}px`;  // Set proportionally smaller than canvas
+//   //scoreBoard.style.height = `${canvas.height}px`;  // Same as banner
+// }
+
 export class Game {
+  playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
+  objects = new Map();
+  numCandies = 1;
+  numberOfPlayers = 2;
+  pause = false;
+  speed = 2.5;
+  isScoring = false;
+  events = new events(this);  // Initialize events after setting up game
+  candies = [];
+  fps = 0;
+  ball = new Ball();
+  finish = false;
+  winner = 0;
+  tournament = null;
+
+  //INITIALIZE GAME
   constructor(numPlayers, controlsList) {
-    this.playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
-    this.objects = new Map();
-    this.numCandies = 1;
+    this.client = new ClientGame(numPlayers, controlsList, "paddle_2"); //<-- CLIENT GAME
     this.numberOfPlayers = numPlayers;
-    this.pause = false;
-    this.speed = 2.5;
-    this.isScoring = false;
-    this.events = new events(this);
-    this.candies = [];
-    this.fps = 0;
-    this.ball = new Ball();
-    this.finish = false;
-    this.winner = 0;
-    this.winnerName = null;
-    this.tournament = null;
-    this.paddleNames = [];
-    this.gameLoop = null;
-    this.loser = null;
-    console.log("GAME BETWEEN", controlsList);
-
-    console.log("Game constructor");
-    //console.log(controlsList);
-
-    this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
-    this.paddleNames = Object.keys(controlsList);
     const row = document.getElementById("game");
     row.style.display = "flex";
+    const canvas = document.getElementById("pongCanvas");
     this.context = canvas.getContext("2d");
-    this.setupGame(controlsList);
+    this.setupGame(controlsList);  // Initialize game after setting context
   }
-
+  
   setupGame(controlsList) {
     this.addMap(map);
     this.addPaddles(controlsList);
@@ -67,33 +73,20 @@ export class Game {
     createScoreBoard(this.numberOfPlayers);
     this.playerBanner.createBanner();
     resizeCanvas();
+    const temp = document.getElementById("scoreBoard");
     this.init();
-<<<<<<< HEAD
-    if (!socket)
-      initializeWebSocket();
-=======
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
-  }
+  } 
 
   init() {
-    this.gameLoop = setInterval(this.draw.bind(this), 1000 / 60);
+    setInterval(this.draw.bind(this), 1000 / 60);
     setInterval(() => {
+      // console.log(`fps = ${this.fps}`);
       this.fps = 0;
     }, 1000);
     console.log("Game initialized");
   }
 
-  cleanup() {
-    clearInterval(this.gameLoop);
-    this.events.removeControls();
-    this.gameLoop = null;
-    this.objects.clear();
-    this.finish = false;
-    this.winner = null;
-    this.context.clearRect(0, 0, canvas.width, canvas.height);
-    document.getElementById("game").style.display = "none";
-  }
-
+  //ADD OBJECTS TO GAME
   addMap(map) {
     map.img.src = "/static/pong/img/lisboa3.png";
     map.pattern.src = "/static/pong/img/cobblestone.jpg"
@@ -101,7 +94,8 @@ export class Game {
     map.radius = canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
     map.size = canvas.width;
-    if (map.sides < 4) map.sides = 4;
+    if (map.sides < 4) //protect in case there is only one player and player * 2 is equal to 2
+      map.sides = 4;
     map.prepareMap();
     map.draw(this.context);
     this.objects.set(map.name, map);
@@ -110,7 +104,8 @@ export class Game {
   addPaddles(controlsList) {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]);
+      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[`Player${i}`]);
+      // temp.print();
       temp.draw(this.context);
       this.objects.set(temp.name, temp);
     }
@@ -134,56 +129,21 @@ export class Game {
     }
   }
 
-<<<<<<< HEAD
-  sendPaddleUpdate(paddle, name) {
-    if (socket) {
-      console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
-      socket.send(JSON.stringify({
-        'type': 'paddle_update',
-        'paddle_x': paddle.x,
-        'paddle_y': paddle.y,
-        'sender': name
-      }))
-    } 
-  }
-  
-  sendBallUpdate(ball) {
-    if (socket) {
-      console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
-      socket.send(JSON.stringify({
-        'type': 'ball_update',
-        'ball_x': ball.x,
-        'ball_y': ball.y,
-      }))
-    }
-  } 
-  
   //UPDATE OBJECTS
-=======
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
   update() {
     const ball = this.objects.get("ball");
 
+    //Update players paddle and ball
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-<<<<<<< HEAD
-      let paddle = this.objects.get("paddle_" + i);
-      paddle.move();
-      //send paddle info to client
-      this.sendPaddleUpdate(paddle, "paddle_" + i);
-      this.client.updatePlayer(paddle);
-    }
-    ball.move(this);
-    //send ball info to client
-    this.sendBallUpdate(ball);
-=======
       let temp = this.objects.get("paddle_" + i);
       temp.move();
+      //send paddle info to client
       this.client.updatePlayer(temp);
     }
     ball.move(this);
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
+    //send ball info to client
     this.client.updateBall(ball);
-
+    //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
       let temp = this.objects.get("candy_" + i);
       this.client.updateCandy(temp);
@@ -196,7 +156,7 @@ export class Game {
     }
   }
 
-  togglePause() {
+  tooglePause() {
     this.pause = !this.pause;
   }
 
@@ -209,9 +169,10 @@ export class Game {
         element.draw(this.context);
       });
 
-<<<<<<< HEAD
     } 
     else if (this.finish) {
+      
+      
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
@@ -220,7 +181,7 @@ export class Game {
       gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
       this.context.fillStyle = gradient;
       this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
-      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadow
       //tell who wins
       this.context.font = "bold 30px Poppins, sans-serif";
       this.context.fillStyle = "black";
@@ -242,61 +203,7 @@ export class Game {
       this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
       writePaddleNames(this);
-=======
-    } else if (this.finish) {
-      this.displayGameOver();
-    } else if (this.pause) {
-      this.displayPaused();
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
     }
-  }
-
-  displayGameOver() {
-    // this.cleanup();
-    this.context.font = "bold 40px Poppins, sans-serif";
-    this.context.fillStyle = "black";
-    this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
-    this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
-    gradient.addColorStop("0", "white");
-    gradient.addColorStop("1", "#759ad7");
-    this.context.fillStyle = gradient;
-    this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
-    this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
-
-    this.context.font = "bold 30px Poppins, sans-serif";
-    this.context.fillStyle = "black";
-    this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
-    this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    this.context.fillStyle = gradient;
-    this.context.fillText(`Player ${this.winner} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
-    this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
-
-    document.getElementById("game").style.display = "none";
-    document.getElementById("gameForm").style.display = "block";
-    this.winnerName = this.paddleNames[this.winner - 1];
-    this.events.removeControls();
-    clearScoreBoard();
-    this.playerBanner.clearBanner();
-    clearInterval(this.gameLoop);
-
-    console.log("Game::Game acabouuu");
-
-  }
-
-  displayPaused() {
-    this.client.updatePause(this.pause);
-    this.context.font = "bold 40px Poppins, sans-serif";
-    this.context.fillStyle = "black";
-    this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
-    this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
-    gradient.addColorStop("0", "white");
-    gradient.addColorStop("1", "#759ad7");
-    this.context.fillStyle = gradient;
-    this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
-    this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
-    writePaddleNames(this);
   }
 
   updateGameSpeed(speed) {
