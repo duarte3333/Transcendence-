@@ -34,6 +34,7 @@ class Chat {
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatSideBar = document.getElementById('chatSideBar');
     this.blockUserButton = document.getElementById('blockUserButton');
+    this.unblockUserButton = document.getElementById('unblockUserButton');
 
     this.SelectedPlayer = null;
     this.chatBody = null;
@@ -44,7 +45,6 @@ class Chat {
 
     this.chatHash = null;
     this.messagesHistory = new Map();
-    // this.connectWebSocket();
 
     this.setupEventListeners();
     this.chatWindow.style.display = "flex";
@@ -58,18 +58,35 @@ class Chat {
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
     if (this.blockUserButton)
       this.blockUserButton.addEventListener('click', () => this.blockUser());
+    if (this.unblockUserButton)
+      this.unblockUserButton.addEventListener('click', () => this.unBlockUser());
     this.setup();
   }
 
   blockUser() {
-    if (socket && this.SelectedPlayer) {
+    if (socket && this.SelectedPlayer && !this.BlockedStatus) {
       console.log("User blocked: ", this.SelectedPlayer);
       socket.send(JSON.stringify({
         'type': 'blocked_conversation',
         'hash': this.chatHash,
       }))
       this.BlockedStatus = !this.BlockedStatus;
-      document.getElementById(`chatButton_${this.SelectedPlayer}`).style.display = 'flex';
+      this.unblockUserButton.style.display = 'flex';
+      this.blockUserButton.style.display = 'none';
+    }
+    console.log("User Status: ", this.BlockedStatus);
+  }
+
+  unBlockUser() {
+    if (socket && this.SelectedPlayer && this.BlockedStatus) {
+      console.log("User unblocked: ", this.SelectedPlayer);
+      socket.send(JSON.stringify({
+        'type': 'unblocked_conversation',
+        'hash': this.chatHash,
+      }))
+      this.BlockedStatus = !this.BlockedStatus;
+      this.unblockUserButton.style.display = 'none';
+      this.blockUserButton.style.display = 'flex';
     }
     console.log("User Status: ", this.BlockedStatus);
   }
