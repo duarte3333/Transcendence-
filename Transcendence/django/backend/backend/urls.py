@@ -35,7 +35,7 @@ Including another URLconf
 
 from login.views import login_view, logout_view, register, user_info
 from main.views import main_view
-from pong.views import home, game, pong, navbar, settings, profile, tournamentLocal
+from pong.views import home, pong, navbar, settings, profile, tournamentLocal
 from django.contrib import admin
 from django.urls import path, re_path
 from django.shortcuts import redirect
@@ -48,7 +48,7 @@ urlpatterns = [
     path('home/', home, name='home'),
     path('pong/index', pong, name='pong'),
 
-    path('api/home/', game),
+    path('api/home/', home),
     path('api/', login_view),
     path('api/logout/', logout_view),
     path('api/pong/index', pong),
@@ -58,7 +58,7 @@ urlpatterns = [
     # path('api/api/settings/', settingssettings/'),
     path('api/settings/', settings),
     path('api/profile/', profile),
-    re_path(r'^.*$', main_view)  # Captura todas as URLs
+    re_path(r'^.*$', main_view),  # Captura todas as URLs
     # re_path(r'^(?!api/).*$', main_view),  # Capture all URLs except those starting with 'api/'
     path('tournament/local/', tournamentLocal, name='tournamentLocal'),
     # path('navbar/', navbar, name='navbar'),

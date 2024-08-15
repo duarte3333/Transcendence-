@@ -1,8 +1,6 @@
 // import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
 
-console.log("main script");
-
 function secureElement(element) {
     var found = document.getElementById(element);
     if (found)

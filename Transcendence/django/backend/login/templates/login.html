@@ -1,14 +1,6 @@
 <div id="login-body" class="login d-flex" style="display: none;">
-    <!-- <form class="login-card">
-        <input autocomplete="off" autofocus input type="text" id="username" placeholder="Username" name="username">
-        <input autocomplete="off" autofocus input type="password" id="password" placeholder="Password" name="password">
-        <button id="login_B" type="button">Login</button>
-        <button id="register_B" type="button">Register</button>
-        <button id="chat_B" type="button">chat</button>
-    </form> -->
     <form method="post" class="login-card w-75">
         {% csrf_token %}
-        <!-- {{ form.as_p }} -->
         <p class="display-5 text-center" style="text-shadow: none; padding-bottom: 1rem;">Log in</p>
         <div id="errorsLogin" class="invalid-feedback noTextShadow">Error.</div>
         <input autocomplete="off" autofocus input type="text" id="username" placeholder="Username" name="username">
