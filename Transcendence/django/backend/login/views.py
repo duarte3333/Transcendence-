@@ -74,7 +74,7 @@ def user_info(request):
         'display_name': user.display_name,
         'profile_picture': user.profile_picture.url if user.profile_picture else None,
         'banner_picture': user.banner_picture.url if user.banner_picture else None,
-        'down_key': user.down_key if user.banner_picture else none,
-        'up_key': user.up_key if user.banner_picture else none,
+        'down_key': user.down_key if user.banner_picture else None,
+        'up_key': user.up_key if user.banner_picture else None,
     }
     return JsonResponse(data)
