@@ -206,6 +206,7 @@ class GenericConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.username = self.scope['url_route']['kwargs']['username']
         self.group_name = f'chat_{self.username}'
+        self.blocked_chats = set()
 
         # Adiciona o usuário ao grupo pessoal
         await self.channel_layer.group_add(
@@ -234,23 +235,34 @@ class GenericConsumer(AsyncWebsocketConsumer):
         if message_type == 'chat_message':
             logger.info(f'Received message: {text_data} e do hash ${hash_value}')
             await self.handle_chat_message(text_data_json, hash_value)
+        elif message_type == 'blocked_conversation':
+            self.blocked_chats.add(hash_value)
+            await self.send(text_data=json.dumps({
+                'type': 'conversation_blocked',
+                'hash': hash_value
+            }))
 
     async def handle_chat_message(self, data, hash_value):
-        message = data.get('message')
-        sender = data.get('sender')
-        receiver = data.get('receiver')
+        if hash_value in self.blocked_chats:
+            await self.send(text_data=json.dumps({
+                'error': 'This conversation is blocked.'
+            }))
+        else:    
+            message = data.get('message')
+            sender = data.get('sender')
+            receiver = data.get('receiver')
 
-        # Enviar a mensagem para o grupo do destinatário
-        await self.channel_layer.group_send(
-            f'chat_{receiver}',
-            {
-                'type': 'chat_message',
-                'message': message,
-                'sender': sender,
-                'receiver': receiver,
-                'hash': hash_value
-            }
-        )
+            # Enviar a mensagem para o grupo do destinatário
+            await self.channel_layer.group_send(
+                f'chat_{receiver}',
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'sender': sender,
+                    'receiver': receiver,
+                    'hash': hash_value
+                }
+            )
 
     async def chat_message(self, event):
         message = event['message']

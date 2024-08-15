@@ -33,6 +33,7 @@ class Chat {
     this.chatInput = document.getElementById('chatInput');
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatSideBar = document.getElementById('chatSideBar');
+    this.blockUserButton = document.getElementById('blockUserButton');
 
     this.SelectedPlayer = null;
     this.chatBody = null;
@@ -55,7 +56,18 @@ class Chat {
       this.chatButton.addEventListener('click', () => this.toggleChatWindow());
     if (this.sendChatButton)
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
+    if (this.blockUserButton)
+      this.blockUserButton.addEventListener('click', () => this.blockUser());
     this.setup();
+  }
+
+  blockUser() {
+    if (socket && this.SelectedPlayer) {
+      socket.send(JSON.stringify({
+        'type': 'block_users',
+        'blocked_user': this.chatHash,
+      }))
+    }
   }
 
   createAndStoreHash(speaker, audience, context) {
@@ -145,7 +157,6 @@ class Chat {
     document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
     console.log("SelectChannel() " + this.SelectedPlayer);
   }
-
 
   toggleChatWindow() {
     if (!socket)
