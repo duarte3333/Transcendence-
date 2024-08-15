@@ -48,7 +48,6 @@ export function initializeWebSocket(username) {
     }
 }
 
-
 function handleWebSocketData(data) {
     console.log("handleWebSocketData() Message received from server:", data);
 
@@ -58,17 +57,20 @@ function handleWebSocketData(data) {
         const sender = data.sender;
         const receiver = data.receiver;
 
-        const storedHash = localStorage.getItem(`${sender}_${receiver}_chatHash`);
+        const storedHash = localStorage.getItem(`${sender}_${receiver}_chat`);
 
-        if (hash === storedHash) {
-            console.log("handleWebSocketData() messages: " + message);
-            window.chat.storeMessages(sender, receiver, hash, message);
-            window.chat.addToMessagesHistory(storedHash, message);
-            window.chat.appendChatMessage(message, sender);
-        }
-        else {
-            console.error("Hash mismatch: Mensagem recebida para um hash desconhecido:", hash);
-        }
+        console.log("handleWebSocketData() hash: " + hash);
+        console.log("handleWebSocketData() storedHash: " + storedHash);
+
+
+        window.chat.storeMessages(sender, receiver, hash, message);
+        window.chat.addToMessagesHistory(hash, message);
+        console.log("handleWebSocketData() window.chat.SelectedPlayer: ", window.chat.SelectedPlayer);
+        console.log("handleWebSocketData() receiver: ", sender);
+
+        if (window.chat.SelectedPlayer === sender)
+            window.chat.appendChatMessage(sender, receiver);
+  
     } else {
         console.error("Unexpected message type received:", data.type);
     }

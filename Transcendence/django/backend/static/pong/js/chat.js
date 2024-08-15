@@ -46,7 +46,7 @@ class Chat {
     // this.connectWebSocket();
 
     this.setupEventListeners();
-    this.closeChat();
+    this.chatWindow.style.display = "flex";
   }
 
   
@@ -61,10 +61,10 @@ class Chat {
   createAndStoreHash(speaker, audience, context) {
 
     console.log("createAndStoreHash() speaker " + speaker);
-    console.log("createAndStoreHash() audience" + audience);
+    console.log("createAndStoreHash() audience " + audience);
 
     this.chatHash = createChatHash(speaker, audience, context);
-    localStorage.setItem(`${speaker}_${audience}_chatHash`, this.chatHash);
+    localStorage.setItem(`${speaker}_${audience}_chat`, this.chatHash);
   }
 
   async setup() {
@@ -96,10 +96,6 @@ class Chat {
     };
     this.chatSideBar.appendChild(button);
 
-    const ChatBodyChild = document.createElement("div");
-    ChatBodyChild.id = `chatBody_${User}`;
-    ChatBodyChild.style.display = 'none';
-    chatBody.appendChild(ChatBodyChild);
   }
 
   generatePlayerButtons() {
@@ -124,90 +120,94 @@ class Chat {
   }
 
   selectChannel(channel) {
-    let showtext = "";
-    if (!this.messages[`chatBody_${channel}`])
-      this.messages[`chatBody_${channel}`] = [];
+    //Apenas para testes
+    // localStorage.clear();
+    let User;
+    if (this.SelectedPlayer === 'Liberal') {
+      User = JSON.parse(ActiveUser2)[0].username;
+    } else {
+      User = JSON.parse(ActiveUser)[0].username;
+    }
+    //FIm dos Testes
+    
+    //let hash = localStorage.getItem(hashkey);
+    this.createAndStoreHash(User, channel, 'chat');
+    if (!this.messagesHistory.has(this.chatHash))
+      this.messagesHistory.set(this.chatHash, []);
+    
 
-    for (let element of this.messages[`chatBody_${channel}`])
-      showtext += element.message;
-    console.log(this.SelectedPlayer);
-    // console.log("--SeletectChannel---------");
-    // console.log(showtext);
-    // console.log("-----------");
-    document.getElementById("chatBodyChildren").innerHTML = showtext;
+    console.log("User ", User);
+    console.log("channel ", channel);
+    console.log("hash ", this.chatHash);
+
+    this.appendChatMessage(User, this.SelectedPlayer);
     
     document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
     console.log("SelectChannel() " + this.SelectedPlayer);
   }
 
+
   toggleChatWindow() {
     if (!socket)
       initializeWebSocket();
-    this.open ? this.closeChat() : this.openChat();
+    this.open ? this.chatWindow.style.display = "none" : this.chatWindow.style.display = "flex";
     this.open = !this.open;
-  }
-
-  closeChat() {
-    this.chatWindow.style.display = "none";
-  }
-
-  openChat() {
-    this.chatWindow.style.display = "flex";
   }
 
   sendChatMessage() {
     const message = this.chatInput.value;
     if (message && socket && this.SelectedPlayer != null) {
-
+      //Isso está aqui para teste e simulação
       let User;
-
       if (this.SelectedPlayer === 'Liberal') {
         User = JSON.parse(ActiveUser2)[0].username;
       } else {
         User = JSON.parse(ActiveUser)[0].username;
       }
+      //Remove
 
-      console.log("this.speaker " + User);
-      console.log("this.SelectedPlayer " + this.SelectedPlayer);
-
-      localStorage.clear();
-      const hashkey = `${User}_${this.SelectedPlayer}_chatHash`;
-      let hash = localStorage.getItem(hashkey);
-      
-      if (hash == undefined) {
-        this.createAndStoreHash(User, this.SelectedPlayer, 'chat');
-        hash = localStorage.getItem(hashkey);
-      }
-      this.chatHash = hash;
-      console.log("this.chatHash() Hash: " + this.chatHash);
-      if (message && socket && hash != null) {
+      if (message && socket && this.chatHash != null) {
         socket.send(JSON.stringify({
           'type': 'chat_message',
           'message': message,
           'sender': User,
           'receiver': this.SelectedPlayer,
-          'hash': hash
+          'hash': this.chatHash
         }));
         this.chatInput.value = '';
       }
 
+      const storedHash = localStorage.getItem(`${User}_${this.SelectedPlayer}_chat`);
+      console.log("sendChatMessage() storedHash", storedHash);
       const fullMessage = `${User}: ${message + "<br>"}`;
-      this.storeMessages(User, this.SelectedPlayer, hash, fullMessage);
-      this.addToMessagesHistory(hash, fullMessage);  // Adiciona ao Map
-
-      const playerId = this.SelectedPlayer.replace('Player', 'player_');
-
-      this.appendChatMessage(fullMessage, this.SelectedPlayer);
+      this.storeMessages(User, this.SelectedPlayer, this.chatHash, fullMessage);
+      this.addToMessagesHistory(this.chatHash, fullMessage); 
+      this.appendChatMessage(User, this.SelectedPlayer);
     } else {
       console.error("sendChatMessage() Message not sent: invalid conditions.");
     }
+  }
+
+  appendChatMessage(sender, receiver) {
+    const chatBodyChildren = document.getElementById(`chatBodyChildren`);
+    // console.log("appendChatMessage() hash ", hash);
+    const storedHash = localStorage.getItem(`${sender}_${receiver}_chat`);
+
+    console.log("appendChatMessage() storedHash: " + storedHash);
+
+    if (!this.messagesHistory.has(storedHash))
+      this.messagesHistory.set(storedHash, []);
+    
+
+    let messages = this.messagesHistory.get(storedHash);
+    chatBodyChildren.innerHTML = "";
+      messages.forEach((msg) => chatBodyChildren.innerHTML += msg + "\n")
   }
 
   storeMessages(sender, receiver, hash, message) {
     if (!this.messagesHistory.has(hash)) {
       this.messagesHistory.set(hash, []);
     }
-
     this.messagesHistory.get(hash).forEach((msg, index) => {
       console.log(`Message ${index + 1}: ${msg}`);
     });
@@ -223,22 +223,7 @@ class Chat {
       console.log(`Message ${index + 1}: ${msg}`);
     });
   } 
-
-  appendChatMessage(message, player) {
-    console.log(`appendChatMessage() chatBody_${player}`);
-    const chatBodyChildren = document.getElementById(`chatBody_${player}`);
-
-    const line = message + '\n';
-    if (chatBodyChildren) {
-      chatBodyChildren.innerHTML += `<div>${line}</div>`;
-      // chatBodyChildren.style.display = 'flex';
-      chatBodyChildren.style.flexDirection = 'column';
-    } else {
-      console.error(`chatBodyChildren not found for player: ${player}`);
-    }
-  }
 }
-
 
 // Para solucionar o caso de usuários iguais terem o mesmo hash, eu poderei
 //acrescentar a esse hash o email do user. Assim garantimos que enquanto o 
@@ -334,3 +319,41 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   */
+
+/*appendChatMessage(message, player) {
+    // console.log(`appendChatMessage() chatBody_${player}`);
+    const chatBodyChildren = document.getElementById(`chatBody_${player}`);
+    
+    const line = message + '\n';
+    if (chatBodyChildren) {
+      console.log("appendChatMessage() dentro do IF statement " + player);
+      chatBodyChildren.innerHTML += `<div>${line}</div>`;
+      chatBodyChildren.style.display = 'flex';
+      chatBodyChildren.style.flexDirection = 'column';
+    } else {
+      console.error(`chatBodyChildren not found for player: ${player}`);
+    }
+  }
+*/
+
+/*selectChannel(channel) {
+
+  let showtext = "";
+  if (!this.messages[`chatBody_${channel}`])
+    this.messages[`chatBody_${channel}`] = [];
+
+  console.log(`Quero ver o que está a ser buscado aqui ${channel}`);
+
+  for (let element of this.messages[`chatBody_${channel}`])
+    showtext += element.message;
+
+  // console.log("--SeletectChannel---------");
+  // console.log(showtext);
+  // console.log("-----------");
+  document.getElementById("chatBodyChildren").innerText = showtext;
+  
+  document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
+  console.log("SelectChannel() " + this.SelectedPlayer);
+}*/
+
+

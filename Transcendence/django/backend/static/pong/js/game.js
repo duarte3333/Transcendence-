@@ -13,8 +13,6 @@ import { Tournament } from "./tournament.js";
 import { socket } from "./myWebSocket.js";
 
 
-
-
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
 
@@ -136,28 +134,28 @@ export class Game {
     }
   }
 
-  sendPaddleUpdate(paddle, name) {
+  sendPaddleUpdate(paddle) {
     if (socket) {
       console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
       socket.send(JSON.stringify({
         'type': 'paddle_update',
         'paddle_x': paddle.x,
         'paddle_y': paddle.y,
-        'sender': name
+        'sender': paddle.displayName
       }))
     } 
   }
   
-  sendBallUpdate(ball) {
-    if (socket) {
-      console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
-      socket.send(JSON.stringify({
-        'type': 'ball_update',
-        'ball_x': ball.x,
-        'ball_y': ball.y,
-      }))
-    }
-  } 
+  // sendBallUpdate(ball) {
+  //   if (socket) {
+  //     console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
+  //     socket.send(JSON.stringify({
+  //       'type': 'ball_update',
+  //       'ball_x': ball.x,
+  //       'ball_y': ball.y,
+  //     }))
+  //   }
+  // } 
   
   //UPDATE OBJECTS
   update() {
@@ -168,7 +166,7 @@ export class Game {
       let paddle = this.objects.get("paddle_" + i);
       paddle.move();
       //send paddle info to client
-      this.sendPaddleUpdate(paddle, "paddle_" + i);
+      this.sendPaddleUpdate(paddle);
       this.client.updatePlayer(paddle);
     }
     ball.move(this);
@@ -247,3 +245,10 @@ export class Game {
     player_2.speed = 3 * this.speed;
   }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('username') || 'test_user';
+
+  console.log(username);
+})
