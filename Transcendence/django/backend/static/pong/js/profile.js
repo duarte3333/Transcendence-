@@ -1,42 +1,47 @@
 import {views} from "../../main/js/main.js"
 import { highlightButtonNavbar } from "./navbar.js";
+import { getUser } from "./user.js"
 
-let user = {
-    username: "teo123",
-    displayName: "Teo",
-    profilePicture: "/static/pong/img/p1.png",
-    banner: "/static/pong/img/banner.jpeg",
-    wins: 12,
-    losses: 7,
-	matchHistory: {
-		match_001: { type: "normal",  numPlayers: 2, players: ["Teo", "Antonio"], hostName: "Teo", id:"001", finalscore: {Teo:5, Antonio: 3}, date:[10, 8, 2024], winner:"Teo"},
-		match_002: { type: "normal",  numPlayers: 3, players: ["Teo", "Antonio", "Joao"], hostName: "Joao", id:"002", finalscore: {Teo:4, Antonio: 1, Joao:5}, date:[9, 8, 2024], winner:"Joao"},
-		match_003: { type: "tournament quarters",  numPlayers: 2, players: ["Teo", "Nuno"], hostName: "Teo", id:"003", finalscore: {Teo:3, Nuno: 5}, date:[7, 8, 2024], winner:"Nuno"},
-		match_004: { type: "tournament final",  numPlayers: 2, players: ["Teo", "Duarte"], hostName: "Duarte", id:"004", finalscore: {Teo:5, Duarte: 4}, date:[7, 8, 2024], winner:"Teo"},
-		match_005: { type: "normal",  numPlayers: 4, players: ["Teo", "Antonio", "Duarte", "Nuno"], hostName: "Nuno", id:"005", finalscore: {Teo:3, Antonio: -1, Duarte:5, Nuno:4}, date:[6, 8, 2024], winner:"Duarte"},
-	}
-};
 
-views.setElement("/profile/", (state) => {
+
+// let user = {
+//     username: "teo123",
+//     displayName: "Teo",
+//     profilePicture: "/static/pong/img/p1.png",
+//     banner: "/static/pong/img/banner.jpeg",
+//     wins: 12,
+//     losses: 7,
+// 	matchHistory: {
+// 		match_001: { type: "normal",  numPlayers: 2, players: ["Teo", "Antonio"], hostName: "Teo", id:"001", finalscore: {Teo:5, Antonio: 3}, date:[10, 8, 2024], winner:"Teo"},
+// 		match_002: { type: "normal",  numPlayers: 3, players: ["Teo", "Antonio", "Joao"], hostName: "Joao", id:"002", finalscore: {Teo:4, Antonio: 1, Joao:5}, date:[9, 8, 2024], winner:"Joao"},
+// 		match_003: { type: "tournament quarters",  numPlayers: 2, players: ["Teo", "Nuno"], hostName: "Teo", id:"003", finalscore: {Teo:3, Nuno: 5}, date:[7, 8, 2024], winner:"Nuno"},
+// 		match_004: { type: "tournament final",  numPlayers: 2, players: ["Teo", "Duarte"], hostName: "Duarte", id:"004", finalscore: {Teo:5, Duarte: 4}, date:[7, 8, 2024], winner:"Teo"},
+// 		match_005: { type: "normal",  numPlayers: 4, players: ["Teo", "Antonio", "Duarte", "Nuno"], hostName: "Nuno", id:"005", finalscore: {Teo:3, Antonio: -1, Duarte:5, Nuno:4}, date:[6, 8, 2024], winner:"Duarte"},
+// 	}
+// };
+
+views.setElement("/profile/", async (state) => {
 	//caso de merda a visualizar mudar block para flex
 	views.get("/navbar/").display(state);
 	document.getElementById("profileBody").style.display = state;
-	loadProfile();
+	let user = await getUser();
+	loadProfile(user);
 	highlightButtonNavbar("profile");
 })
 .setEvents(
 	[ "matchHistoryButton", "click",  (event) => showMatchHistory(event)]
-);
-
-function loadProfile() {
+	);
+	
+	function loadProfile(user) {
+	console.log("user =>>> " + user.display_name);
 	const header = document.getElementById("header");
-	header.style.backgroundImage = `url(${user.banner})`;
+	header.style.backgroundImage = `url(${user.banner_picture})`;
 
 	const profilePicture = document.getElementById("profilePicture");
-	profilePicture.setAttribute('src', user.profilePicture);
+	profilePicture.setAttribute('src', user.profile_picture);
 
 	const displayName = document.getElementById("displayName");
-	displayName.innerText = user.displayName;
+	displayName.innerText = user.display_name;
 
 	const winsRatio = document.getElementById("winsRatio");
 	winsRatio.innerText = `Wins: ${user.wins}, Losses: ${user.losses}`;

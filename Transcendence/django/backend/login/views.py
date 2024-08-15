@@ -32,45 +32,6 @@ def login_view(request):
     else:
         return render(request, 'index.html')
 
-
-    # if request.method == 'POST':
-    #     form = AuthenticationForm(request, data=request.POST)
-    #     if form.is_valid():
-    #         username = form.cleaned_data.get('username')
-    #         password = form.cleaned_data.get('password')
-    #         user = authenticate(request, username=username, password=password)
-    #         if user is not None:
-    #             login(request, user)
-    #             messages.info(request, f"You are now logged in as {username}.")
-    #             return redirect('home')  # Redirect to a home page or another page
-    #         else:
-    #             messages.error(request, "Invalid username or password.")
-    #     else:
-    #         messages.error(request, "Invalid username or password.")
-    # else:
-    #     form = AuthenticationForm()
-    # return render(request, 'index.html', {'form': form})
-
-# def login_view(request):
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request, data=request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 messages.info(request, f"You are now logged in as {username}.")
-#                 return redirect('home')  # Redirect to a home page or another page
-#             else:
-#                 messages.error(request, "Invalid username or password.")
-#         else:
-#             messages.error(request, "Invalid username or password.")
-#     else:
-#         form = AuthenticationForm()
-#     return render(request, 'index.html', {'form': form})
-
-
 def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
@@ -107,3 +68,16 @@ def register(request):
         # Respond with success
         return JsonResponse({'success': True})
         # return render(request, 'index.html')
+
+@login_required
+def user_info(request):
+    user = request.user
+    data = {
+        'username': user.username,
+        'display_name': user.display_name,
+        'profile_picture': user.profile_picture.url if user.profile_picture else None,
+        'banner_picture': user.banner_picture.url if user.banner_picture else None,
+        'down_key': user.down_key if user.banner_picture else none,
+        'up_key': user.up_key if user.banner_picture else none,
+    }
+    return JsonResponse(data)

@@ -33,7 +33,7 @@ Including another URLconf
 #     # path('api/register/', register),
 # ]
 
-from login.views import login_view, logout_view, register
+from login.views import login_view, logout_view, register, user_info
 from pong.views import home, pong, navbar, settings, profile, tournamentLocal
 from django.contrib import admin
 from django.urls import path, re_path
@@ -41,7 +41,7 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    path('api/user-info/', user_info, name='user-info'),
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', home, name='home'),
