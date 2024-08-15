@@ -58,19 +58,18 @@ function handleWebSocketData(data) {
         const receiver = data.receiver;
 
         const storedHash = localStorage.getItem(`${sender}_${receiver}_chat`);
-
-        console.log("handleWebSocketData() hash: " + hash);
-        console.log("handleWebSocketData() storedHash: " + storedHash);
-
-
+        // console.log("handleWebSocketData() hash: " + hash);
+        // console.log("handleWebSocketData() storedHash: " + storedHash);
         window.chat.storeMessages(sender, receiver, hash, message);
         window.chat.addToMessagesHistory(hash, message);
         console.log("handleWebSocketData() window.chat.SelectedPlayer: ", window.chat.SelectedPlayer);
         console.log("handleWebSocketData() receiver: ", sender);
 
-        if (window.chat.SelectedPlayer === sender)
+        if (window.chat.SelectedPlayer === sender) 
             window.chat.appendChatMessage(sender, receiver);
-  
+    } else if (data.type === 'conversation_blocked') {
+        //alterar o status do user para blocked
+        
     } else {
         console.error("Unexpected message type received:", data.type);
     }

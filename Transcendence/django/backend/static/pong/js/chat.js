@@ -40,7 +40,7 @@ class Chat {
     this.open = false;
     this.messages = {};
     this.General = {};
-
+    this.BlockedStatus = false;
 
     this.chatHash = null;
     this.messagesHistory = new Map();
@@ -63,11 +63,15 @@ class Chat {
 
   blockUser() {
     if (socket && this.SelectedPlayer) {
+      console.log("User blocked: ", this.SelectedPlayer);
       socket.send(JSON.stringify({
-        'type': 'block_users',
-        'blocked_user': this.chatHash,
+        'type': 'blocked_conversation',
+        'hash': this.chatHash,
       }))
+      this.BlockedStatus = !this.BlockedStatus;
+      document.getElementById(`chatButton_${this.SelectedPlayer}`).style.display = 'flex';
     }
+    console.log("User Status: ", this.BlockedStatus);
   }
 
   createAndStoreHash(speaker, audience, context) {
@@ -102,12 +106,12 @@ class Chat {
     const button = document.createElement("button");
         
     button.innerText = User;
+    button.id = `chatButton_${User}`
     button.onclick = () => {
       this.SelectedPlayer = User;
       this.selectChannel(User);
     };
     this.chatSideBar.appendChild(button);
-
   }
 
   generatePlayerButtons() {
@@ -141,6 +145,8 @@ class Chat {
       User = JSON.parse(ActiveUser)[0].username;
     }
     //FIm dos Testes
+
+    this.blockUserButton.style.display = 'flex';
     
     //let hash = localStorage.getItem(hashkey);
     this.createAndStoreHash(User, channel, 'chat');
@@ -167,7 +173,7 @@ class Chat {
 
   sendChatMessage() {
     const message = this.chatInput.value;
-    if (message && socket && this.SelectedPlayer != null) {
+    if (message && socket && this.SelectedPlayer != null && !this.BlockedStatus) {
       //Isso está aqui para teste e simulação
       let User;
       if (this.SelectedPlayer === 'Liberal') {
@@ -175,7 +181,6 @@ class Chat {
       } else {
         User = JSON.parse(ActiveUser)[0].username;
       }
-      //Remove
 
       if (message && socket && this.chatHash != null) {
         socket.send(JSON.stringify({
@@ -196,6 +201,7 @@ class Chat {
       this.appendChatMessage(User, this.SelectedPlayer);
     } else {
       console.error("sendChatMessage() Message not sent: invalid conditions.");
+      this.chatInput.value = '';
     }
   }
 

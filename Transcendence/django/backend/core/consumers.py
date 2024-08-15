@@ -237,6 +237,7 @@ class GenericConsumer(AsyncWebsocketConsumer):
             await self.handle_chat_message(text_data_json, hash_value)
         elif message_type == 'blocked_conversation':
             self.blocked_chats.add(hash_value)
+            logger.info(f'Received message: {text_data} e do hash ${hash_value}')
             await self.send(text_data=json.dumps({
                 'type': 'conversation_blocked',
                 'hash': hash_value
