@@ -68,9 +68,11 @@ function handleWebSocketData(data) {
         if (window.chat.SelectedPlayer === sender) 
             window.chat.appendChatMessage(sender, receiver);
     } else if (data.type === 'conversation_blocked') {
-        //alterar o status do user para blocked
-        
-    } else {
+        console.log("conversation_blocked ", data);
+    } else if (data.type === 'unblocked_conversation') {
+        console.log("unblocked_conversation ", data);
+    }    
+    else {
         console.error("Unexpected message type received:", data.type);
     }
 }

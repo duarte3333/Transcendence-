@@ -231,17 +231,27 @@ class GenericConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
         hash_value = text_data_json.get('hash')
+        blocked_user = text_data_json.get('user')
 
-        if message_type == 'chat_message':
-            logger.info(f'Received message: {text_data} e do hash ${hash_value}')
-            await self.handle_chat_message(text_data_json, hash_value)
-        elif message_type == 'blocked_conversation':
+
+        if message_type == 'blocked_conversation':
             self.blocked_chats.add(hash_value)
-            logger.info(f'Received message: {text_data} e do hash ${hash_value}')
+            await self.notify_user_blocked(hash_value, blocked_user)
             await self.send(text_data=json.dumps({
                 'type': 'conversation_blocked',
                 'hash': hash_value
             }))
+        elif message_type == 'unblocked_conversation':
+            self.blocked_chats.discard(hash_value)
+            await self.notify_user_unblocked(hash_value, blocked_user)
+            await self.send(text_data=json.dumps({
+                'type': 'unblocked_conversation',
+                'hash': hash_value
+            }))        
+        
+        elif message_type == 'chat_message':
+            await self.handle_chat_message(text_data_json, hash_value)
+        
 
     async def handle_chat_message(self, data, hash_value):
         if hash_value in self.blocked_chats:
@@ -279,4 +289,5 @@ class GenericConsumer(AsyncWebsocketConsumer):
             'receiver': receiver,
             'hash': hash_value
         }))
-
+    #
+    

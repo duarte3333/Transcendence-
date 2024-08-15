@@ -68,6 +68,7 @@ class Chat {
       console.log("User blocked: ", this.SelectedPlayer);
       socket.send(JSON.stringify({
         'type': 'blocked_conversation',
+        'user': this.SelectedPlayer,
         'hash': this.chatHash,
       }))
       this.BlockedStatus = !this.BlockedStatus;
@@ -82,6 +83,7 @@ class Chat {
       console.log("User unblocked: ", this.SelectedPlayer);
       socket.send(JSON.stringify({
         'type': 'unblocked_conversation',
+        'user': this.SelectedPlayer,
         'hash': this.chatHash,
       }))
       this.BlockedStatus = !this.BlockedStatus;
