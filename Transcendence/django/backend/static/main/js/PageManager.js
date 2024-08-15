@@ -8,7 +8,7 @@ export class PageManager {
     #currentPage;
 
     constructor(current) {
-        this.#pageMap = new Map();
+        this.#pageMap = new Map();  
         this.#onScreen = new Set();
         this.#onDom = new Set();
         this.#currentPage = "current";
