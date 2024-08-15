@@ -1,23 +1,5 @@
 import {views} from "../../main/js/main.js"
-// import { highlightButtonNavbar } from "./navbar.js";
 // import {secureElement} from "../../main/js/main.js"	
-
-function highlightButtonNavbar(page) {
-	const lastPageElements = document.getElementsByClassName("active");
-
-	//needs to be converted to an array so it can use forEach
-    if (lastPageElements.length > 0) {
-		Array.from(lastPageElements).forEach(page => page.className = "nav-link");
-    } else {
-        console.log("No active page found.");
-    }
-	if (page == "home")
-		document.getElementById("homeButton").className = "nav-link active";
-	else if (page == "settings")
-		document.getElementById("settingsButton").className = "nav-link active";
-	else if (page == "profile")
-		document.getElementById("profileButton").className = "nav-link active";
-}
 
 
 
@@ -25,8 +7,9 @@ views.setElement("/home/", (state) => {
 	//caso de merda a visualizar mudar block para flex
 	views.get("/navbar/").display(state);
 	document.getElementById("homeBody").style.display = state;
-	highlightButtonNavbar("home");
+	views.get("/footer/").display(state);
 })
+.setChilds(["/navbar/", "/footer/"])
 .setEvents(
 	[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
 	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ],
@@ -105,8 +88,6 @@ function goBack(div, oldParent) {
 	div.remove();
 	oldParent.style.setProperty('display', 'block', 'important');
 }
-<<<<<<< HEAD
-=======
 
 function onlineMatch() {
 
@@ -139,4 +120,3 @@ function playOnlineMatch(event, type) {
 
 	//request match to backend aqui
 }
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6

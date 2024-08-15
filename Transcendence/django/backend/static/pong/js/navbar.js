@@ -1,14 +1,12 @@
 import { views } from "../../main/js/main.js";
 
 views.setElement("/navbar/", (state) => {
-	// console.log("1navbar " + state);
-	// console.log("2navbar style " + (document.getElementById("navbarBody").style.display = state));
+	
 	document.getElementById("navbarBody").style.display = state;
-	// console.log("3navbar style after " + (document.getElementById("navbarBody").style.display = state));
 	if (state == "block") {
 		document.getElementById('menuClose').click();
+		highlightButtonNavbar();
 	}
-	// views.bind("/settings/").then(settings => settings.display(state));
 })
 .setEvents(
 	[ "settingsButton", "click", () => views.urlLoad("/settings/")],
@@ -142,8 +140,10 @@ function addFriendInputCheck() {
 // document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
 
-function highlightButtonNavbar(page) {
+function highlightButtonNavbar() {
 	const lastPageElements = document.getElementsByClassName("active");
+
+	const page = window.location.pathname;
 
 	//needs to be converted to an array so it can use forEach
     if (lastPageElements.length > 0) {
@@ -151,11 +151,11 @@ function highlightButtonNavbar(page) {
     } else {
         console.log("No active page found.");
     }
-	if (page == "home")
+	if (page == "/home/")
 		document.getElementById("homeButton").className = "nav-link active";
-	else if (page == "settings")
+	else if (page == "/settings/")
 		document.getElementById("settingsButton").className = "nav-link active";
-	else if (page == "profile")
+	else if (page == "/profile/")
 		document.getElementById("profileButton").className = "nav-link active";
 }
 

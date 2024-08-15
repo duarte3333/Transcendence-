@@ -1,5 +1,4 @@
 import {views} from "../../main/js/main.js"
-// import { highlightButtonNavbar } from "./navbar.js";
 // import {secureElement} from "../../main/js/main.js"	
 // import {sleep} from "./auxFts.js"
 
@@ -21,32 +20,14 @@ let user = {
 	// }
 };
 
-function highlightButtonNavbar(page) {
-	const lastPageElements = document.getElementsByClassName("active");
-
-	//needs to be converted to an array so it can use forEach
-    if (lastPageElements.length > 0) {
-		Array.from(lastPageElements).forEach(page => page.className = "nav-link");
-    } else {
-        console.log("No active page found.");
-    }
-	if (page == "home")
-		document.getElementById("homeButton").className = "nav-link active";
-	else if (page == "settings")
-		document.getElementById("settingsButton").className = "nav-link active";
-	else if (page == "profile")
-		document.getElementById("profileButton").className = "nav-link active";
-}
-
-
 views.setElement("/settings/", (state) => {
 	//caso de merda a visualizar mudar block para flex
 	views.get("/navbar/").display(state);
 	document.getElementById("settingsContainer").style.display = state;
 	loadProfileSettings();
-	highlightButtonNavbar("settings");
+	views.get("/footer/").display(state);
 })
-// .setChilds(["/navbar/"])
+.setChilds(["/navbar/", "/footer/"])
 .setEvents(
 	[ "changeUsername", "click",  (event) => changeText(event, "username")],
 	[ "changeDisplayName", "click",  (event) => changeText(event, "displayName")],

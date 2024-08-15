@@ -1,5 +1,4 @@
 import {views} from "../../main/js/main.js"
-import { highlightButtonNavbar } from "./navbar.js";
 import { getUser } from "./user.js"
 
 
@@ -26,14 +25,14 @@ views.setElement("/profile/", async (state) => {
 	document.getElementById("profileBody").style.display = state;
 	let user = await getUser();
 	loadProfile(user);
-	highlightButtonNavbar("profile");
+	views.get("/footer/").display(state);
 })
+.setChilds(["/navbar/", "/footer/"])
 .setEvents(
 	[ "matchHistoryButton", "click",  (event) => showMatchHistory(event)]
 	);
 	
-	function loadProfile(user) {
-	console.log("user =>>> " + user.display_name);
+function loadProfile(user) {
 	const header = document.getElementById("header");
 	header.style.backgroundImage = `url(${user.banner_picture})`;
 

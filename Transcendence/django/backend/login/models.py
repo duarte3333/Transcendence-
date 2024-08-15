@@ -18,11 +18,11 @@ class PongUser(AbstractUser):
     )
     display_name = models.CharField(max_length=255, blank=False, null=True)
     profile_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="/static/pong/img/p1.png")
-    banner_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="/static/pong/img/banner.png")
+    banner_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="/static/pong/img/banner.jpeg")
     down_key = models.CharField(max_length=1, blank=True, null=True)
     up_key = models.CharField(max_length=1, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True, unique=True)
 
+    email = None
     first_name = None
     last_name = None
     date_joined = None
@@ -32,4 +32,7 @@ class PongUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+
 

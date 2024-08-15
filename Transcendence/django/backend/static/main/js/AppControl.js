@@ -54,7 +54,7 @@ export class AppControl {
             // document.body.innerHTML = appHtml;
             console.log("----------------");
             console.log(find);
-            if (find == "api/settings/")
+            if (find == "api/footer/")
                 console.log(appHtml);
             console.log("----------------");
             await this.#executeScript(newdiv);

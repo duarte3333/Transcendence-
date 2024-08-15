@@ -1,33 +1,42 @@
-from django.shortcuts import render
-from django import http
-from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.csrf import csrf_exempt
 import json
-from django.core.serializers import serialize
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from .models import Game
+from django.contrib.auth.decorators import login_required
 
+@login_required
 @csrf_exempt
-def get_user(request):
-    if request.method == "GET":
-        users = User.objects.all()
-        user_list = list(users.values('username'))
-        return JsonResponse({'users':user_list}, status=200)
-    if request.method == "POST":
-        data = json.loads(request.body)
-        username = data.get('username')
+def create_game(request):
+    if request.method == 'POST':
+        return JsonResponse({'success': True, 'game': json.loads(request.body)}, status=201)
         try:
-            user = User.objects.get(username=username) 
-            user_data = {
-                    'username': user.username,
-                    'email': user.email,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name
-            }
-            return JsonResponse({"user": user_data}, status=200)
-        except ObjectDoesNotExist:
-            return JsonResponse({'error': 'User does not exist', 'username': username}, status=404)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
-    
-        
+            # Parse do JSON recebido
+            data = json.loads(request.body)
+            players = data.get('players', [])
+            game_type = data.get('type')
+            number_of_players = data.get('number_of_players')
+
+            # Validação básica dos parâmetros
+            if not players or not game_type or not number_of_players:
+                return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+            # Verifique se o número de jogadores é consistente com a lista de IDs
+            if len(players) != number_of_players:
+                return JsonResponse({'error': 'Number of players does not match the list of player IDs'}, status=400)
+
+            # Criação do objeto Game
+            game = Game.create(
+                players=players,
+                type=game_type,
+                playerHost=request.user.id,
+                number_of_players=number_of_players
+            )
+
+            # Resposta de sucesso
+            return JsonResponse({'success': True, 'game': game}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Invalid method'}, status=405)

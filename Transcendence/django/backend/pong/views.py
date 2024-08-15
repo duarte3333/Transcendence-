@@ -19,3 +19,6 @@ def profile(request):
 
 def tournamentLocal(request):
     return render(request, 'pong_game.html')
+
+def footer(request):
+    return render(request, 'pong_footer.html')

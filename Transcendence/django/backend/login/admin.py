@@ -7,7 +7,7 @@ class PongUserAdmin(UserAdmin):
 
     # Fields to display when viewing or editing a user
     fieldsets = (
-        (None, {'fields': ('username', 'password', 'email')}),
+        (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('display_name', 'profile_picture', 'banner_picture')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Custom Controls', {'fields': ('up_key', 'down_key')}),
