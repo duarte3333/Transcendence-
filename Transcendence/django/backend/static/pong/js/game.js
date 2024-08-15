@@ -8,6 +8,11 @@ import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 import { ClientGame } from "./clientGame.js";
 
+import { socket } from "./myWebSocket.js";
+
+
+
+
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
 
@@ -63,6 +68,11 @@ export class Game {
     this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
+<<<<<<< HEAD
+    if (!socket)
+      initializeWebSocket();
+=======
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
   }
 
   init() {
@@ -124,15 +134,54 @@ export class Game {
     }
   }
 
+<<<<<<< HEAD
+  sendPaddleUpdate(paddle, name) {
+    if (socket) {
+      console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
+      socket.send(JSON.stringify({
+        'type': 'paddle_update',
+        'paddle_x': paddle.x,
+        'paddle_y': paddle.y,
+        'sender': name
+      }))
+    } 
+  }
+  
+  sendBallUpdate(ball) {
+    if (socket) {
+      console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
+      socket.send(JSON.stringify({
+        'type': 'ball_update',
+        'ball_x': ball.x,
+        'ball_y': ball.y,
+      }))
+    }
+  } 
+  
+  //UPDATE OBJECTS
+=======
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
   update() {
     const ball = this.objects.get("ball");
 
     for (let i = 1; i <= this.numberOfPlayers; i++) {
+<<<<<<< HEAD
+      let paddle = this.objects.get("paddle_" + i);
+      paddle.move();
+      //send paddle info to client
+      this.sendPaddleUpdate(paddle, "paddle_" + i);
+      this.client.updatePlayer(paddle);
+    }
+    ball.move(this);
+    //send ball info to client
+    this.sendBallUpdate(ball);
+=======
       let temp = this.objects.get("paddle_" + i);
       temp.move();
       this.client.updatePlayer(temp);
     }
     ball.move(this);
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
     this.client.updateBall(ball);
 
     for (let i = 1; i <= this.numCandies; i++) {
@@ -160,10 +209,45 @@ export class Game {
         element.draw(this.context);
       });
 
+<<<<<<< HEAD
+    } 
+    else if (this.finish) {
+      this.context.font = "bold 40px Poppins, sans-serif";
+      this.context.fillStyle = "black";
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
+      this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
+      var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
+      this.context.fillStyle = gradient;
+      this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
+      //tell who wins
+      this.context.font = "bold 30px Poppins, sans-serif";
+      this.context.fillStyle = "black";
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
+      this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
+      this.context.fillStyle = gradient;
+      this.context.fillText(`Player ${this.winner} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
+    }
+    else if(this.pause){
+      this.client.updatePause(this.pause);
+      this.context.font = "bold 40px Poppins, sans-serif";
+      this.context.fillStyle = "black";
+      this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
+      this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
+      var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
+      this.context.fillStyle = gradient;
+      this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
+      this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
+      writePaddleNames(this);
+=======
     } else if (this.finish) {
       this.displayGameOver();
     } else if (this.pause) {
       this.displayPaused();
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
     }
   }
 

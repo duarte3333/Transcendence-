@@ -47,11 +47,13 @@ views.setElement("/home/", (state) => {
 function nextPage(event, type) {
 	console.log("type == " + type);
 	const oldParent = event.target.closest('.displayDiv');
-    if (!oldParent) return;
+    if (!oldParent) 
+		return;
 	oldParent.style.setProperty('display', 'none', 'important');
 
 	const container = event.target.closest('.container');
-	if (!container) return;
+	if (!container) 
+		return;
 
 	const div = document.createElement('div');
 	div.id = type +  "div";
@@ -103,6 +105,8 @@ function goBack(div, oldParent) {
 	div.remove();
 	oldParent.style.setProperty('display', 'block', 'important');
 }
+<<<<<<< HEAD
+=======
 
 function onlineMatch() {
 
@@ -135,3 +139,4 @@ function playOnlineMatch(event, type) {
 
 	//request match to backend aqui
 }
+>>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6

@@ -10,3 +10,4 @@ __pycache__
 *.pkl
 */migrations/*
 !*/migrations/__init__.py
+myenv

@@ -1,6 +1,21 @@
 // import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function secureElement(element) {
     var found = document.getElementById(element);
     if (found)
@@ -47,7 +62,8 @@ function loginPost() {
     fetch('api/login/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify(data),
     })
@@ -70,11 +86,11 @@ function loginPost() {
         // Handle successful registration here (e.g., redirect user or show success message)
     })
     .catch(error => {
-        // console.error('Error:', error);
-        const errorMessage = error.message.replace(/^Error:\s*/, '');
-        const errors = document.getElementById("errorsLogin");
-        errors.style.display = "block";
-        errors.innerText = errorMessage;
+        console.error('Error:', error);
+        // const errorMessage = error.message.replace(/^Error:\s*/, '');
+        // const errors = document.getElementById("errorsLogin");
+        // errors.style.display = "block";
+        // errors.innerText = errorMessage;
         // Handle error here (e.g., show an error message to the user)
     });
 }
@@ -94,7 +110,8 @@ function registerPost() {
     fetch('api/register/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify(data)
     })
