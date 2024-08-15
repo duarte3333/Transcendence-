@@ -86,6 +86,7 @@ function loginPost() {
         // Handle successful registration here (e.g., redirect user or show success message)
     })
     .catch(error => {
+        console.log("aqui")
         console.error('Error:', error);
         // const errorMessage = error.message.replace(/^Error:\s*/, '');
         // const errors = document.getElementById("errorsLogin");
