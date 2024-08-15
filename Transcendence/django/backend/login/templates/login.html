@@ -10,6 +10,7 @@
         {% csrf_token %}
         <!-- {{ form.as_p }} -->
         <p class="display-5 text-center" style="text-shadow: none; padding-bottom: 1rem;">Log in</p>
+        <div id="errorsLogin" class="invalid-feedback noTextShadow">Error.</div>
         <input autocomplete="off" autofocus input type="text" id="username" placeholder="Username" name="username">
         <input autocomplete="off" autofocus input type="password" id="password" placeholder="Password" name="password">
         <button id="login_B" type="button">Login</button>

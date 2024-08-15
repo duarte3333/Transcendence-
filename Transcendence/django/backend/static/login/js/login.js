@@ -1,4 +1,4 @@
-import { AppControl } from "../../main/js/AppControl.js";
+// import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
 
 function getCookie(name) {
@@ -25,8 +25,10 @@ function secureElement(element) {
 }
 
 views.setElement("/", (state) => {
+    // views.get("/navbar/").display(state);
     secureElement("login-body").style.display = state;
 })
+// .setChilds(["/navbar/"])
 .setEvents(
     ["login_B", "click", () => loginPost()],
     ["register_B", "click", () => registerLoad()],
@@ -84,7 +86,11 @@ function loginPost() {
         // Handle successful registration here (e.g., redirect user or show success message)
     })
     .catch(error => {
-        console.error('Error:', error);
+        // console.error('Error:', error);
+        const errorMessage = error.message.replace(/^Error:\s*/, '');
+        const errors = document.getElementById("errorsLogin");
+        errors.style.display = "block";
+        errors.innerText = errorMessage;
         // Handle error here (e.g., show an error message to the user)
     });
 }

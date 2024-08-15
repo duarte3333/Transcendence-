@@ -3,10 +3,13 @@ export class Page {
     #eventInfo;
     #name;
     #onDisplay;
+    #bindings;
+    #html;
 
     constructor(name, displayFunc, events) {
         this.#displayFunction = displayFunc;
         this.#eventInfo = [];
+        this.#bindings = [];
         this.#name = name;
         this.#onDisplay = "none";
         if (events) this.addEvents(events);
@@ -42,6 +45,24 @@ export class Page {
             else
                 element.removeEventListener(event.type, event.handler);
         });
+    }
+
+    setChilds(elements) {
+        this.#bindings = elements;
+        return (this);
+    }
+
+    getFamilyTree() {
+        return (this.#bindings);
+    }
+
+    getHtml() {
+        return (this.#html);
+    }
+
+    setHtml(tag) {
+        console.log("html page " + this.#name);
+        this.#html = tag;
     }
 
     display(state) {

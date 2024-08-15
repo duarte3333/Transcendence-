@@ -4,11 +4,13 @@ import { AppControl } from "./AppControl.js";
 export class PageManager {
     #pageMap;
     #onScreen;
+    #onDom;
     #currentPage;
 
     constructor(current) {
         this.#pageMap = new Map();  
         this.#onScreen = new Set();
+        this.#onDom = new Set();
         this.#currentPage = "current";
     }
 
@@ -28,32 +30,27 @@ export class PageManager {
     }
 
     get(name) {
+        // console.log("getting view " + name);
+        // while (!this.#pageMap.get(name))
+        //     ;
         return (this.#pageMap.get(name));
     }
 
-    async bind(name) {
-        if (this.#pageMap.get(name))
-            return (this.#pageMap.get(name));
-        return (AppControl.fetchApp(name));
-    }
-
-    async load(name) {
-        // if (!this.#pageMap.get(name) && !()) {
-        //     console.log(`Could not load the page: ${name}`);
-        //     return ;
-        // }
-        const page = this.#pageMap.get(name) || await AppControl.fetchApp(name)
+    show(name) {
+        const page = this.#pageMap.get(name);
         if (!page) {
             console.log("not page")
-            return;
+            return ;
         }
-        console.log("loading " + name);
+        console.log("showing " + name);
         page.display("block");
         this.#onScreen.add(page);
         this.#currentPage = window.location.pathname;
     }
 
     async preLoad(name) {
+        if (this.#pageMap.get(name))
+            return (this.#pageMap.get(name));
         if (!this.#pageMap.get(name) && !(await AppControl.fetchApp(name))) {
             console.log(`Could not load the page: ${name}`);
             return ;
@@ -64,24 +61,63 @@ export class PageManager {
         }
     }
 
+    #domLoad(element) {
+        if (document.querySelector(`[page="${element}"]`))
+            return ;
+        let page = this.get(element);
+        if (!page.getHtml())
+            console.log("trying to load not existing html " + element);
+        else
+            document.body.appendChild(page.getHtml());
+            // console.log(page.getHtml());
+            
+        this.#onDom.add(element);
+    }
+
+    #domUnload(element) {
+        if (!document.querySelector(`[page="${element}"]`)) {
+            console.log("domUnload failed " + element);
+            return ;
+        }
+        console.log("domUnload success" + element);
+        const page = this.#pageMap.get(element);
+        page.display("none");
+        document.body.removeChild(page.getHtml());
+        this.#onDom.delete(page);
+    }
+    async waitFetch(name) {
+        while (!this.#pageMap.get(name)) {
+            console.log("test");
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+
     async urlLoad(name) {
-        for await (const page of this.#onScreen)
-            page.display("none");
+        console.log("urload " + name);
+        for (const page of this.#onDom) {
+            this.#domUnload(page);
+        }
         this.#onScreen.clear();
     
-        if (this.#pageMap.get(name) || (await AppControl.fetchApp(name))) {
-            // console.log("put on screen " + name);
-            await this.load(name);
+        // document.body.innerHTML = "";
+        let child;
+        let familyTree = [name];
+        while (child = familyTree.pop()) {
+            if (!this.#pageMap.get(child) && !(await AppControl.fetchApp(child))) {
+                console.log(`The page ${child} does not exist`);
+                return ;
+            }
+            console.log(name +" loading " +child);
+            this.#domLoad(child);
+            if (child == name)
+                familyTree = [...this.get(name).getFamilyTree()];
         }
-        else {
-            // this.load("/");
-            console.log(`The page ${name} does not exist`);
-        }
+        this.show(name);
         if (window.location.pathname !== name)
             history.pushState({name: name}, '', name);
     }
 
-    unload(name) {
+    hide(name) {
         let page = this.#pageMap.get(name);
 
         if (!page) {

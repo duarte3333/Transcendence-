@@ -65,3 +65,16 @@ def register(request):
         # Respond with success
         return JsonResponse({'success': True})
         # return render(request, 'index.html')
+
+@login_required
+def user_info(request):
+    user = request.user
+    data = {
+        'username': user.username,
+        'display_name': user.display_name,
+        'profile_picture': user.profile_picture.url if user.profile_picture else None,
+        'banner_picture': user.banner_picture.url if user.banner_picture else None,
+        'down_key': user.down_key if user.banner_picture else none,
+        'up_key': user.up_key if user.banner_picture else none,
+    }
+    return JsonResponse(data)
