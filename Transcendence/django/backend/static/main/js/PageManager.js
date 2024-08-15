@@ -30,7 +30,9 @@ export class PageManager {
     }
 
     get(name) {
-        console.log("getting view " + name);
+        // console.log("getting view " + name);
+        // while (!this.#pageMap.get(name))
+        //     ;
         return (this.#pageMap.get(name));
     }
 
@@ -40,7 +42,7 @@ export class PageManager {
             console.log("not page")
             return ;
         }
-        console.log("loading " + name);
+        console.log("showing " + name);
         page.display("block");
         this.#onScreen.add(page);
         this.#currentPage = window.location.pathname;
@@ -60,24 +62,44 @@ export class PageManager {
     }
 
     #domLoad(element) {
-        console.log("trye appending " + element);
-
         if (document.querySelector(`[page="${element}"]`))
             return ;
+        let page = this.get(element);
+        if (!page.getHtml())
+            console.log("trying to load not existing html " + element);
+        else
+            document.body.appendChild(page.getHtml());
+            // console.log(page.getHtml());
+            
+        this.#onDom.add(element);
+    }
+
+    #domUnload(element) {
+        if (!document.querySelector(`[page="${element}"]`)) {
+            console.log("domUnload failed " + element);
+            return ;
+        }
+        console.log("domUnload success" + element);
         const page = this.#pageMap.get(element);
-        console.log("appending " + element);
-        document.body.appendChild(page.getHtml());
-        this.#onDom.add(page);
+        page.display("none");
+        document.body.removeChild(page.getHtml());
+        this.#onDom.delete(page);
+    }
+    async waitFetch(name) {
+        while (!this.#pageMap.get(name)) {
+            console.log("test");
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 
     async urlLoad(name) {
-        for (const page of this.#onScreen) {
-            page.display("none");
-            document.body.removeChild(page.getHtml());
+        console.log("urload " + name);
+        for (const page of this.#onDom) {
+            this.#domUnload(page);
         }
         this.#onScreen.clear();
     
-        document.body.innerHTML = "";
+        // document.body.innerHTML = "";
         let child;
         let familyTree = [name];
         while (child = familyTree.pop()) {
@@ -85,9 +107,10 @@ export class PageManager {
                 console.log(`The page ${child} does not exist`);
                 return ;
             }
+            console.log(name +" loading " +child);
             this.#domLoad(child);
             if (child == name)
-                familyTree = [...this.#pageMap.get(name).getFamilyTree()];
+                familyTree = [...this.get(name).getFamilyTree()];
         }
         this.show(name);
         if (window.location.pathname !== name)

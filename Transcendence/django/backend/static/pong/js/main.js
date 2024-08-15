@@ -1,8 +1,8 @@
 // Import our custom CSS
-import "../css/styles.css";
+// import "../css/styles.css";
 
 // Import only the Bootstrap components we need
-import { Popover } from "bootstrap";
+// import { Popover } from "bootstrap";
 
 // Create an example popover
 document.querySelectorAll('[data-bs-toggle="popover"]').forEach((popover) => {

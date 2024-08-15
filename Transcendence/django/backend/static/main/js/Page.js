@@ -52,15 +52,16 @@ export class Page {
         return (this);
     }
 
-    getFamilyTree(elements) {
+    getFamilyTree() {
         return (this.#bindings);
     }
 
-    getHtml(tag) {
+    getHtml() {
         return (this.#html);
     }
 
     setHtml(tag) {
+        console.log("html page " + this.#name);
         this.#html = tag;
     }
 

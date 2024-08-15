@@ -3,15 +3,10 @@ export class Banner {
         this.img = new Image();
         this.img.src = imgPath;
 		this.imgProfile = new Image();
-		this.imgProfile.src = "img/p1.png";
+		this.imgProfile.src = "/static/pong/img/p1.png";
         this.playerName = playerName;
         this.playerNickname = playerNickname;
         this.playerStats = playerStats;
-
-        this.profilePhoto;
-        this.nameText;
-        this.nicknameText;
-        this.statsText;
     }
 
     createBanner() {
@@ -27,7 +22,7 @@ export class Banner {
         bannerContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.5)"; // Adds depth
 
         const profilePhoto = new Image();
-        profilePhoto.src = "img/p1.png"; // Path to the player's profile photo
+        profilePhoto.src = "/static/pong/img/p1.png"; // Path to the player's profile photo
         profilePhoto.alt = 'Player Profile';
         profilePhoto.style.width = "100px"; // Set the width as needed
         profilePhoto.style.height = "100px"; // Set the height as needed
@@ -65,23 +60,9 @@ export class Banner {
         statsText.style.borderRadius = "10px";
         statsText.style.fontSize = "0.8rem";
 
-        this.profilePhoto = profilePhoto;
-        this.nameText = nameText;
-        this.nicknameText = nicknameText;
-        this.statsText = statsText;
-
         bannerContainer.appendChild(profilePhoto);
         bannerContainer.appendChild(nameText);
         bannerContainer.appendChild(nicknameText);
         bannerContainer.appendChild(statsText);
-    }
-
-    clearBanner()
-    {
-        const bannerContainer = document.getElementById('banner');
-        bannerContainer.removeChild(this.profilePhoto);
-        bannerContainer.removeChild(this.nameText);
-        bannerContainer.removeChild(this.nicknameText);
-        bannerContainer.removeChild(this.statsText);
     }
 }

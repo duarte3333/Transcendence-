@@ -30,10 +30,13 @@ export class AppControl {
 
    
     static async fetchApp(name) {
-        // console.log(`fetching =${'api/' + name} `);
         try {
-            let find = "api" + name;
-            console.log(`fetching =${find} `);
+            console.log("@@@@");
+            console.log(name);
+            console.log("@@@@");
+            // let find = "api" + name;
+            let find = "https://localhost/api" + name;
+            console.log(`fetching= ${find} `);
             const response = await fetch(find);
             if (!response.ok)
                 throw new Error('Network response was not ok: ' + response.statusText);
@@ -55,11 +58,14 @@ export class AppControl {
                 console.log(appHtml);
             console.log("----------------");
             await this.#executeScript(newdiv);
+            // const fetched = views.get(name);
+            // if (fetched)
+            // await views.waitFetch(name);
             views.get(name).setHtml(newdiv);
             return (views.get(name));
         } catch (error) {
             console.error('Error:', error);
-            return false;
+            return (false);
         }
     }
 

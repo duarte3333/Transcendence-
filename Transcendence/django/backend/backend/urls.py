@@ -34,8 +34,8 @@ Including another URLconf
 # ]
 
 from login.views import login_view, logout_view, register
-from pong.views import game, pong, navbar, settings, profile
 from main.views import main_view
+from pong.views import game, pong, navbar, settings, profile, tournamentLocal
 from django.contrib import admin
 from django.urls import path, re_path
 from django.shortcuts import redirect
@@ -43,15 +43,17 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/', login_view, name='login'),
-    path('api/logout/', logout_view, name='logout'),
-    path('api/home/', game, name='home'),
-    path('api/pong/index', pong, name='pong'),
-    path('api/register/', register, name='register'),
-    path('api/navbar/', navbar, name='navbar'),
-    path('api/api/settings/', settings, name='api/settings/'),
-    path('api/settings/', settings, name='settings'),
-    path('api/profile/', profile, name='profile'),
+    path('api/home/', game),
+    path('api/', login_view),
+    path('api/logout/', logout_view),
+    path('api/pong/index', pong),
+    path('api/register/', register),
+    path('api/navbar/', navbar),
+    path('navbar/api/navbar/', navbar),
+    # path('api/api/settings/', settingssettings/'),
+    path('api/settings/', settings),
+    path('api/profile/', profile),
     re_path(r'^.*$', main_view)  # Captura todas as URLs
+    # re_path(r'^(?!api/).*$', main_view),  # Capture all URLs except those starting with 'api/'
 
 ]

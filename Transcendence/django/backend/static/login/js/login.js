@@ -1,4 +1,4 @@
-import { AppControl } from "../../main/js/AppControl.js";
+// import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
 
 console.log("main script");
@@ -17,8 +17,8 @@ views.setElement("/", (state) => {
 })
 // .setChilds(["/navbar/"])
 .setEvents(
-    ["login_B", "click", () => {views.urlLoad("/home/")}],
-    ["register_B", "click", () => views.urlLoad("/register/")]
+    ["login_B", "click", () => views.urlLoad("/home/")],
+    ["register_B", "click", () => views.urlLoad("/settings/")]
 );
 
 views.setElement("/register/", (state) => {

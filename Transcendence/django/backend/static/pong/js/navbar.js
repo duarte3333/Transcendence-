@@ -137,12 +137,12 @@ function addFriendInputCheck() {
 	}
 }
 
-// document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
+// document.body.insertBe	fore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
 // document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
 
-export function highlightButtonNavbar(page) {
+function highlightButtonNavbar(page) {
 	const lastPageElements = document.getElementsByClassName("active");
 
 	//needs to be converted to an array so it can use forEach
