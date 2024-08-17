@@ -9,34 +9,111 @@ from django.contrib.auth.decorators import login_required
 @csrf_exempt
 def create_game(request):
     if request.method == 'POST':
-        return JsonResponse({'success': True, 'game': json.loads(request.body)}, status=201)
         try:
-            # Parse do JSON recebido
+
             data = json.loads(request.body)
-            players = data.get('players', [])
-            game_type = data.get('type')
-            number_of_players = data.get('number_of_players')
-
-            # Validação básica dos parâmetros
-            if not players or not game_type or not number_of_players:
-                return JsonResponse({'error': 'Missing parameters'}, status=400)
-
-            # Verifique se o número de jogadores é consistente com a lista de IDs
-            if len(players) != number_of_players:
-                return JsonResponse({'error': 'Number of players does not match the list of player IDs'}, status=400)
-
-            # Criação do objeto Game
-            game = Game.create(
-                players=players,
-                type=game_type,
-                playerHost=request.user.id,
-                number_of_players=number_of_players
+            game = Game().create(
+                players = data.get('players', []),
+                game_type = data.get('type'),
+                playerHost = request.user.id,
+                numberPlayers =  data.get('number_of_players')
             )
+            data["id"] = game.id
 
             # Resposta de sucesso
-            return JsonResponse({'success': True, 'game': game}, status=201)
+            return JsonResponse({'success': True, 'game': data}, status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
-    return JsonResponse({'error': 'Invalid method'}, status=405)
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+@login_required
+@csrf_exempt
+def match_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            result = Game().list(status = data.get('pending'))
+            if (len(result) == 0):
+                game = Game().create(
+                    players = data.get('players', []),
+                    game_type = data.get('type'),
+                    playerHost = request.user.id,
+                    numberPlayers =  data.get('number_of_players')
+                )
+                data["id"] = game.id
+            else:
+                return JsonResponse({'success': True, 'game': result[0]}, status=201)
+            return JsonResponse({'success': True, 'game': data}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+
+@login_required
+@csrf_exempt
+def list_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            data = []
+        result = Game().list(status = data.get('status'), playerId = data.get('playerId'))
+        return JsonResponse({'success': True, 'game': result}, status=201)
+
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+@login_required
+@csrf_exempt
+def update_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game = Game.objects.get(id=data.get("id"))
+
+            for field, value in data.items():
+                if hasattr(game, field):
+                    setattr(game, field, value)
+                else:
+                    return JsonResponse({'error': f'Field {field} does not exist on Game'}, status=400)
+            # Salvar as alterações
+            game.save()
+            return JsonResponse({'success': True, 'game': game.toJson()}, status=201)
+        except json.JSONDecodeError:
+            data = []
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+@login_required
+@csrf_exempt
+def deleted_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game = Game.objects.get(id=data.get("id"))
+            game.status = "deleted"
+            game.save()
+            return JsonResponse({'success': True, 'game': game.toJson()}, status=201)
+        except json.JSONDecodeError:
+            data = []
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+
+@login_required
+def user_profile(request):
+    user = request.user 
+    user_data = {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'display_name': user.ponguser.display_name if hasattr(user, 'ponguser') else None,
+        'profile_picture': user.ponguser.profile_picture.url if hasattr(user, 'ponguser') and user.ponguser.profile_picture else None,
+        'banner_picture': user.ponguser.banner_picture.url if hasattr(user, 'ponguser') and user.ponguser.banner_picture else None,
+    }
+    
+    return JsonResponse({'success': True, 'user': user_data}, status=200)

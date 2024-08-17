@@ -22,7 +22,7 @@ class PongUser(AbstractUser):
     down_key = models.CharField(max_length=1, blank=True, null=True)
     up_key = models.CharField(max_length=1, blank=True, null=True)
 
-    email = None
+    email = models.EmailField(unique=True, null=True, blank=True)
     first_name = None
     last_name = None
     date_joined = None

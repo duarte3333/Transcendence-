@@ -10,9 +10,6 @@ import { ClientGame } from "./clientGame.js";
 
 import { socket } from "./myWebSocket.js";
 
-
-
-
 const canvas = document.getElementById("pongCanvas");
 window.addEventListener('resize', resizeCanvas);
 
@@ -68,11 +65,8 @@ export class Game {
     this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
-<<<<<<< HEAD
     if (!socket)
       initializeWebSocket();
-=======
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
   }
 
   init() {
@@ -134,7 +128,6 @@ export class Game {
     }
   }
 
-<<<<<<< HEAD
   sendPaddleUpdate(paddle, name) {
     if (socket) {
       console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
@@ -156,34 +149,25 @@ export class Game {
         'ball_y': ball.y,
       }))
     }
-  } 
-  
-  //UPDATE OBJECTS
-=======
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
+  }
+
+    //UPDATE OBJECTS
   update() {
     const ball = this.objects.get("ball");
 
+    //Update players paddle and ball
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-<<<<<<< HEAD
       let paddle = this.objects.get("paddle_" + i);
       paddle.move();
       //send paddle info to client
-      this.sendPaddleUpdate(paddle, "paddle_" + i);
+      this.sendPaddleUpdate(paddle);
       this.client.updatePlayer(paddle);
     }
     ball.move(this);
     //send ball info to client
     this.sendBallUpdate(ball);
-=======
-      let temp = this.objects.get("paddle_" + i);
-      temp.move();
-      this.client.updatePlayer(temp);
-    }
-    ball.move(this);
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
     this.client.updateBall(ball);
-
+    //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
       let temp = this.objects.get("candy_" + i);
       this.client.updateCandy(temp);
@@ -209,7 +193,6 @@ export class Game {
         element.draw(this.context);
       });
 
-<<<<<<< HEAD
     } 
     else if (this.finish) {
       this.context.font = "bold 40px Poppins, sans-serif";
@@ -242,12 +225,10 @@ export class Game {
       this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
       writePaddleNames(this);
-=======
     } else if (this.finish) {
       this.displayGameOver();
     } else if (this.pause) {
       this.displayPaused();
->>>>>>> 007bd64a2c7e5c302ca0d34f92cb366c40c1f8f6
     }
   }
 

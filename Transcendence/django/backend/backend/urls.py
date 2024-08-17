@@ -71,8 +71,8 @@ from main.views import main_view
 from pong.views import home, pong, navbar, settings, profile, tournamentLocal, footer
 from django.contrib import admin
 from django.urls import path, re_path
-from django.shortcuts import redirect
-from api.views import create_game   
+from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -89,7 +89,14 @@ urlpatterns = [
     path('settings/', settings, name='settings'),
     path('profile/', profile, name='profile'),
     path('api/game/create', create_game),
+    path('api/game/list', list_game),
+    path('api/game/update', update_game),
+    path('api/game/deleted', deleted_game),
+    path('api/game/match', match_game),
 
+    # USER
+    path('api/user/profile', user_profile),
+    
     # RUBENS
     path('api/home/', home),
     path('api/logout/', logout_view),

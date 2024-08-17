@@ -67,8 +67,9 @@ function loginPost() {
         },
         body: JSON.stringify(data),
     })
-    .then(response => {
+    .then((response) => {
         if (!response.ok) {
+
             return response.json().then(errorData => {
                 throw new Error(errorData.error || 'Network response was not ok.');
             });
@@ -76,7 +77,6 @@ function loginPost() {
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data);
         const registerBody = document.getElementById("registerBody")
         if (registerBody) {
             registerBody.setAttribute("style", "display: none !important;");

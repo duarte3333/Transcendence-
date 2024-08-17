@@ -3,6 +3,7 @@ import {views} from "../../main/js/main.js"
 // import {sleep} from "./auxFts.js"
 
 let user = {
+	id: 2,
     username: "teo123",
     displayName: "Teo",
     profilePicture: "/static/pong/img/p1.png",

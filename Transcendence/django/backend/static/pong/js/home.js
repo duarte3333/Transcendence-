@@ -1,9 +1,24 @@
 import {views} from "../../main/js/main.js"
+// import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
 // import {secureElement} from "../../main/js/main.js"	
 
 
 
-views.setElement("/home/", (state) => {
+views.setElement("/home/", async (state) => {
+
+	await fetch('https://localhost/api/user/profile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+    })
+    .then(async (response) => {
+		const { user } = await response.json();
+		window.user = user;
+		console.log("profile: ", user)
+		return user;
+	});
 	//caso de merda a visualizar mudar block para flex
 	views.get("/navbar/").display(state);
 	document.getElementById("homeBody").style.display = state;
@@ -12,7 +27,7 @@ views.setElement("/home/", (state) => {
 .setChilds(["/navbar/", "/footer/"])
 .setEvents(
 	[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
-	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ],
+	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ] ,
 );
 
 // document.addEventListener('DOMContentLoaded', function() {
@@ -108,7 +123,34 @@ function onlineMatch() {
 	});
 }
 
-function playOnlineMatch(event, type) {
+
+function initializeWebSocket(id, playerId){
+	const chatSocket = new WebSocket(
+	 	`ws://localhost:8000/ws/game/${id}/`
+	);
+
+	chatSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+		console.log('Message:', data);
+	};
+
+	chatSocket.onclose = function(e) {
+		console.error('Chat socket closed unexpectedly');
+	};
+
+	// Enviar uma mensagem
+	chatSocket.onopen = function(e) {
+		chatSocket.send(JSON.stringify({
+			'playerId': playerId,
+			'action': 'join'
+		}));
+	};
+
+}
+
+
+function playOnlineMatch(event, type, numberPlayers = 2) {
+
 	const container = event.target.closest('.container');
 	if (!container) return;
 	container.innerHTML = `<div class="row justify-content-center align-items-center" style="margin-bottom: 7rem; margin-top: 3rem;">
@@ -118,5 +160,44 @@ function playOnlineMatch(event, type) {
 		<div class="spinner-border text-primary" role="status"></div>
 	</div>`;
 
+
 	//request match to backend aqui
+
+	const data = JSON.stringify({
+		"players": [],
+		"type": type,
+		"number_of_players": numberPlayers
+	});
+	
+	fetch('https://localhost/api/game/match', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: data,
+    })
+    .then(async (response) => {
+		const { game } = await response.json();
+		console.log(game)
+		console.log(game.id)
+		initializeWebSocket(game.id, window.user.id);
+		console.log(response)
+	});
+}
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
