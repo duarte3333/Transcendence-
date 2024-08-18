@@ -88,7 +88,7 @@ urlpatterns = [
     path('settings/', settings, name='settings'),
     path('profile/', profile, name='profile'),
     path('game/', tournamentLocal, name='mygame'),
-    
+
     # API
     #   Game
     path('api/game/create', create_game),
