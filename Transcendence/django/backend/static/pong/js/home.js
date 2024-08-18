@@ -6,6 +6,7 @@ import {views} from "../../main/js/main.js"
 
 views.setElement("/home/", async (state) => {
 
+	alert("home");
 	await fetch('https://localhost/api/user/profile', {
         method: 'POST',
         headers: {
@@ -126,29 +127,7 @@ function onlineMatch() {
 }
 
 
-function initializeWebSocket(id, playerId){
-	const chatSocket = new WebSocket(
-	 	`ws://localhost:8000/ws/game/${id}/`
-	);
 
-	chatSocket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		console.log('Message:', data);
-	};
-
-	chatSocket.onclose = function(e) {
-		console.error('Chat socket closed unexpectedly');
-	};
-
-	// Enviar uma mensagem
-	chatSocket.onopen = function(e) {
-		chatSocket.send(JSON.stringify({
-			'playerId': playerId,
-			'action': 'join'
-		}));
-	};
-
-}
 
 
 function playOnlineMatch(event, type, numberPlayers = 2) {
@@ -181,10 +160,35 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
     })
     .then(async (response) => {
 		const { game } = await response.json();
+
+
+		views.urlLoad("/game/");
+		// function checkConditionUntilTimeout() {
+		// 	let attempts = 0;
+		// 	const maxAttempts = 30;
+		
+		// 	const intervalId = setInterval(() => {
+		// 		attempts++;
+		
+		// 		// Sua condição de verificação aqui
+		// 		const conditionMet = yourConditionCheckFunction(); // Substitua isso pela sua função de verificação
+		
+		// 		if (conditionMet) {
+		// 			console.log("Condição satisfeita!");
+		// 			clearInterval(intervalId); // Para o intervalo se a condição for satisfeita
+		// 		} else if (attempts >= maxAttempts) {
+		// 			console.log("Tempo limite atingido, condição não satisfeita.");
+		// 			clearInterval(intervalId); // Para o intervalo se atingir o tempo limite
+		// 		}
+		
+		// 		console.log(`Tentativa ${attempts}`);
+		// 	}, 1000); // Checa a cada 1 segundo (1000 milissegundos)
+		// }
+		
 		console.log(game)
 		console.log(game.id)
-		initializeWebSocket(game.id, window.user.id);
-		console.log(response)
+		// initializeWebSocket(game.id, window.user.id);
+		// console.log(response)
 	});
 }
 

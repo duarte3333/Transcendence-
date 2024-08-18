@@ -58,7 +58,6 @@ function loginPost() {
         username: username.value,
         password: password.value,
     }
-
     fetch('api/login/', {
         method: 'POST',
         headers: {
@@ -160,3 +159,5 @@ function registerPost() {
         // Handle error here (e.g., show an error message to the user)
     });
 }
+
+
