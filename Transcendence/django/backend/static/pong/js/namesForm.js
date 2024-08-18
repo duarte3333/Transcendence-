@@ -55,6 +55,7 @@ function loadNamesForm() {
 		if (window.location.href.includes("tournament"))
 			tournament =  new Tournament(number, names); // Using Singleton pattern
 		else {
+			console.log('AQUIIII')
             const match = new Match("local", "normal", number, names, player1);
 			let winner =  await match.startLocalMatch();
             console.log("Match::winner", winner);

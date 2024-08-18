@@ -68,7 +68,7 @@ Including another URLconf
 
 from login.views import login_view, logout_view, register, user_info, index
 from main.views import main_view
-from pong.views import home, navbar, settings, profile, tournamentLocal, footer
+from pong.views import home, navbar, settings, profile, tournamentLocal, footer, game
 from django.contrib import admin
 from django.urls import path, re_path
 from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game
@@ -94,7 +94,7 @@ urlpatterns = [
     # RUBENS
     # path('', index, name='index'),
     path('spa/', index, name='index'),
-    path('spa/game', tournamentLocal, name='mygame'),
+    path('spa/game', game, name='mygame'),
     path('spa/home', home),
     path('spa/logout', logout_view),
     path('spa/login', index, name='index'),

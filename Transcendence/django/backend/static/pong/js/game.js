@@ -6,15 +6,14 @@ import { map } from "./map.js";
 import { Paddle, writePaddleNames } from "./paddles.js";
 import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
-import { ClientGame } from "./clientGame.js";
-
 import { socket } from "./myWebSocket.js";
+import { views } from "../../main/js/main.js";
 
-const canvas = document.getElementById("pongCanvas");
-window.addEventListener('resize', resizeCanvas);
+
+
 
 function resizeCanvas() {
-  const canvas = document.getElementById('pongCanvas');
+  const canvas = document.getElementById("pongCanvas");
   const banner = document.getElementById('banner');
   const scoreBoard = document.getElementById('scoreBoard');
   const width = canvas.clientWidth;
@@ -25,6 +24,9 @@ function resizeCanvas() {
 
 export class Game {
   constructor(numPlayers, controlsList) {
+    console.log("controlsList")
+    console.log(numPlayers)
+    console.log(controlsList)
     this.playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
     this.objects = new Map();
     this.numCandies = 1;
@@ -43,17 +45,57 @@ export class Game {
     this.paddleNames = [];
     this.gameLoop = null;
     this.loser = null;
+    this.canvas = document.getElementById("pongCanvas");
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+    });
     console.log("GAME BETWEEN", controlsList);
-
-    console.log("Game constructor");
+    console.log("Game constructor: ", views.props);
     //console.log(controlsList);
 
-    this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
+    // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
     const row = document.getElementById("game");
     row.style.display = "flex";
-    this.context = canvas.getContext("2d");
+    this.context = this.canvas.getContext("2d");
+    this.events.handleKeyDown = this.handleKeyDown.bind(this);
+    this.events.handleKeyUp = this.handleKeyUp.bind(this);
     this.setupGame(controlsList);
+  }
+
+
+  handleKeyDown(event) {
+    console.log("handleKeyDown")
+    for (let i = 1; i <= this.numberOfPlayers; i++) {
+        let temp = this.objects.get("paddle_" + i);
+        if (event.key == temp.moveUpKey) {
+            event.preventDefault();
+            temp.moveUp = true;
+        }
+        else if (event.key == temp.moveDownKey) {
+            event.preventDefault();
+            temp.moveDown = true;
+        }
+    }
+    if (event.key == " ") {
+        event.preventDefault();
+        this.pause = !this.pause;
+    }
+  }
+
+  handleKeyUp(event) {
+    console.log("handleKeyUp")
+    for (let i = 1; i <= this.numberOfPlayers; i++) {
+        let temp = this.objects.get("paddle_" + i);
+        if (event.key == temp.moveUpKey) {
+            event.preventDefault();
+            temp.moveUp = false;
+        }
+        else if (event.key == temp.moveDownKey) {
+            event.preventDefault();
+            temp.moveDown = false;
+        }
+    }
   }
 
   setupGame(controlsList) {
@@ -70,10 +112,11 @@ export class Game {
   }
 
   init() {
+    resizeCanvas();
     this.gameLoop = setInterval(this.draw.bind(this), 1000 / 60);
-    setInterval(() => {
-      this.fps = 0;
-    }, 1000);
+    // setInterval(() => {
+    //   this.fps = 0;
+    // }, 1000);
     console.log("Game initialized");
   }
 
@@ -84,7 +127,7 @@ export class Game {
     this.objects.clear();
     this.finish = false;
     this.winner = null;
-    this.context.clearRect(0, 0, canvas.width, canvas.height);
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     document.getElementById("game").style.display = "none";
   }
 
@@ -92,9 +135,9 @@ export class Game {
     map.img.src = "/static/pong/img/lisboa3.png";
     map.pattern.src = "/static/pong/img/cobblestone.jpg"
     map.color =  "teal";
-    map.radius = canvas.width / 2;
+    map.radius = this.canvas.width / 2;
     map.sides = this.numberOfPlayers * 2;
-    map.size = canvas.width;
+    map.size = this.canvas.width;
     if (map.sides < 4) map.sides = 4;
     map.prepareMap();
     map.draw(this.context);
@@ -111,8 +154,8 @@ export class Game {
   }
 
   addBall() {
-    this.ball.x = canvas.width / 2;
-    this.ball.y = canvas.height / 2;
+    this.ball.x = this.canvas.width / 2;
+    this.ball.y = this.canvas.height / 2;
     this.ball.speed *= this.speed;
     this.ball.draw(this.context);
     this.objects.set(this.ball.name, this.ball);
@@ -161,16 +204,16 @@ export class Game {
       paddle.move();
       //send paddle info to client
       this.sendPaddleUpdate(paddle);
-      this.client.updatePlayer(paddle);
+      // this.client.updatePlayer(paddle);
     }
     ball.move(this);
     //send ball info to client
     this.sendBallUpdate(ball);
-    this.client.updateBall(ball);
+    // this.client.updateBall(ball);
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
       let temp = this.objects.get("candy_" + i);
-      this.client.updateCandy(temp);
+      // this.client.updateCandy(temp);
     }
 
     let final_i = checkGameOver(this.numberOfPlayers);
@@ -188,7 +231,7 @@ export class Game {
     this.fps++;
     if (!this.pause && !this.finish) {
       this.update();
-      this.context.clearRect(0, 0, canvas.width, canvas.height);
+      this.context.clearRect(0, 0, this.canvas.width,this.canvas.height);
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
@@ -199,10 +242,10 @@ export class Game {
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
       this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-      var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+      var gradient = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
       gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
       this.context.fillStyle = gradient;
-      this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
+      this.context.fillText("Game Over", this.canvas.width / 2 - 100, this.canvas.height / 2);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
       //tell who wins
       this.context.font = "bold 30px Poppins, sans-serif";
@@ -210,19 +253,19 @@ export class Game {
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
       this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
       this.context.fillStyle = gradient;
-      this.context.fillText(`Player ${this.winner} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+      this.context.fillText(`Player ${this.winner} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
     }
     else if(this.pause){
-      this.client.updatePause(this.pause);
+      // this.client.updatePause(this.pause);
       this.context.font = "bold 40px Poppins, sans-serif";
       this.context.fillStyle = "black";
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)"; 
       this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-      var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+      var gradient = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
       gradient.addColorStop("0", "white"); gradient.addColorStop("1", "#759ad7"); // light blue
       this.context.fillStyle = gradient;
-      this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
+      this.context.fillText("Paused", this.canvas.width / 2 - 75, this.canvas.height / 2);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
       writePaddleNames(this);
     } else if (this.finish) {
@@ -238,11 +281,11 @@ export class Game {
     this.context.fillStyle = "black";
     this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
     this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+    var gradient = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
     gradient.addColorStop("0", "white");
     gradient.addColorStop("1", "#759ad7");
     this.context.fillStyle = gradient;
-    this.context.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);
+    this.context.fillText("Game Over", this.canvas.width / 2 - 100, this.canvas.height / 2);
     this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
 
     this.context.font = "bold 30px Poppins, sans-serif";
@@ -250,7 +293,7 @@ export class Game {
     this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
     this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
     this.context.fillStyle = gradient;
-    this.context.fillText(`Player ${this.winner} wins`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    this.context.fillText(`Player ${this.winner} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
     this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
 
     document.getElementById("game").style.display = "none";
@@ -266,16 +309,16 @@ export class Game {
   }
 
   displayPaused() {
-    this.client.updatePause(this.pause);
+    // this.client.updatePause(this.pause);
     this.context.font = "bold 40px Poppins, sans-serif";
     this.context.fillStyle = "black";
     this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
     this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    var gradient = this.context.createLinearGradient(0, 0, canvas.width, 0);
+    var gradient = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
     gradient.addColorStop("0", "white");
     gradient.addColorStop("1", "#759ad7");
     this.context.fillStyle = gradient;
-    this.context.fillText("Paused", canvas.width / 2 - 75, canvas.height / 2);
+    this.context.fillText("Paused", this.canvas.width / 2 - 75, this.canvas.height / 2);
     this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
     writePaddleNames(this);
   }
@@ -316,4 +359,35 @@ export class Game {
     };
   
   }
+
+  destroyer() {
+    clearInterval(this.gameLoop);
+    alert("alert: " +destroyer);
+  }
 }
+
+let game = undefined;
+
+views.setElement('/game', (state) => {
+  const data = {
+    "1": [
+      "ArrowUp",
+      "ArrowDown"
+    ],
+    "2": [
+      "w",
+      "s"
+    ]
+  }
+  console.log("game: ", game)
+  if (state == "block")
+    game = new Game(2, data);
+  else
+  {
+    game?.destroyer();
+    game = undefined;
+  }
+
+})
+.setChilds(["/navbar", "/footer"])
+.setEvents();

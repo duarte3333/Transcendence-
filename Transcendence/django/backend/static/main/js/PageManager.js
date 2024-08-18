@@ -6,6 +6,7 @@ export class PageManager {
     #onScreen;
     #onDom;
     #currentPage;
+    props = {}
 
     constructor(current) {
         this.#pageMap = new Map();  
@@ -93,13 +94,18 @@ export class PageManager {
     }
 
     async urlLoad(name) {
-        console.log("urload " + name);
+        const urlParams = new URLSearchParams(name.split("?")[1]);
+        name =  name.split("?")[0];
+        this.props = {};
+
+        urlParams.forEach((value, key) => {
+            this.props[key] = value;
+        });
         for (const page of this.#onDom) {
             this.#domUnload(page);
         }
         this.#onScreen.clear();
     
-        // document.body.innerHTML = "";
         let child;
         let familyTree = [name];
         while (child = familyTree.pop()) {

@@ -19,36 +19,12 @@ export class events {
         document.removeEventListener("keyup", (event) => this.handleKeyUp(event));
     }
 
-    handleKeyDown(event) {
-        for (let i = 1; i <= this.game.numberOfPlayers; i++) {
-            let temp = this.game.objects.get("paddle_" + i);
-            if (event.key == temp.moveUpKey) {
-                event.preventDefault();
-                temp.moveUp = true;
-            }
-            else if (event.key == temp.moveDownKey) {
-                event.preventDefault();
-                temp.moveDown = true;
-            }
-        }
-        if (event.key == " ") {
-            event.preventDefault();
-            this.game.pause = !this.game.pause;
-        }
+    handleKeyDown =  (event) => {
+        console.log("e:handleKeyDown")
     }
 
-    handleKeyUp(event) {
-        for (let i = 1; i <= this.game.numberOfPlayers; i++) {
-            let temp = this.game.objects.get("paddle_" + i);
-            if (event.key == temp.moveUpKey) {
-                event.preventDefault();
-                temp.moveUp = false;
-            }
-            else if (event.key == temp.moveDownKey) {
-                event.preventDefault();
-                temp.moveDown = false;
-            }
-        }
+    handleKeyUp = (event) => {
+           console.log("e:handleKeyUp")
     }
 
     initializeUIButtons() {
