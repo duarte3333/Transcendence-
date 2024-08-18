@@ -36,7 +36,7 @@ export class AppControl {
             console.log(name);
             console.log("@@@@");
             // let find = "api" + name;
-            let find = "https://localhost" + name;
+            let find = "https://localhost/spa" + name;
             console.log(`fetching= ${find} `);
             const response = await fetch(find);
             console.log("Estouuuu aquiiiiiiiiiiiiiiiii");

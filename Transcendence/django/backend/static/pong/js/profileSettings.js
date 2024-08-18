@@ -21,14 +21,14 @@ let user = {
 	// }
 };
 
-views.setElement("/settings/", (state) => {
+views.setElement("/settings", (state) => {
 	//caso de merda a visualizar mudar block para flex
-	views.get("/navbar/").display(state);
+	views.get("/navbar").display(state);
 	document.getElementById("settingsContainer").style.display = state;
 	loadProfileSettings();
-	views.get("/footer/").display(state);
+	views.get("/footer").display(state);
 })
-.setChilds(["/navbar/", "/footer/"])
+.setChilds(["/navbar", "/footer"])
 .setEvents(
 	[ "changeUsername", "click",  (event) => changeText(event, "username")],
 	[ "changeDisplayName", "click",  (event) => changeText(event, "displayName")],

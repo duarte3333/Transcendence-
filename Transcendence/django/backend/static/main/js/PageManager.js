@@ -82,7 +82,8 @@ export class PageManager {
         console.log("domUnload success" + element);
         const page = this.#pageMap.get(element);
         page.display("none");
-        document.body.removeChild(page.getHtml());
+        page.getHtml().remove();
+        // document.body.removeChild(page.getHtml());
         this.#onDom.delete(page);
     }
     async waitFetch(name) {

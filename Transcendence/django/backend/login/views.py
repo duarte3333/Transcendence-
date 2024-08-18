@@ -78,3 +78,6 @@ def user_info(request):
         'up_key': user.up_key if user.banner_picture else None,
     }
     return JsonResponse(data)
+
+def index(request):
+    return render(request, 'index.html')

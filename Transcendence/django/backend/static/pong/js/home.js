@@ -4,28 +4,27 @@ import {views} from "../../main/js/main.js"
 
 
 
-views.setElement("/home/", async (state) => {
-
-	alert("home");
-	await fetch('https://localhost/api/user/profile', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-    })
-    .then(async (response) => {
-		const { user } = await response.json();
-		window.user = user;
-		console.log("profile: ", user)
-		return user;
-	});
-	//caso de merda a visualizar mudar block para flex
-	views.get("/navbar/").display(state);
+views.setElement("/home", async (state) => {
+	if (state == "block") {
+		await fetch('https://localhost/api/user/profile', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken')
+			},
+		})
+		.then(async (response) => {
+			const { user } = await response.json();
+			window.user = user;
+			console.log("profile: ", user)
+			return user;
+		});
+	}
+	views.get("/navbar").display(state);
 	document.getElementById("homeBody").style.display = state;
-	views.get("/footer/").display(state);
+	views.get("/footer").display(state);
 })
-.setChilds(["/navbar/", "/footer/"])
+.setChilds(["/navbar", "/footer"])
 .setEvents(
 	[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
 	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ] ,
@@ -68,6 +67,11 @@ function nextPage(event, type) {
 	match.textContent = "Match";
 	if (type == "playOnline")
 		match.addEventListener('click', onlineMatch);
+	else {
+		match.addEventListener('click', () => {
+			views.urlLoad('/game');
+		});
+	}
 	rowButtons.appendChild(match);
 
 	const tournament = document.createElement('button');
@@ -77,7 +81,7 @@ function nextPage(event, type) {
 	tournament.textContent = "Tournament";
 	if (type == "playLocal") {
 		tournament.addEventListener('click', () => {
-			views.urlLoad("/tournament/local/")
+			views.urlLoad("/tournament/local")
 		});
 	}
 	rowButtons.appendChild(tournament);
@@ -162,7 +166,7 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 		const { game } = await response.json();
 
 
-		views.urlLoad("/game/");
+		views.urlLoad("/game");
 		// function checkConditionUntilTimeout() {
 		// 	let attempts = 0;
 		// 	const maxAttempts = 30;
