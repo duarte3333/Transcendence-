@@ -26,7 +26,7 @@
 						</div>
 						
 						<!-- <input type="number" id="numberOfPlayers" class="form-control" placeholder="Enter number of players"> -->
-						<button type="button" id="nb_button" class="btn btn-outline-dark w-10 bodyBtns" onclick="generateInputFields()" style="font-size: 1rem;">Set Players</button>
+						<button type="button" id="nb_button" class="btn btn-outline-dark w-10 bodyBtns" style="font-size: 1rem;">Set Players</button>
 					</div>
 					<!-- Container for dynamic player name inputs -->
 					<div id="inputContainer" class="form-group"></div>
@@ -74,22 +74,5 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script type="module" src="{% static 'pong/js/namesForm.js' %}"></script>
-<script>
-    function generateInputFields() {
-        var number = document.getElementById('numberOfPlayers').value;
-        var container = document.getElementById('inputContainer');
-        container.innerHTML = ''; // Clear previous inputs
-
-        for (var i = 0; i < number; i++) {
-            var input = document.createElement('div');
-            input.className = 'form-group display-1';
-            input.style.fontSize = '1.2rem';
-            input.style.margin = '0.5rem';
-            input.innerHTML = `<label for="player${i + 1}">Player ${i + 1} Name</label><input type="text" id="player${i + 1}" name="player${i + 1}" class="form-control">`;
-            container.appendChild(input);
-        }
-    }
-</script>
-
 </body>
 </html>

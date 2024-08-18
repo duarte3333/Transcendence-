@@ -1,10 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-@login_required
-def pong(request):
-    return render(request, 'pong_index.html')
-
 def home(request):
     return render(request, 'pong_home.html')
 
@@ -18,7 +14,7 @@ def profile(request):
     return render(request, 'pong_profile.html')
 
 def tournamentLocal(request):
-    return render(request, 'pong_game.html')
+    return render(request, 'pong_tournament.html')
 
 def footer(request):
     return render(request, 'pong_footer.html')

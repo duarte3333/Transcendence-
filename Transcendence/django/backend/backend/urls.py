@@ -68,7 +68,7 @@ Including another URLconf
 
 from login.views import login_view, logout_view, register, user_info
 from main.views import main_view
-from pong.views import home, pong, navbar, settings, profile, tournamentLocal, footer
+from pong.views import home, navbar, settings, profile, tournamentLocal, footer
 from django.contrib import admin
 from django.urls import path, re_path
 from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game
@@ -80,7 +80,6 @@ urlpatterns = [
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', home, name='home'),
-    path('pong/index', pong, name='pong'),
     path('tournament/local/', tournamentLocal, name='tournamentLocal'),
     path('api/register/', register, name='register'),
     path('api/login/', login_view, name='login'),
@@ -93,6 +92,7 @@ urlpatterns = [
     path('api/game/update', update_game),
     path('api/game/deleted', deleted_game),
     path('api/game/match', match_game),
+    path('game', tournamentLocal, name='mygame'),
 
     # USER
     path('api/user/profile', user_profile),
@@ -100,11 +100,10 @@ urlpatterns = [
     # RUBENS
     path('api/home/', home),
     path('api/logout/', logout_view),
-    path('api/pong/index', pong),
     path('api/register/', register),
     path('api/navbar/', navbar),
     path('api/settings/', settings),
-    path('api/tournament/local/', tournamentLocal, name='tournamentLocal'),
+    path('api/tournament/local/', tournamentLocal),
     path('api/profile/', profile),
     re_path(r'^.*$', main_view),  # Captura todas as URLs
 ]

@@ -4,8 +4,6 @@ class PongUserManager(BaseUserManager):
     def create_superuser(self, username, password=None, **extra_fields):
         if password is None:
             raise TypeError('Superusers must have a password.')
-        # if not email:
-        #     raise TypeError('Superusers must have an email address.')
         
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
@@ -20,8 +18,6 @@ class PongUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise TypeError('Users must have a username.')
-        # if not email:
-        #     raise TypeError('Users must have an email address.')
 
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
