@@ -1,6 +1,6 @@
 import { views } from "../../main/js/main.js";
 
-views.setElement("/navbar/", (state) => {
+views.setElement("/navbar", (state) => {
 
 	// document.getElementById("navbarBody").style.display = state;
 	if (state == "block") {
@@ -9,9 +9,9 @@ views.setElement("/navbar/", (state) => {
 	}
 })
 .setEvents(
-	[ "settingsButton", "click", () => views.urlLoad("/settings/")],
-	[ "profileButton", "click", () => views.urlLoad("/profile/")],
-	[ "homeButton", "click", () => views.urlLoad("/home/")],
+	[ "settingsButton", "click", () => views.urlLoad("/settings")],
+	[ "profileButton", "click", () => views.urlLoad("/profile")],
+	[ "homeButton", "click", () => views.urlLoad("/home")],
 	[ "friendsButton", "click", () => generateFriendsList()],
 	[ "addFriendFinal", "click", () => addFriendInputCheck()],
 	[ "addFriend", "click", () => {
@@ -152,11 +152,11 @@ function highlightButtonNavbar() {
     } else {
         console.log("No active page found.");
     }
-	if (page == "/home/")
+	if (page == "/home")
 		document.getElementById("homeButton").className = "nav-link active";
-	else if (page == "/settings/")
+	else if (page == "/settings")
 		document.getElementById("settingsButton").className = "nav-link active";
-	else if (page == "/profile/")
+	else if (page == "/profile")
 		document.getElementById("profileButton").className = "nav-link active";
 }
 

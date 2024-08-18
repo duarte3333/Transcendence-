@@ -58,7 +58,7 @@ function loginPost() {
         username: username.value,
         password: password.value,
     }
-    fetch('api/login/', {
+    fetch('api/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -80,8 +80,7 @@ function loginPost() {
         if (registerBody) {
             registerBody.setAttribute("style", "display: none !important;");
         }
-        // views.urlLoad("/home/")
-        window.location.href = "/home/";
+        views.urlLoad("/home")
         // Handle successful registration here (e.g., redirect user or show success message)
     })
     .catch(error => {
@@ -125,7 +124,7 @@ function registerPost() {
         password: password.value,
     }
 
-    fetch('api/register/', {
+    fetch('api/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -66,7 +66,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from login.views import login_view, logout_view, register, user_info
+from login.views import login_view, logout_view, register, user_info, index
 from main.views import main_view
 from pong.views import home, navbar, settings, profile, tournamentLocal, footer
 from django.contrib import admin
@@ -76,19 +76,6 @@ from api.views import create_game , list_game, update_game, deleted_game, user_p
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-  
-    path('', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('home/', home, name='home'),
-    path('tournament/local/', tournamentLocal, name='tournamentLocal'),
-    path('register/', register, name='register'),
- 
-    path('footer/', footer, name='footer'),
-    path('settings/', settings, name='api/settings/'),
-    path('settings/', settings, name='settings'),
-    path('profile/', profile, name='profile'),
-    path('game/', tournamentLocal, name='mygame'),
-    
     # API
     #   Game
     path('api/game/create', create_game),
@@ -100,20 +87,23 @@ urlpatterns = [
 
     #   USER
     path('api/user/profile', user_profile),
-    path('api/user-info/', user_info, name='user-info'),   
-    path('api/login/', login_view, name='login'),
+    path('api/user-info', user_info, name='user-info'),   
+    path('api/login', login_view, name='login'),
     
     # END API
     # RUBENS
-    path('spa/home/', home),
-    path('spa/logout/', logout_view),
-    path('spa/login/', login_view, name='login'),
-    path('spa/tournament/local/', tournamentLocal, name='tournamentLocal'),
-    path('spa/footer/', footer, name='footer'),
-    path('spa/register/', register),
-    path('spa/navbar/', navbar),
-    path('spa/settings/', settings),
-    path('spa/tournament/local/', tournamentLocal),
-    path('spa/profile/', profile),
+    # path('', index, name='index'),
+    path('spa/', index, name='index'),
+    path('spa/game', tournamentLocal, name='mygame'),
+    path('spa/home', home),
+    path('spa/logout', logout_view),
+    path('spa/login', index, name='index'),
+    path('spa/tournament/local', tournamentLocal, name='tournamentLocal'),
+    path('spa/footer', footer, name='footer'),
+    path('spa/register', register),
+    path('spa/navbar', navbar),
+    path('spa/settings', settings),
+    path('spa/tournament/local', tournamentLocal),
+    path('spa/profile', profile),
     re_path(r'^.*$', main_view),  # Captura todas as URLs
 ]
