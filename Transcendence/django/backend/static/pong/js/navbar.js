@@ -2,7 +2,7 @@ import { views } from "../../main/js/main.js";
 
 views.setElement("/navbar/", (state) => {
 
-	document.getElementById("navbarBody").style.display = state;
+	// document.getElementById("navbarBody").style.display = state;
 	if (state == "block") {
 		document.getElementById('menuClose').click();
 		highlightButtonNavbar();

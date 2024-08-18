@@ -5,21 +5,21 @@ import {views} from "../../main/js/main.js"
 
 
 views.setElement("/home/", async (state) => {
-
-	await fetch('https://localhost/api/user/profile', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-    })
-    .then(async (response) => {
-		const { user } = await response.json();
-		window.user = user;
-		console.log("profile: ", user)
-		return user;
-	});
-	//caso de merda a visualizar mudar block para flex
+	if (state == "block") {
+		await fetch('https://localhost/api/user/profile', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken')
+			},
+		})
+		.then(async (response) => {
+			const { user } = await response.json();
+			window.user = user;
+			console.log("profile: ", user)
+			return user;
+		});
+	}
 	views.get("/navbar/").display(state);
 	document.getElementById("homeBody").style.display = state;
 	views.get("/footer/").display(state);

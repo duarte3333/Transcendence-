@@ -13,12 +13,14 @@ function resizeCanvas() {
   const banner = document.getElementById('banner');
   const scoreBoard = document.getElementById('scoreBoard');
   const width = window.innerWidth;  // More reliable measurement of the viewport width
-  canvas.width = width;  // Set the canvas width to fill the container or viewport
-  canvas.height = width;  // Maintain a 1:1 aspect ratio for the canvas
-
-  const heightProportion = width / 5;  // Example proportion based on design needs
-  banner.style.height = `${heightProportion}px`;  // Set proportionally smaller than canvas
-  scoreBoard.style.height = `${heightProportion}px`;  // Same as banner
+  if (canvas) {
+    canvas.width = width;  // Set the canvas width to fill the container or viewport
+    canvas.height = width;  // Maintain a 1:1 aspect ratio for the canvas
+  
+    const heightProportion = width / 5;  // Example proportion based on design needs
+    banner.style.height = `${heightProportion}px`;  // Set proportionally smaller than canvas
+    scoreBoard.style.height = `${heightProportion}px`;  // Same as banner
+  }
 }
 
 window.addEventListener('resize', resizeCanvas);

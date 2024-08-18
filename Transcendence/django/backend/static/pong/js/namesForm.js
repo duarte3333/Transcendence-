@@ -2,7 +2,6 @@ import { Tournament } from './tournament.js';
 import { views } from "../../main/js/main.js";
 import { Match } from './match.js';
 
-
 views.setElement('/tournament/local/', (state) => {
     document.getElementById('tournamentBody').style.display = state;
 	loadNamesForm();
