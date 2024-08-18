@@ -21,11 +21,13 @@ import { getUser } from "./user.js"
 
 views.setElement("/profile", async (state) => {
 	//caso de merda a visualizar mudar block para flex
-	views.get("/navbar/").display(state);
-	document.getElementById("profileBody").style.display = state;
+	if (state != "block") return;
 	let user = await getUser();
+	console.log("loading profile crl: ", user)
 	loadProfile(user);
 	views.get("/footer/").display(state);
+	views.get("/navbar/").display(state);
+	document.getElementById("profileBody").style.display = state;
 })
 .setChilds(["/navbar", "/footer"])
 .setEvents(

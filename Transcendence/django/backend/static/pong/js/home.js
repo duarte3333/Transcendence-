@@ -164,9 +164,9 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
     })
     .then(async (response) => {
 		const { game } = await response.json();
-
-
-		views.urlLoad("/game");
+		encodeURI
+		decodeURI
+		views.urlLoad("/game?id=" + game.id);
 		// function checkConditionUntilTimeout() {
 		// 	let attempts = 0;
 		// 	const maxAttempts = 30;

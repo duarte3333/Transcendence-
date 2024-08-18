@@ -1,6 +1,5 @@
 import { Animation } from "./animation.js";
 
-const canvas = document.getElementById("pongCanvas");
 
 const candyImage = new Image();
 candyImage.src = '/static/pong/img/ItemBoxSprite.png';
@@ -69,6 +68,7 @@ class Candy {
 }
 
 function generateXnY(map) {
+  const canvas = document.getElementById("pongCanvas");
   // Generate a random angle between 0 and 2π
   const angle = Math.random() * 2 * Math.PI;
   
