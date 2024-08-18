@@ -110,7 +110,6 @@ def user_profile(request):
     user_data = {
         'id': user.id,
         'username': user.username,
-        'email': user.email,
         'display_name': user.ponguser.display_name if hasattr(user, 'ponguser') else None,
         'profile_picture': user.ponguser.profile_picture.url if hasattr(user, 'ponguser') and user.ponguser.profile_picture else None,
         'banner_picture': user.ponguser.banner_picture.url if hasattr(user, 'ponguser') and user.ponguser.banner_picture else None,

@@ -6,7 +6,6 @@ from django.contrib.auth.forms import UserCreationForm
 from login.models import PongUser
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
 
     class Meta:
         model = PongUser

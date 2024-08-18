@@ -1,7 +1,7 @@
 import { views } from "../../main/js/main.js";
 
 views.setElement("/navbar/", (state) => {
-	
+
 	document.getElementById("navbarBody").style.display = state;
 	if (state == "block") {
 		document.getElementById('menuClose').click();
@@ -10,6 +10,7 @@ views.setElement("/navbar/", (state) => {
 })
 .setEvents(
 	[ "settingsButton", "click", () => views.urlLoad("/settings/")],
+	[ "profileButton", "click", () => views.urlLoad("/profile/")],
 	[ "homeButton", "click", () => views.urlLoad("/home/")],
 	[ "friendsButton", "click", () => generateFriendsList()],
 	[ "addFriendFinal", "click", () => addFriendInputCheck()],
