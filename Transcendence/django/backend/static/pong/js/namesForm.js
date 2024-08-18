@@ -1,6 +1,15 @@
 import { Tournament } from './tournament.js';
+import { views } from "../../main/js/main.js";
 
-document.addEventListener('DOMContentLoaded', function() {
+
+views.setElement('/tournament/local/', (state) => {
+    document.getElementById('tournamentBody').style.display = state;
+	loadNamesForm();
+})
+.setEvents(
+);
+
+function loadNamesForm() {
 	const submitNames = document.getElementById("submitNames");
 	submitNames.addEventListener('click', function() {
 		var names = [];
@@ -17,6 +26,4 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.getElementById('gameForm').style.display = 'block';
 		const tournament =  new Tournament(number, names); // Using Singleton pattern
     });
-
-})
-
+}

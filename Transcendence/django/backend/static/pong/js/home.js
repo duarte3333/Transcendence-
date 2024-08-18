@@ -74,9 +74,11 @@ function nextPage(event, type) {
 	tournament.id = "button_2";
 	tournament.type = "button";
 	tournament.textContent = "Tournament";
-	tournament.addEventListener('click', () => {
-		// tournamentStart(div, type);
-	});
+	if (type == "playLocal") {
+		tournament.addEventListener('click', () => {
+			views.urlLoad("/tournament/local/")
+		});
+	}
 	rowButtons.appendChild(tournament);
 
 	const rowBack = document.createElement('div');

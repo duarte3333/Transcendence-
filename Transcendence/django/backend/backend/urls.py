@@ -104,6 +104,7 @@ urlpatterns = [
     path('api/register/', register),
     path('api/navbar/', navbar),
     path('api/settings/', settings),
+    path('api/tournament/local/', tournamentLocal, name='tournamentLocal'),
     path('api/profile/', profile),
     re_path(r'^.*$', main_view),  # Captura todas as URLs
 ]
