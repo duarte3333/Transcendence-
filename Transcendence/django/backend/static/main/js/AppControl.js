@@ -38,6 +38,7 @@ export class AppControl {
             let find = "https://localhost/api" + name;
             console.log(`fetching= ${find} `);
             const response = await fetch(find);
+            console.log("Estouuuu aquiiiiiiiiiiiiiiiii");
             if (!response.ok)
                 throw new Error('Network response was not ok: ' + response.statusText);
             const appHtml = await response.text();

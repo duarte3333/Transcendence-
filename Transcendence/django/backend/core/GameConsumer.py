@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
 # from api.models import Game
 
+
 class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         # Adiciona o usuário ao grupo de uma sala de chat específica
@@ -50,23 +51,25 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             from api.models import Game
 
             game = await sync_to_async(Game.objects.get)(id=self.room_name)
-            game.player.append(event.get("playerId"))
-            max = len(game.player)
-            if (max == game.numberPlayers):
-                game.status = "running"
-            elif (max > game.numberPlayers):
-                await self.send_json({
-                    'type': 'player_joined',
-                    'playerId': self.userId,
-                    'status': 'error',
-                    'room_name': int(self.room_name)
-                })
-            await sync_to_async(game.save)()
-            self.playerId = event.get("playerId")
+            player_id = event.get('playerId')
+            if not player_id in game.player:
+                game.player.append(player_id)
+                max = len(game.player)
+                if (max == game.numberPlayers):
+                    game.status = "running"
+                elif (max > game.numberPlayers):
+                    await self.send_json({
+                        'type': 'player_joined',
+                        'playerId': player_id,
+                        'status': 'error',
+                        'room_name': int(self.room_name)
+                    })
+                await sync_to_async(game.save)()
+            self.playerId = player_id
             self.gameId = game.id
             await self.send_json({
                 'type': 'player_joined',
-                'playerId': event.get("playerId"),
+                'playerId': player_id,
                 'gameid': "game.id",
                 'status': 'ok'
             })
