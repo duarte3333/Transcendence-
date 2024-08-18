@@ -290,4 +290,30 @@ export class Game {
     player_1.speed = 3 * this.speed;
     player_2.speed = 3 * this.speed;
   }
+
+
+
+  initializeWebSocket(id, playerId){
+    const chatSocket = new WebSocket(
+       `ws://localhost:8000/ws/game/${id}/`
+    );
+  
+    chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      console.log('Message:', data);
+    };
+  
+    chatSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+    };
+  
+    // Enviar uma mensagem
+    chatSocket.onopen = function(e) {
+      chatSocket.send(JSON.stringify({
+        'playerId': playerId,
+        'action': 'join'
+      }));
+    };
+  
+  }
 }

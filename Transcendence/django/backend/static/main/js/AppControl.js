@@ -31,13 +31,15 @@ export class AppControl {
    
     static async fetchApp(name) {
         try {
+            name = "/" + name.replace(/^\/+/, "");
             console.log("@@@@");
             console.log(name);
             console.log("@@@@");
             // let find = "api" + name;
-            let find = "https://localhost/api" + name;
+            let find = "https://localhost/spa" + name;
             console.log(`fetching= ${find} `);
             const response = await fetch(find);
+            console.log("Estouuuu aquiiiiiiiiiiiiiiiii");
             if (!response.ok)
                 throw new Error('Network response was not ok: ' + response.statusText);
             const appHtml = await response.text();
@@ -54,7 +56,7 @@ export class AppControl {
             // document.body.innerHTML = appHtml;
             console.log("----------------");
             console.log(find);
-            if (find == "api/footer/")
+            if (find == "footer/")
                 console.log(appHtml);
             console.log("----------------");
             await this.#executeScript(newdiv);

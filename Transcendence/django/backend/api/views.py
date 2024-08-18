@@ -3,7 +3,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from .models import Game
+import logging
+
 from django.contrib.auth.decorators import login_required
+
+logger = logging.getLogger(__name__)
 
 @login_required
 @csrf_exempt
@@ -35,7 +39,11 @@ def match_game(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            result = Game().list(status = data.get('pending'))
+            result = Game().list(status = 'running', playerId=request.user.id)
+            if (len(result) == 1):
+                return JsonResponse({'success': True, 'game': result[0]}, status=201)
+            result = Game().list(status = 'pending')
+            logger.info(f'Match_game result: ${result}')
             if (len(result) == 0):
                 game = Game().create(
                     players = data.get('players', []),

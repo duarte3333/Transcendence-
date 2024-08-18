@@ -76,28 +76,44 @@ from api.views import create_game , list_game, update_game, deleted_game, user_p
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/user-info/', user_info, name='user-info'),
+  
     path('', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('home/', home, name='home'),
+    path('tournament/local/', tournamentLocal, name='tournamentLocal'),
+    path('register/', register, name='register'),
+ 
+    path('footer/', footer, name='footer'),
+    path('settings/', settings, name='api/settings/'),
+    path('settings/', settings, name='settings'),
+    path('profile/', profile, name='profile'),
+    path('game/', tournamentLocal, name='mygame'),
+    
+    # API
+    #   Game
     path('api/game/create', create_game),
     path('api/game/list', list_game),
     path('api/game/update', update_game),
     path('api/game/deleted', deleted_game),
     path('api/game/match', match_game),
-    path('game', tournamentLocal, name='mygame'),
 
-    # USER
+
+    #   USER
     path('api/user/profile', user_profile),
-    
-    # RUBENS
-    path('api/home/', home),
-    path('api/logout/', logout_view),
+    path('api/user-info/', user_info, name='user-info'),   
     path('api/login/', login_view, name='login'),
-    path('api/tournament/local/', tournamentLocal, name='tournamentLocal'),
-    path('api/footer/', footer, name='footer'),
-    path('api/register/', register),
-    path('api/navbar/', navbar),
-    path('api/settings/', settings),
-    path('api/tournament/local/', tournamentLocal),
-    path('api/profile/', profile),
+    
+    # END API
+    # RUBENS
+    path('spa/home/', home),
+    path('spa/logout/', logout_view),
+    path('spa/login/', login_view, name='login'),
+    path('spa/tournament/local/', tournamentLocal, name='tournamentLocal'),
+    path('spa/footer/', footer, name='footer'),
+    path('spa/register/', register),
+    path('spa/navbar/', navbar),
+    path('spa/settings/', settings),
+    path('spa/tournament/local/', tournamentLocal),
+    path('spa/profile/', profile),
     re_path(r'^.*$', main_view),  # Captura todas as URLs
 ]
