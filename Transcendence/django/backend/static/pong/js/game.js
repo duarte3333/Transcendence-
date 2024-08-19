@@ -107,8 +107,8 @@ export class Game {
     this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
-    if (!socket)
-      initializeWebSocket();
+    // if (!socket)
+    //   initializeWebSocket();
   }
 
   init() {
