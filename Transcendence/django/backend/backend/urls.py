@@ -71,7 +71,7 @@ from main.views import main_view
 from pong.views import home, navbar, settings, profile, tournamentLocal, footer, game
 from django.contrib import admin
 from django.urls import path, re_path
-from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game, add_friend, user_friends
+from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game, add_friend, user_friends, update_profile
 from django.contrib.auth import views as auth_views
 
 
@@ -88,6 +88,7 @@ urlpatterns = [
 
     #   USER
     path('api/user/profile', user_profile),
+    path('api/user/profile/update', update_profile),
     path('api/user/addFriend', add_friend),
     path('api/user/userFriends', user_friends),
     path('api/user-info', user_info, name='user-info'),

@@ -42,7 +42,6 @@ export class AppControl {
         console.log("ola");
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(">>>>>>>> getting user info global");
                 const response = await fetch('https://localhost/api/user/profile', {
                     method: 'POST',
                     headers: {

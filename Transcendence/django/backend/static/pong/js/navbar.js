@@ -9,7 +9,6 @@ views.setElement("/navbar", (state) => {
 
 	// document.getElementById("navbarBody").style.display = state;
 	if (state == "block") {
-		console.log("loading navbar")
 		document.getElementById('menuClose').click();
 		highlightButtonNavbar();
 		friends = getUserFriends();
@@ -170,7 +169,6 @@ function highlightButtonNavbar() {
     } else {
 		console.log("No active page found.");
     }
-	console.log("highlighting navbar page = ", page)
 	if (page == "/home") {
 		document.getElementById("homeButton").className = "nav-link active";
 	}

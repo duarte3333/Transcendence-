@@ -7,6 +7,9 @@ import logging
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from login.models import PongUser
+from django.core.exceptions import ValidationError
+from django.views.decorators.http import require_POST
+from django.contrib.auth.hashers import make_password
 
 logger = logging.getLogger(__name__)
 
@@ -121,12 +124,67 @@ def user_profile(request):
             'display_name': user.display_name,
             'profile_picture': user.profile_picture.url if user.profile_picture else None,
             'banner_picture': user.banner_picture.url if user.banner_picture else None,
-            'up_key': user.up_key,
-            'down_key': user.down_key,
+            'up_key': user.up_key if user.up_key else 'w',
+            'down_key': user.down_key if user.down_key else 's',
         }
         return JsonResponse({'success': True, 'user': user_data}, status=200)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+def update_user_properties(user: PongUser, updated_fields: dict):
+    # List of allowed fields that can be updated
+    allowed_fields = {
+        'username',
+        'display_name',
+        'profile_picture',
+        'banner_picture',
+        'down_key',
+        'up_key',
+        'friends'
+    }
+    
+    for field, value in updated_fields.items():
+        if field not in allowed_fields:
+            raise ValidationError(f"Field '{field}' is not allowed to be updated.")
+        
+        setattr(user, field, value)
+    
+    # Validate the updated user instance
+    # user.full_clean()  # This will raise a ValidationError if any fields are invalid
+    
+    # Save the updated user instance to the database
+    user.save()
+
+    return user
+
+# @csrf_exempt
+@login_required
+@require_POST
+def update_profile(request):
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        # Handle password change separately
+        if 'password' in data:
+            new_password = data.pop('password')
+            user.password = make_password(new_password)  # Hash the new password
+            user.save()
+
+        # Update other fields using the helper function
+        updated_user = update_user_properties(user, data)
+
+
+        
+        return JsonResponse({'status': 'success', 'message': 'Profile updated successfully.', 'user': updated_user.to_dict()})
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': 'An error occurred. ' + str(e)}, status=500)
+
 
 
 @login_required

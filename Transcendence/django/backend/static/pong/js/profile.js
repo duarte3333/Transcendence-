@@ -44,7 +44,7 @@ function loadProfile() {
 	displayName.innerText = window.user.display_name;
 
 	const winsRatio = document.getElementById("winsRatio");
-	winsRatio.innerText = `Wins: ${window.user.wins}, Losses: ${window.user.losses}`;
+	winsRatio.innerText = `Wins: ${window.user.wins || 0}, Losses: ${window.user.losses || 0}`;
 }
 
 function showMatchHistory(event){
@@ -59,11 +59,22 @@ function showMatchHistory(event){
 	if (!document.getElementById("matchHistoryTitle")) {
 		let user = window.user;
 		title = document.createElement('p');
-		title.innerText = `${user.displayName}'s Match History`;
+		title.innerText = `${user.display_name}'s Match History`;
 		title.id = "matchHistoryTitle"
 		title.className = "h1";
 		title.style.marginBottom = "2rem";
 		matchHistory.appendChild(title);
+
+		if (!user.matchHistory) {
+			const row = document.createElement('div');
+			row.className = "row row-matchHistory text-center";
+			row.style.justifyContent = "center"
+			row.style.padding = "10px"
+			row.style.width = "100%";
+			row.innerText = "No Matches...";
+			matchHistory.appendChild(row);
+			return ;
+		}
 
 		for (const matchId in user.matchHistory) {
 			if (user.matchHistory.hasOwnProperty(matchId)) {

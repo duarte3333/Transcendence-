@@ -39,7 +39,6 @@ export function deleteCookie(name, path = '/', domain) {
 export  async function loginPage(){
     if (window.user != undefined)
         return window.user;
-    console.log(">>>>>>>> getting user info global")
     return await fetch('https://localhost/api/user/profile', {
         method: 'POST',
         headers: {
@@ -53,7 +52,7 @@ export  async function loginPage(){
             try {
             const { user } = await response.json();
             window.user = user;
-            console.log("sjadiajdjsadgh user ====== " , window.user);
+            console.log("user ====== " , window.user);
             return user;
             } catch {
                 window.user = undefined;
