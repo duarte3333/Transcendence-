@@ -15,11 +15,9 @@ export class PageManager {
         this.#onScreen = new Set();
         this.#onDom = new Set();
         this.#currentPage = "current";
-        loginPage();
     }
 
     setElement(name, displayFunction, events) {
-        console.log("setElement " + name);
         if (typeof(name) !== 'string') {
             console.log(`Invalid page name: ${name}`);
             return ;
@@ -46,7 +44,6 @@ export class PageManager {
             console.log("not page")
             return ;
         }
-        console.log("showing " + name);
         page.display("block");
         this.#onScreen.add(page);
         this.#currentPage = window.location.pathname;
@@ -83,7 +80,7 @@ export class PageManager {
             console.log("domUnload failed " + element);
             return ;
         }
-        console.log("domUnload success" + element);
+        // console.log("domUnload success" + element);
         const page = this.#pageMap.get(element);
         page.display("none");
         document.body.removeChild(page.getHtml());
@@ -91,18 +88,19 @@ export class PageManager {
     }
     async waitFetch(name) {
         while (!this.#pageMap.get(name)) {
-            console.log("test");
             await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
 
     async urlLoad(name) {
+        await loginPage();
         const nameOrigin = name;
         const urlParams = new URLSearchParams(name.split("?")[1]);
         name =  name.split("?")[0];
+        //Para users nao estando logged in conseguirem ir po resto
         if (name != "/" && window.user == undefined)
         {
-            alert("adeus")
+            console.log("AQUI NO URLLOAD FORCAR / user = ", window.user);
             this.urlLoad('/');
             return;
         }
@@ -123,14 +121,13 @@ export class PageManager {
                 console.log(`The page ${child} does not exist`);
                 return ;
             }
-            console.log(name +" loading " +child);
             this.#domLoad(child);
             if (child == name)
                 familyTree = [...this.get(name).getFamilyTree()];
         }
-        this.show(name);
         if (window.location.pathname !== nameOrigin)
             history.pushState({name: nameOrigin}, '', nameOrigin);
+        this.show(name);
     }
 
     hide(name) {

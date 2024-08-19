@@ -19,13 +19,13 @@ import { getUser } from "./user.js"
 // 	}
 // };
 
-views.setElement("/profile", async (state) => {
+views.setElement("/profile", (state) => {
 	//caso de merda a visualizar mudar block para flex
-	if (state != "block") return;
-	let user = await getUser();
-	loadProfile(user);
-	views.get("/footer/").display(state);
-	views.get("/navbar/").display(state);
+	// if (state != "block") return;
+	// let user = await getUser();
+	loadProfile();
+	views.get("/footer").display(state);
+	views.get("/navbar").display(state);
 	document.getElementById("profileBody").style.display = state;
 })
 .setChilds(["/navbar", "/footer"])
@@ -33,18 +33,18 @@ views.setElement("/profile", async (state) => {
 	[ "matchHistoryButton", "click",  (event) => showMatchHistory(event)]
 	);
 	
-function loadProfile(user) {
+function loadProfile() {
 	const header = document.getElementById("header");
-	header.style.backgroundImage = `url(${user.banner_picture})`;
+	header.style.backgroundImage = `url(${window.user.banner_picture})`;
 
 	const profilePicture = document.getElementById("profilePicture");
-	profilePicture.setAttribute('src', user.profile_picture);
+	profilePicture.setAttribute('src', window.user.profile_picture);
 
 	const displayName = document.getElementById("displayName");
-	displayName.innerText = user.display_name;
+	displayName.innerText = window.user.display_name;
 
 	const winsRatio = document.getElementById("winsRatio");
-	winsRatio.innerText = `Wins: ${user.wins}, Losses: ${user.losses}`;
+	winsRatio.innerText = `Wins: ${window.user.wins}, Losses: ${window.user.losses}`;
 }
 
 function showMatchHistory(event){
@@ -57,6 +57,7 @@ function showMatchHistory(event){
 
 	let title;
 	if (!document.getElementById("matchHistoryTitle")) {
+		let user = window.user;
 		title = document.createElement('p');
 		title.innerText = `${user.displayName}'s Match History`;
 		title.id = "matchHistoryTitle"
