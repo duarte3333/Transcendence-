@@ -1,24 +1,11 @@
 import {views} from "../../main/js/main.js"
 // import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
 // import {secureElement} from "../../main/js/main.js"	
-
+import { getCookie } from "./auxFts.js";
 
 
 views.setElement("/home", async (state) => {
 	if (state == "block") {
-		await fetch('https://localhost/api/user/profile', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': getCookie('csrftoken')
-			},
-		})
-		.then(async (response) => {
-			const { user } = await response.json();
-			window.user = user;
-			console.log("profile: ", user)
-			return user;
-		});
 	}
 	views.get("/navbar").display(state);
 	document.getElementById("homeBody").style.display = state;
@@ -197,17 +184,4 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 }
 
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+

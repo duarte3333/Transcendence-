@@ -1,5 +1,6 @@
 // import { AppControl } from "../../main/js/AppControl.js";
 import { views } from "../../main/js/main.js"
+import { loginPage } from "../../pong/js/auxFts.js";
 
 function getCookie(name) {
     let cookieValue = null;
@@ -25,6 +26,9 @@ function secureElement(element) {
 }
 
 views.setElement("/", (state) => {
+    if (state == "block" && window?.user != undefined)
+        views.urlLoad("/home")
+    else
     // views.get("/navbar/").display(state);
     secureElement("login-body").style.display = state;
 })
@@ -68,14 +72,16 @@ function loginPost() {
     })
     .then((response) => {
         if (!response.ok) {
-
+          
             return response.json().then(errorData => {
                 throw new Error(errorData.error || 'Network response was not ok.');
             });
         }
         return response.json();
     })
-    .then(data => {
+    .then(async (data) => {
+        alert("ola")
+        await loginPage();
         const registerBody = document.getElementById("registerBody")
         if (registerBody) {
             registerBody.setAttribute("style", "display: none !important;");

@@ -1,5 +1,7 @@
 import { Page } from "./Page.js";
 import { AppControl } from "./AppControl.js";
+import { getCookie, loginPage } from "../../pong/js/auxFts.js"; 
+
 
 export class PageManager {
     #pageMap;
@@ -13,6 +15,7 @@ export class PageManager {
         this.#onScreen = new Set();
         this.#onDom = new Set();
         this.#currentPage = "current";
+        loginPage();
     }
 
     setElement(name, displayFunction, events) {
@@ -95,8 +98,15 @@ export class PageManager {
     }
 
     async urlLoad(name) {
+        const nameOrigin = name;
         const urlParams = new URLSearchParams(name.split("?")[1]);
         name =  name.split("?")[0];
+        if (name != "/" && window.user == undefined)
+        {
+            alert("adeus")
+            this.urlLoad('/');
+            return;
+        }
         this.props = {};
 
         urlParams.forEach((value, key) => {
@@ -120,8 +130,8 @@ export class PageManager {
                 familyTree = [...this.get(name).getFamilyTree()];
         }
         this.show(name);
-        if (window.location.pathname !== name)
-            history.pushState({name: name}, '', name);
+        if (window.location.pathname !== nameOrigin)
+            history.pushState({name: nameOrigin}, '', nameOrigin);
     }
 
     hide(name) {

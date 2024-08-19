@@ -1,4 +1,9 @@
 import { views } from "../../main/js/main.js";
+import { addFriend } from "./user.js";
+import { getUserFriends } from "./user.js";
+import { deleteCookie, getCookie } from "./auxFts.js";
+
+let friends;
 
 views.setElement("/navbar", (state) => {
 
@@ -6,10 +11,13 @@ views.setElement("/navbar", (state) => {
 	if (state == "block") {
 		document.getElementById('menuClose').click();
 		highlightButtonNavbar();
+		friends = getUserFriends();
+		const label = document.getElementById("friendsLabel").innerText = `${window.user.display_name}'s Friends`;
 	}
 })
 .setEvents(
 	[ "settingsButton", "click", () => views.urlLoad("/settings")],
+	[ "logoutButton", "click", () => logout()],
 	[ "profileButton", "click", () => views.urlLoad("/profile")],
 	[ "homeButton", "click", () => views.urlLoad("/home")],
 	[ "friendsButton", "click", () => generateFriendsList()],
@@ -32,11 +40,11 @@ let users = [
     { username: "Maria", status: "offline" }
 ];
 
-let friends = [
-    { username: "Antonio", status: "online" },
-    { username: "Vasco", status: "offline" },
-    { username: "Joao", status: "offline" }
-];
+// let friends = [
+//     { username: "Antonio", status: "online" },
+//     { username: "Vasco", status: "offline" },
+//     { username: "Joao", status: "offline" }
+// ];
 
 
 // document.addEventListener('DOMContentLoaded', function() {
@@ -61,7 +69,6 @@ let friends = [
 
 
 function generateFriendsList() {
-
 	let friendsList = document.getElementById("friendsList");
 	if (!friendsList) {
 		friendsList = document.createElement('div');
@@ -71,43 +78,53 @@ function generateFriendsList() {
 		friendsList.innerHTML = '';
 	}
 
-	friends.forEach(user => {
-		let li = document.createElement('li');
 
+	if (!friends.value) {
+		let li = document.createElement('li');
 		let div = document.createElement('div');
 		div.className = "dropdown-item lightGreyText d-flex align-items-center justify-content-between gap-2";
-
-		let span = document.createElement('span');
-		span.className = "text-start";
-		span.innerText = user.username;
-
-		let profileButton = document.createElement('button');
-		profileButton.style.padding = "0px";
-		profileButton.className = "btn d-flex align-items-center";
-		profileButton.innerHTML = `
-			<image height="16" width="16" src="/static/pong/img/account.png" style="filter: invert(1);"></image>
-		`;
-
-		let chatButton = document.createElement('button');
-		chatButton.className = "btn d-flex align-items-center";
-		chatButton.style.padding = "0px";
-		chatButton.innerHTML = `
-			<image height="16" width="16" src="/static/pong/img/chat.png" style="filter: invert(1);"></image>
-		`;
-
-		let onlineStatus = document.createElement('img');
-		onlineStatus.className = "image-end";
-		onlineStatus.setAttribute('height', '14');
-		onlineStatus.setAttribute('width', '14');
-		onlineStatus.setAttribute('src', `/static/pong/img/${user.status}.png`);
-
-		div.appendChild(span);
-		div.appendChild(profileButton);
-		div.appendChild(chatButton);
-		div.appendChild(onlineStatus);
+		div.innerText = "No friends added yet :(";
 		li.appendChild(div);
 		friendsList.appendChild(li);
-	});
+	}
+
+	// friends.forEach(user => {
+	// 	let li = document.createElement('li');
+
+	// 	let div = document.createElement('div');
+	// 	div.className = "dropdown-item lightGreyText d-flex align-items-center justify-content-between gap-2";
+
+	// 	let span = document.createElement('span');
+	// 	span.className = "text-start";
+	// 	span.innerText = user.username;
+
+	// 	let profileButton = document.createElement('button');
+	// 	profileButton.style.padding = "0px";
+	// 	profileButton.className = "btn d-flex align-items-center";
+	// 	profileButton.innerHTML = `
+	// 		<image height="16" width="16" src="/static/pong/img/account.png" style="filter: invert(1);"></image>
+	// 	`;
+
+	// 	let chatButton = document.createElement('button');
+	// 	chatButton.className = "btn d-flex align-items-center";
+	// 	chatButton.style.padding = "0px";
+	// 	chatButton.innerHTML = `
+	// 		<image height="16" width="16" src="/static/pong/img/chat.png" style="filter: invert(1);"></image>
+	// 	`;
+
+	// 	let onlineStatus = document.createElement('img');
+	// 	onlineStatus.className = "image-end";
+	// 	onlineStatus.setAttribute('height', '14');
+	// 	onlineStatus.setAttribute('width', '14');
+	// 	onlineStatus.setAttribute('src', `/static/pong/img/${user.status}.png`);
+
+	// 	div.appendChild(span);
+	// 	div.appendChild(profileButton);
+	// 	div.appendChild(chatButton);
+	// 	div.appendChild(onlineStatus);
+	// 	li.appendChild(div);
+	// 	friendsList.appendChild(li);
+	// });
 
 }
 
@@ -160,3 +177,29 @@ function highlightButtonNavbar() {
 		document.getElementById("profileButton").className = "nav-link active";
 }
 
+function logout() {
+	fetch('api/logout', {
+        method: 'POST', // Use POST for logout requests
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // Add CSRF token if needed
+        },
+        credentials: 'include' // Send cookies with the request
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redirect or perform any action after successful logout
+			window.user = undefined;
+			views.urlLoad('/');
+        } else {
+            // Handle errors here
+            console.error('Logout failed.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+
+
+    // deleteCookie('csrftoken');
+    // deleteCookie('sessionid');
+	// views.urlLoad('/');
+}
