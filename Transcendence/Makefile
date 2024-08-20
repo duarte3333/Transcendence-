@@ -12,7 +12,7 @@ prune:
 re_clean:
 	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down --remove-orphans && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) build --no-cache && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) up
 
-rebuild:
+run:
 	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) up --build
 
 re:
