@@ -9,11 +9,11 @@ remove:
 prune:
 	docker system prune -a --volumes -f
 
-restart_clean:
+re_clean:
 	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down --remove-orphans && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) build --no-cache && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) up
 
 rebuild:
 	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) up --build
 
-restart:
+re:
 	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) up
