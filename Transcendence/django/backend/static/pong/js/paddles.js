@@ -24,7 +24,7 @@ export class Paddle {
   moveDown;
   moveUp;
   moveUpKey;
-  moveDownKey
+  moveDownKey;
   color;
   rectEdges = new Map();
 
@@ -207,6 +207,9 @@ export class Paddle {
       this.updateRectMap();
     }
   }
+
+
+
 
   checkColision(x, y, radius) {
     for (let i = 1; i <= 4; i++) {

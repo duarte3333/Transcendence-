@@ -58,12 +58,12 @@ export class Game {
     this.context = this.canvas.getContext("2d");
     console.log("views.props.type: ", views.props.type);
     if (views.props.type == 'online') {
-      this.pause = true;
+      // this.pause = true;
       document.addEventListener("keydown", this.handleKeyDownOnline.bind(this));
       document.addEventListener("keyup", this.handleKeyUpOnline.bind(this));
+
     }
     else if (views.props.type == 'local'){
-      console.log("Dentro do else TOO");
       this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
     }
    this.setupGame(controlsList);
@@ -105,14 +105,14 @@ export class Game {
   }
 
   handleKeyDownOnline(event) {
+
+    console.log("window.user.down_key ", window.user.down_key);
     let action = undefined;
-    console.log("handleKeyDownOnline ", window.user.up_key)
-    if (event.key == window.user.up_key || event.key == window.user.down_key) 
+    if (event.key == window.user.down_key || event.key == 'ArrowDown') 
       action = "down" 
-    console.log("handleKeyDownOnline: " + action)
     if (action)
       this.socket.send(JSON.stringify({
-        'type': 'paddle_update',
+        'type': 'down',
         'action': action,
         'playerId': window.user.id
       }));
@@ -120,12 +120,11 @@ export class Game {
 
   handleKeyUpOnline(event) {
     let action = undefined;
-    if (event.key == window.user.up_key || event.key == window.user.down_key) 
+    if (event.key == window.user.up_key || event.key == 'ArrowUp') 
       action = "up"
-    console.log("handleKeyUpOnline: " + action)
     if (action)
       this.socket.send(JSON.stringify({
-        'type': 'paddle_update',
+        'type': 'up',
         'action': action,
         'playerId': window.user.id
       }));
@@ -203,46 +202,16 @@ export class Game {
       sleep(400);
     }
   }
-
-  sendPaddleUpdate(paddle, name) {
-    if (socket) {
-      // console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
-      socket.send(JSON.stringify({
-        'type': 'paddle_update',
-        'paddle_x': paddle.x,
-        'paddle_y': paddle.y,
-        'sender': name
-      }))
-    } 
-  }
-  
-  sendBallUpdate(ball) {
-    if (socket) {
-      // console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
-      socket.send(JSON.stringify({
-        'type': 'ball_update',
-        'ball_x': ball.x,
-        'ball_y': ball.y,
-      }))
-    }
-  }
-
     //UPDATE OBJECTS
   update() {
     const ball = this.objects.get("ball");
 
-    //Update players paddle and ball
-    for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let paddle = this.objects.get("paddle_" + i);
-      paddle.move();
-      //send paddle info to client
-      // this.sendPaddleUpdate(paddle);
-      // this.client.updatePlayer(paddle);
-    }
+    // for (let i = 1; i <= this.numberOfPlayers; i++) {
+    //   let paddle = this.objects.get("paddle_" + i);
+    //   paddle.move();
+    //   // this.client.updatePlayer(paddle);
+    // }
     ball.move(this);
-    //send balxl info to client
-    // this.sendBallUpdate(ball);
-    // this.client.updateBall(ball);
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
       let temp = this.objects.get("candy_" + i);
@@ -268,7 +237,6 @@ export class Game {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
-
     } 
     else if (this.finish) {
       this.context.font = "bold 40px Poppins, sans-serif";
@@ -367,8 +335,6 @@ export class Game {
     player_2.speed = 3 * this.speed;
   }
 
-
-
   initializeWebSocket(id, playerId){
     this.socket = new WebSocket(
        `ws://localhost:8000/ws/game/${id}/`
@@ -377,10 +343,12 @@ export class Game {
     this.socket.onmessage = function(e) {
         try {
           const data = JSON.parse(e.data);
-          console.log('Message:', data);
-          console.log("data.action == 'running': ", (data.action == 'running'))
+          // console.log('Message:', data);
+          // console.log("data.action == 'running': ", (data.action == 'running'))
           if (data.action == 'running')
             this.pause = false;
+          else if (data.type == 'player_move')
+            this.handlePlayerMove(data);
         } catch {}
     }.bind(this);
   
@@ -396,6 +364,20 @@ export class Game {
       }));
     }.bind(this);
   
+  }
+
+  handlePlayerMove(data) {    
+    let paddle = game.objects.get("paddle_" + data.playerId);
+
+    if (data.move === "up") {
+      paddle.moveUp = false;
+      paddle.moveDown = true;
+    }
+    else if (data.move === 'down') {
+      paddle.moveUp = true;
+      paddle.moveDown = false;
+    }
+    paddle.move();
   }
 
   destroyer() {

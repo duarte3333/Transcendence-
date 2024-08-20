@@ -12,16 +12,14 @@ export class events {
 
         function handleKeyDownAction(event)
         {
-            console.log("setupControls handleKeyDownAction ", event);
+            document.addEventListener("keydown", handleKeyDownAction.bind(this));
         }
 
         function handleKeyUpAction(event)
         {
-            console.log("setupControls handleKeyUpAction ", event);
+            document.addEventListener("keyup", handleKeyUpAction.bind(this));
         }
 
-        document.addEventListener("keydown", handleKeyDownAction.bind(this));
-        document.addEventListener("keyup", handleKeyUpAction.bind(this));
         this.removeControls = () => {
             document.removeEventListener("keydown", handleKeyDownAction.bind(this));
             document.removeEventListener("keyup", handleKeyUpAction.bind(this));
