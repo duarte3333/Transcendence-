@@ -43,7 +43,6 @@ let users = [
 
 async function generateFriendsList() {
 	friends = await getUserFriends();
-	console.log("user friends ==> ", friends);
 	let friendsList = document.getElementById("friendsList");
 	if (!friendsList) {
 		friendsList = document.createElement('div');
@@ -54,7 +53,8 @@ async function generateFriendsList() {
 	}
 
 
-	if (!friends.value) {
+	console.log("friends ==>>>", friends)
+	if (friends.length === 0) {
 		let li = document.createElement('li');
 		let div = document.createElement('div');
 		div.className = "dropdown-item lightGreyText d-flex align-items-center justify-content-between gap-2";
@@ -72,7 +72,7 @@ async function generateFriendsList() {
 
 		let span = document.createElement('span');
 		span.className = "text-start";
-		span.innerText = user.display_name;
+		span.innerText = user;
 
 		let profileButton = document.createElement('button');
 		profileButton.style.padding = "0px";
@@ -88,16 +88,16 @@ async function generateFriendsList() {
 			<image height="16" width="16" src="/static/pong/img/chat.png" style="filter: invert(1);"></image>
 		`;
 
-		// let onlineStatus = document.createElement('img');
-		// onlineStatus.className = "image-end";
-		// onlineStatus.setAttribute('height', '14');
-		// onlineStatus.setAttribute('width', '14');
-		// onlineStatus.setAttribute('src', `/static/pong/img/${user.status}.png`);
+		let onlineStatus = document.createElement('img');
+		onlineStatus.className = "image-end";
+		onlineStatus.setAttribute('height', '14');
+		onlineStatus.setAttribute('width', '14');
+		onlineStatus.setAttribute('src', `/static/pong/img/online.png`);
 
 		div.appendChild(span);
 		div.appendChild(profileButton);
 		div.appendChild(chatButton);
-		// div.appendChild(onlineStatus);
+		div.appendChild(onlineStatus);
 		li.appendChild(div);
 		friendsList.appendChild(li);
 	});
@@ -105,32 +105,37 @@ async function generateFriendsList() {
 }
 
 async function addFriendInputCheck() {
-	const addFriendInput = document.getElementById("validationServer01");
-	const username = addFriendInput.value;
+    const addFriendInput = document.getElementById("validationServer01");
+    const username = addFriendInput.value;
 
-	const userObject = users.find(user => user.username === username);
+    // Hide previous messages
+    const notFound = document.getElementById("notFound");
+    const alreadyFriend = document.getElementById("alreadyFriend");
+    notFound.style.display = "none";
+    alreadyFriend.style.display = "none";
 
-	notFound.style.display = "none";
-	alreadyFriend.style.display = "none";
+    // Make the API call
+    const data = await addFriend(username);
 
-	const data = await addFriend(username);
-	// if (!userObject) {
-	// 	let notFound = document.getElementById("notFound");
-	// 	notFound.style.display = "block";
-	// } else if (friends.find(user => user.username === username)) {
-	// 	let alreadyFriend = document.getElementById("alreadyFriend");
-	// 	alreadyFriend.style.display = "block";
-	// } else {
-	// 	//ADD FRIEND
-	// 	friends.push(userObject);
-		
-		// const myModalElement = document.getElementById('addFriendModal');
-		// const myModal = bootstrap.Modal.getInstance(myModalElement) || new bootstrap.Modal(myModalElement);
-		// myModal.hide();
-	// }
-	console.log("data ==" + data);
+    // Log the response for debugging
+    // console.log("Response data:", data);
+
+    if (data && data.message) {
+        // Check the message or other properties in the response data to decide what to do
+        if (data.message.includes('does not exist')) {
+            notFound.style.display = "block";
+        } else if (data.message.includes('already a friend')) {
+            alreadyFriend.style.display = "block";
+        } else {
+            // Hide the modal if there is no error
+            const myModalElement = document.getElementById('addFriendModal');
+            const myModal = bootstrap.Modal.getInstance(myModalElement) || new bootstrap.Modal(myModalElement);
+            myModal.hide();
+        }
+    } else {
+        console.error('Unexpected response format:', data);
+    }
 }
-
 // document.body.insertBe	fore(document.getElementById("navbarBody").parentElement, document.body.firstChild);
 
 // document.body.insertBefore(document.getElementById("navbarBody").parentElement, document.body.firstChild);

@@ -94,6 +94,7 @@ urlpatterns = [
     path('api/user-info', user_info, name='user-info'),
     path('api/login', login_view, name='login'),
     path('api/logout', auth_views.LogoutView.as_view(), name='logout'),
+    path('api/register', register),
     
     # END API
     # RUBENS
@@ -105,7 +106,6 @@ urlpatterns = [
     path('spa/login', index, name='index'),
     path('spa/tournament/local', tournamentLocal, name='tournamentLocal'),
     path('spa/footer', footer, name='footer'),
-    path('spa/register', register),
     path('spa/navbar', navbar),
     path('spa/settings', settings),
     path('spa/tournament/local', tournamentLocal),

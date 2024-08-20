@@ -7,6 +7,9 @@ from .forms import RegisterForm
 from login.models import PongUser
 from django.http import JsonResponse
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 def login_view(request):
     if request.method == 'POST':
