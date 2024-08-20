@@ -2,7 +2,9 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
 # from api.models import Game
+import logging
 
+logger = logging.getLogger(__name__)
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
@@ -57,9 +59,10 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def player_move(self, event):
+        logger.info(f'Event received: {event}')
         await self.send_json({
             'type': 'player_move',
-            'action': "move_" + event,
+            'action': "move_" + event.get('move'),
             'move': event.get('move'),
             'playerId': event.get('playerId')
         })

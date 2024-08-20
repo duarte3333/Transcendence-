@@ -12,12 +12,12 @@ export class events {
 
         function handleKeyDownAction(event)
         {
-            handleKeyDown(event);
+            console.log("setupControls handleKeyDownAction ", event);
         }
 
         function handleKeyUpAction(event)
         {
-            handleKeyUp(event);
+            console.log("setupControls handleKeyUpAction ", event);
         }
 
         document.addEventListener("keydown", handleKeyDownAction.bind(this));

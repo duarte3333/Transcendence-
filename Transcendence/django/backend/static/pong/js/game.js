@@ -56,14 +56,14 @@ export class Game {
     const row = document.getElementById("game");
     row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
+    console.log("views.props.type: ", views.props.type);
     if (views.props.type == 'online') {
       this.pause = true;
-      alert("game")
       document.addEventListener("keydown", this.handleKeyDownOnline.bind(this));
       document.addEventListener("keyup", this.handleKeyUpOnline.bind(this));
-
     }
-    else {
+    else if (views.props.type == 'local'){
+      console.log("Dentro do else TOO");
       this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
     }
    this.setupGame(controlsList);
@@ -72,8 +72,6 @@ export class Game {
   }
 
   handleKeyDown(event) {
-    console.log("handleKeyDown")
-
     for (let i = 1; i <= this.numberOfPlayers; i++) {
         let temp = this.objects.get("paddle_" + i);
         if (event.key == temp.moveUpKey) {
@@ -106,11 +104,11 @@ export class Game {
     }
   }
 
-
   handleKeyDownOnline(event) {
     let action = undefined;
-    console.log("handleKeyDownOnline")
-    if (event.key == window.user.up_key || event.key == window.user.down_key) action = "down" 
+    console.log("handleKeyDownOnline ", window.user.up_key)
+    if (event.key == window.user.up_key || event.key == window.user.down_key) 
+      action = "down" 
     console.log("handleKeyDownOnline: " + action)
     if (action)
       this.socket.send(JSON.stringify({
@@ -122,8 +120,9 @@ export class Game {
 
   handleKeyUpOnline(event) {
     let action = undefined;
-    console.log("handleKeyUpOnline")
-    if (event.key == window.user.up_key || event.key == window.user.down_key) action = "up" 
+    if (event.key == window.user.up_key || event.key == window.user.down_key) 
+      action = "up"
+    console.log("handleKeyUpOnline: " + action)
     if (action)
       this.socket.send(JSON.stringify({
         'type': 'paddle_update',
@@ -237,12 +236,12 @@ export class Game {
       let paddle = this.objects.get("paddle_" + i);
       paddle.move();
       //send paddle info to client
-      this.sendPaddleUpdate(paddle);
+      // this.sendPaddleUpdate(paddle);
       // this.client.updatePlayer(paddle);
     }
     ball.move(this);
     //send balxl info to client
-    this.sendBallUpdate(ball);
+    // this.sendBallUpdate(ball);
     // this.client.updateBall(ball);
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
