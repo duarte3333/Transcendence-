@@ -85,7 +85,6 @@ function loginPost() {
         if (registerBody) {
             registerBody.setAttribute("style", "display: none !important;");
         }
-        console.log("a ir para home de login");
         views.urlLoad("/home")
         // Handle successful registration here (e.g., redirect user or show success message)
     })

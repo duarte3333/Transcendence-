@@ -56,10 +56,10 @@ function loadProfileSettings() {
 	downKey.innerText = user.down_key;
 
 	const profilePicture = document.getElementById("profilePicture");
-	profilePicture.setAttribute("xlink:href", user.profile_picture);
+	profilePicture.setAttribute("href", user.profile_picture);
 
 	const banner = document.getElementById("profileBanner");
-	banner.setAttribute("xlink:href", user.banner_picture);
+	banner.setAttribute("href", user.banner_picture);
 }
 function changeText(event, type) {
 	
@@ -89,7 +89,7 @@ function changeText(event, type) {
 	input.className = 'form-control';
 	input.setAttribute('aria-label', type);
 	input.setAttribute('aria-describedby', 'basic-addon1');
-	if (type == "upKey" || type == "downKey") {
+	if (type == "up_key" || type == "down_key") {
 		input.readOnly = true;
 		input.addEventListener('keydown', function keyHandler(event) {
             input.value = event.key;  // Capture the key
@@ -119,10 +119,22 @@ function changeText(event, type) {
 async function completeChange(oldParent, div, type, inputID, buttonID) {
 
 	const input = document.getElementById(inputID);
+
+	if (!input.value) {
+		input.placeholder = "Can't be empty";
+		return ;
+	}
 	
-	const data = {
-		[type]: input.value,
-	};
+	let data;
+	if (type != "profile_picture" && type != "banner_picture") {
+		data = {
+			[type]: input.value,
+		};
+	} else {
+		data = {
+			[type]: input.files[0],
+		};
+	}
 	
 	try {
 		// Wait for the profile update to complete
@@ -135,11 +147,12 @@ async function completeChange(oldParent, div, type, inputID, buttonID) {
 		div.remove();
 		const button = document.getElementById(buttonID);
 		button.remove();
-		loadProfileSettings();
+		// loadProfileSettings();
 	} catch (error) {
 		console.error('Failed to update profile:', error);
 		// Optionally, show an error message to the user
 	}
+	loadProfileSettings();
 }
 
 function changeImage(event, type) {
@@ -186,28 +199,28 @@ function changeImage(event, type) {
 	col.appendChild(completeButton);
 }
 
-function completeChangeImage(oldParent, div, type, inputID, buttonID) {
-	const fileInput = document.getElementById(inputID);
-	if (!fileInput || fileInput.files.length === 0) {
-		alert('Please select a file.');
-		return;
-	}
+// function completeChangeImage(oldParent, div, type, inputID, buttonID) {
+// 	const fileInput = document.getElementById(inputID);
+// 	if (!fileInput || fileInput.files.length === 0) {
+// 		alert('Please select a file.');
+// 		return;
+// 	}
 
-	const file = fileInput.files[0];
+// 	const file = fileInput.files[0];
 
 
-	// const reader = new FileReader();
-	// reader.onload = function(event) {
-	// 	const imgElement = document.getElementById(type);
-	// 	if (imgElement) {
-	// 		imgElement.setAttribute('href', event.target.result);
-	// 	}
-	// };
-	// reader.readAsDataURL(file);
+// 	// const reader = new FileReader();
+// 	// reader.onload = function(event) {
+// 	// 	const imgElement = document.getElementById(type);
+// 	// 	if (imgElement) {
+// 	// 		imgElement.setAttribute('href', event.target.result);
+// 	// 	}
+// 	// };
+// 	// reader.readAsDataURL(file);
 
-	//show old elements hide new ones
-	oldParent.style.setProperty('display', 'flex', 'important');
-	div.remove();
-	const button = document.getElementById(buttonID);
-	button.remove();
-}
+// 	//show old elements hide new ones
+// 	oldParent.style.setProperty('display', 'flex', 'important');
+// 	div.remove();
+// 	const button = document.getElementById(buttonID);
+// 	button.remove();
+// }
