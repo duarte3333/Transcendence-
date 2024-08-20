@@ -101,7 +101,6 @@ export class PageManager {
         //Para users nao estando logged in conseguirem ir po resto
         if (name != "/" && window.user == undefined)
         {
-            console.log("AQUI NO URLLOAD FORCAR / user = ", window.user);
             this.urlLoad('/');
             return;
         }

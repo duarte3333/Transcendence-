@@ -23,7 +23,8 @@ views.setElement("/profile", (state) => {
 	//caso de merda a visualizar mudar block para flex
 	// if (state != "block") return;
 	// let user = await getUser();
-	loadProfile();
+	if (state == "block")
+		loadProfile();
 	views.get("/footer").display(state);
 	views.get("/navbar").display(state);
 	document.getElementById("profileBody").style.display = state;
