@@ -228,8 +228,9 @@ def update_profile(request):
 def user_friends(request):
     user = request.user
     friend_ids = user.friends
-    
-    friends_display_names = PongUser.objects.filter(username__in=friend_ids).values_list('display_name', flat=True)
+
+    # Fetch friends by their IDs and get their display names
+    friends_display_names = PongUser.objects.filter(id__in=friend_ids).values_list('display_name', flat=True)
 
     user_data = {
         'friends': list(friends_display_names)
@@ -242,21 +243,21 @@ def add_friend(request):
     friend_display_name = request.POST.get('friend_display_name')
 
     if not friend_display_name:
-        return JsonResponse({'success': False, 'message': 'Friend username not provided.'}, status=400)
+        return JsonResponse({'success': False, 'message': 'Friend display name not provided.'}, status=400)
     
     try:
         friend_user = PongUser.objects.get(display_name=friend_display_name)
     except PongUser.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'User does not exist.'}, status=404)
     
-    if friend_display_name in user.friends:
+    if friend_user.id in user.friends:
         return JsonResponse({'success': False, 'message': 'User is already a friend.'}, status=400)
     
-    user.friends.append(friend_display_name)
+    user.friends.append(friend_user.id)
     user.save()
 
-    if user.display_name not in friend_user.friends:
-        friend_user.friends.append(user.display_name)
+    if user.id not in friend_user.friends:
+        friend_user.friends.append(user.id)
         friend_user.save()
     
     return JsonResponse({'success': True, 'message': 'Friend added successfully.'}, status=200)

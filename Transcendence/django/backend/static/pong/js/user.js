@@ -20,6 +20,7 @@ export async function getUserFriends() {
         const data = await response.json();
         if (response.ok) {
             // console.log('User friends:', data.user.friends);
+            return data.user.friends;
         } else {
             console.error('Error:', data.message);
         }
