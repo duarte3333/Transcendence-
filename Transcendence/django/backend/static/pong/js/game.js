@@ -21,9 +21,9 @@ function resizeCanvas() {
 
 export class Game {
   constructor(numPlayers, controlsList) {
-    console.log("controlsList")
-    console.log(numPlayers)
-    console.log(controlsList)
+    // console.log("controlsList")
+    // console.log(numPlayers)
+    // console.log(controlsList)
     this.playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
     this.objects = new Map();
     this.numCandies = 1;
@@ -47,8 +47,8 @@ export class Game {
     window.addEventListener('resize', () => {
       resizeCanvas();
     });
-    console.log("GAME BETWEEN", controlsList);
-    console.log("Game constructor: ", views.props);
+    // console.log("GAME BETWEEN", controlsList);
+    // console.log("Game constructor: ", views.props);
     //console.log(controlsList);
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
@@ -92,7 +92,7 @@ export class Game {
   }
 
   handleKeyUp(event) {
-    console.log("handleKeyUp")
+    // console.log("handleKeyUp")
     for (let i = 1; i <= this.numberOfPlayers; i++) {
         let temp = this.objects.get("paddle_" + i);
         if (event.key == temp.moveUpKey) {
@@ -207,7 +207,7 @@ export class Game {
 
   sendPaddleUpdate(paddle, name) {
     if (socket) {
-      console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
+      // console.log(`paddle_x: ${paddle.x}, paddle_y: ${paddle.y}`);
       socket.send(JSON.stringify({
         'type': 'paddle_update',
         'paddle_x': paddle.x,
@@ -219,7 +219,7 @@ export class Game {
   
   sendBallUpdate(ball) {
     if (socket) {
-      console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
+      // console.log(`ball_x: ${ball.x}, ball_y: ${ball.y}`);
       socket.send(JSON.stringify({
         'type': 'ball_update',
         'ball_x': ball.x,
@@ -338,7 +338,7 @@ export class Game {
     this.playerBanner.clearBanner();
     clearInterval(this.gameLoop);
 
-    console.log("Game::Game acabouuu");
+    // console.log("Game::Game acabouuu");
 
   }
 
@@ -359,7 +359,7 @@ export class Game {
 
   updateGameSpeed(speed) {
     this.speed = 2.5 * speed;
-    console.log("Speed updated to: " + this.speed);
+    // console.log("Speed updated to: " + this.speed);
     const ball = this.objects.get("ball");
     const player_1 = this.objects.get("player_1");
     const player_2 = this.objects.get("player_2");
@@ -401,7 +401,6 @@ export class Game {
 
   destroyer() {
     clearInterval(this.gameLoop);
-    alert("alert: " +destroyer);
   }
 }
 
@@ -418,7 +417,7 @@ views.setElement('/game', (state) => {
       "s"
     ]
   }
-  console.log("game: ", game)
+  // console.log("game: ", game)
   if (state == "block")
     game = new Game(2, data);
   else

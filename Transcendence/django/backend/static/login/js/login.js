@@ -21,13 +21,13 @@ function secureElement(element) {
     var found = document.getElementById(element);
     if (found)
         return (found);
-    console.log(element + "Not found");
     return (document.createElement("div"));
 }
 
 views.setElement("/", (state) => {
-    if (state == "block" && window?.user != undefined)
+    if (state == "block" && window?.user != undefined) {
         views.urlLoad("/home")
+    }
     else
     // views.get("/navbar/").display(state);
     secureElement("login-body").style.display = state;
@@ -80,12 +80,12 @@ function loginPost() {
         return response.json();
     })
     .then(async (data) => {
-        alert("ola")
         await loginPage();
         const registerBody = document.getElementById("registerBody")
         if (registerBody) {
             registerBody.setAttribute("style", "display: none !important;");
         }
+        console.log("a ir para home de login");
         views.urlLoad("/home")
         // Handle successful registration here (e.g., redirect user or show success message)
     })
@@ -147,7 +147,7 @@ function registerPost() {
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data);
+        // console.log('Success:', data);
         const registerBody = document.getElementById("registerBody")
         if (registerBody) {
             registerBody.setAttribute("style", "display: none !important;");

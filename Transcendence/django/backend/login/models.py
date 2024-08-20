@@ -31,6 +31,17 @@ class PongUser(AbstractUser):
 
     objects = PongUserManager()
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'display_name': self.display_name,
+            'profile_picture': self.profile_picture.url if self.profile_picture else None,
+            'banner_picture': self.banner_picture.url if self.banner_picture else None,
+            'up_key': self.up_key if self.up_key else 'w',
+            'down_key': self.down_key if self.down_key else 's',
+        }
+
     def __str__(self):
         return self.username
 
