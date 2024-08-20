@@ -151,9 +151,8 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
     })
     .then(async (response) => {
 		const { game } = await response.json();
-		encodeURI
-		decodeURI
-		views.urlLoad("/game?id=" + game.id);
+		views.urlLoad(`/game?id=${game.id}&type=online`);
+
 		// function checkConditionUntilTimeout() {
 		// 	let attempts = 0;
 		// 	const maxAttempts = 30;
@@ -181,6 +180,7 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 		// initializeWebSocket(game.id, window.user.id);
 		// console.log(response)
 	});
+
 }
 
 

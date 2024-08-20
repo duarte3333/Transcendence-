@@ -131,10 +131,10 @@ export function updateScore(playerName, flag) {
     score.textContent--;
 }
 
-export function checkGameOver(numberOfPlayers) {
+export function checkGameOver(numberOfPlayers, maxScore) {
   for (let i = 1; i <= numberOfPlayers; i++) {
     const score = document.getElementById("playerScore_" + i);
-    if (score.textContent >= 1) {
+    if (score.textContent >= maxScore) {
       const score1 = document.getElementById("playerScore_1");
       const score2 = document.getElementById("playerScore_2");
       score1.textContent = 0;
