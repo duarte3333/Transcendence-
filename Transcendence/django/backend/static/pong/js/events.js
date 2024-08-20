@@ -1,31 +1,37 @@
 export class events {
     constructor(game) {
         this.game = game; 
-        this.setupControls();
         this.initializeUIButtons();
         // this.initializeTournament();
     }
 
-    setupControls() {
+    setupControls(handleKeyDown, handleKeyUp) {
         if (document.getElementById("keydown") == null) {
             console.log("keydown está a ser chamado.");
         }
-        document.addEventListener("keydown", (event) => this.handleKeyDown(event));
-        document.addEventListener("keyup", (event) => this.handleKeyUp(event));
+
+        function handleKeyDownAction(event)
+        {
+            handleKeyDown(event);
+        }
+
+        function handleKeyUpAction(event)
+        {
+            handleKeyUp(event);
+        }
+
+        document.addEventListener("keydown", handleKeyDownAction.bind(this));
+        document.addEventListener("keyup", handleKeyUpAction.bind(this));
+        this.removeControls = () => {
+            document.removeEventListener("keydown", handleKeyDownAction.bind(this));
+            document.removeEventListener("keyup", handleKeyUpAction.bind(this));
+        }
     }
 
-    removeControls() {
-        document.removeEventListener("keydown", (event) => this.handleKeyDown(event));
-        document.removeEventListener("keyup", (event) => this.handleKeyUp(event));
-    }
 
-    handleKeyDown =  (event) => {
-        console.log("e:handleKeyDown")
-    }
+    removeControls = () => {}
 
-    handleKeyUp = (event) => {
-           console.log("e:handleKeyUp")
-    }
+
 
     initializeUIButtons() {
         const speedControl = document.getElementById('speedControl');

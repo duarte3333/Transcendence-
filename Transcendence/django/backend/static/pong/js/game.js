@@ -9,9 +9,6 @@ import { Banner } from "./banner.js";
 import { socket } from "./myWebSocket.js";
 import { views } from "../../main/js/main.js";
 
-
-
-
 function resizeCanvas() {
   const canvas = document.getElementById("pongCanvas");
   const banner = document.getElementById('banner');
@@ -37,6 +34,7 @@ export class Game {
     this.events = new events(this);
     this.candies = [];
     this.fps = 0;
+    this.maxScore = 100;
     this.ball = new Ball();
     this.finish = false;
     this.winner = 0;
@@ -58,14 +56,24 @@ export class Game {
     const row = document.getElementById("game");
     row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
-    this.events.handleKeyDown = this.handleKeyDown.bind(this);
-    this.events.handleKeyUp = this.handleKeyUp.bind(this);
-    this.setupGame(controlsList);
-  }
+    if (views.props.type == 'online') {
+      this.pause = true;
+      alert("game")
+      document.addEventListener("keydown", this.handleKeyDownOnline.bind(this));
+      document.addEventListener("keyup", this.handleKeyUpOnline.bind(this));
 
+    }
+    else {
+      this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
+    }
+   this.setupGame(controlsList);
+    if (views.props.type == 'online')
+      this.initializeWebSocket(views.props.id, window.user.id);
+  }
 
   handleKeyDown(event) {
     console.log("handleKeyDown")
+
     for (let i = 1; i <= this.numberOfPlayers; i++) {
         let temp = this.objects.get("paddle_" + i);
         if (event.key == temp.moveUpKey) {
@@ -96,6 +104,32 @@ export class Game {
             temp.moveDown = false;
         }
     }
+  }
+
+
+  handleKeyDownOnline(event) {
+    let action = undefined;
+    console.log("handleKeyDownOnline")
+    if (event.key == window.user.up_key || event.key == window.user.down_key) action = "down" 
+    console.log("handleKeyDownOnline: " + action)
+    if (action)
+      this.socket.send(JSON.stringify({
+        'type': 'paddle_update',
+        'action': action,
+        'playerId': window.user.id
+      }));
+  }
+
+  handleKeyUpOnline(event) {
+    let action = undefined;
+    console.log("handleKeyUpOnline")
+    if (event.key == window.user.up_key || event.key == window.user.down_key) action = "up" 
+    if (action)
+      this.socket.send(JSON.stringify({
+        'type': 'paddle_update',
+        'action': action,
+        'playerId': window.user.id
+      }));
   }
 
   setupGame(controlsList) {
@@ -207,7 +241,7 @@ export class Game {
       // this.client.updatePlayer(paddle);
     }
     ball.move(this);
-    //send ball info to client
+    //send balxl info to client
     this.sendBallUpdate(ball);
     // this.client.updateBall(ball);
     //send candy info to client
@@ -216,7 +250,7 @@ export class Game {
       // this.client.updateCandy(temp);
     }
 
-    let final_i = checkGameOver(this.numberOfPlayers);
+    let final_i = checkGameOver(this.numberOfPlayers, this.maxScore);
     if (final_i != -1) {
       this.finish = true;
       this.winner = final_i;
@@ -337,26 +371,31 @@ export class Game {
 
 
   initializeWebSocket(id, playerId){
-    const chatSocket = new WebSocket(
+    this.socket = new WebSocket(
        `ws://localhost:8000/ws/game/${id}/`
     );
   
-    chatSocket.onmessage = function(e) {
-      const data = JSON.parse(e.data);
-      console.log('Message:', data);
-    };
+    this.socket.onmessage = function(e) {
+        try {
+          const data = JSON.parse(e.data);
+          console.log('Message:', data);
+          console.log("data.action == 'running': ", (data.action == 'running'))
+          if (data.action == 'running')
+            this.pause = false;
+        } catch {}
+    }.bind(this);
   
-    chatSocket.onclose = function(e) {
+    this.socket.onclose = function(e) {
       console.error('Chat socket closed unexpectedly');
-    };
+    }.bind(this);
   
     // Enviar uma mensagem
-    chatSocket.onopen = function(e) {
-      chatSocket.send(JSON.stringify({
+    this.socket.onopen = function(e) {
+      this.socket.send(JSON.stringify({
         'playerId': playerId,
         'action': 'join'
       }));
-    };
+    }.bind(this);
   
   }
 
@@ -391,3 +430,5 @@ views.setElement('/game', (state) => {
 })
 .setChilds(["/navbar", "/footer"])
 .setEvents();
+
+
