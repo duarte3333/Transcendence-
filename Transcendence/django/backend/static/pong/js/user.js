@@ -1,10 +1,31 @@
 import { getCookie } from "./auxFts.js";
 
-export async function getUser() {
-	console.log("return user");
-	return await fetch('/api/user-info')
-    .then(async (response) => {return await response.json()})
-    .catch(error => console.error('Error:', error));
+export async function getUser(display_name) {
+    console.log("get user display name === ", display_name);
+    if (!display_name)
+        display_name = window.user.display_name
+    const data = JSON.stringify({
+		"display_name": display_name,
+	});
+
+    try {
+        const response = await fetch('https://localhost/api/user/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: data,
+        });
+
+        const user = await response.json();
+        if (!response.ok) {
+            console.error('Error:', user.message);
+        }
+        return user.user;
+    } catch (error) {
+        console.error('Request failed:', error);
+    }
 }
 
 export async function getUserFriends() {

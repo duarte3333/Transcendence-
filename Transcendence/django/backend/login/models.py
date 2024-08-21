@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 from .managers import PongUserManager
+from django.utils import timezone
 
 class PongUser(AbstractUser):
     username = models.CharField(
@@ -17,11 +18,12 @@ class PongUser(AbstractUser):
         },
     )
     display_name = models.CharField(max_length=255, blank=False, null=True)
-    profile_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="/static/pong/img/p1.png")
-    banner_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="/static/pong/img/banner.jpeg")
+    profile_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="static/pong/img/p1.png")
+    banner_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="static/pong/img/banner.jpeg")
     down_key = models.CharField(max_length=1, blank=True, null=True, default='s')
     up_key = models.CharField(max_length=1, blank=True, null=True, default='w')
     friends = models.JSONField(default=list)
+    last_seen = models.DateTimeField(null=True, blank=True)
 
     email = None
     first_name = None
@@ -30,6 +32,15 @@ class PongUser(AbstractUser):
     last_login = None
 
     objects = PongUserManager()
+
+    def update_last_seen(self):
+        self.last_seen = timezone.now()
+        self.save(update_fields=['last_seen'])
+
+    @staticmethod
+    def get_online_users():
+        now = timezone.now()
+        return PongUser.objects.filter(last_seen__gte=now - ONLINE_THRESHOLD)
 
     def to_dict(self):
         return {

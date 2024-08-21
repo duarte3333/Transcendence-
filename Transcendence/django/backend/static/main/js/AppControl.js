@@ -39,7 +39,6 @@ export class AppControl {
         if (!this.#logged) {
             return Promise.resolve(false);
         }
-        console.log("ola");
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await fetch('https://localhost/api/user/profile', {

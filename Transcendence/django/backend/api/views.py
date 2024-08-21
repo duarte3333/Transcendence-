@@ -13,6 +13,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import make_password
 from django.core.files.images import get_image_dimensions
 from django.core.files.storage import default_storage
+from django.utils import timezone
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +137,15 @@ def validate_image(file):
 @login_required
 def user_profile(request):
     try:
-        user = request.user
+        if not request.body:
+            user = request.user
+        else:
+            try:
+                data = json.loads(request.body)
+                # logger.info(f'\n\n>>>> data == {data}\n\n')
+                user = PongUser.objects.get(display_name=data['display_name'])
+            except PongUser.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'User does not exist.'}, status=404)
         user_data = {
             'id': user.id,
             'username': user.username,
@@ -224,16 +234,29 @@ def update_profile(request):
         logger.exception("Unexpected error occurred")
         return JsonResponse({'status': 'error', 'message': 'An error occurred. ' + str(e)}, status=500)
 
+# Define the threshold for considering a user "online"
+ONLINE_THRESHOLD = timedelta(minutes=5)
+
 @login_required
 def user_friends(request):
     user = request.user
     friend_ids = user.friends
 
-    # Fetch friends by their IDs and get their display names
-    friends_display_names = PongUser.objects.filter(id__in=friend_ids).values_list('display_name', flat=True)
+    # Fetch friends by their IDs, getting their display names and last_seen timestamps
+    friends = PongUser.objects.filter(id__in=friend_ids).values('id', 'display_name', 'last_seen')
+
+    now = timezone.now()
+    friends_data = []
+
+    for friend in friends:
+        is_online = (now - friend['last_seen']) <= ONLINE_THRESHOLD if friend['last_seen'] else False
+        friends_data.append({
+            'display_name': friend['display_name'],
+            'online': is_online
+        })
 
     user_data = {
-        'friends': list(friends_display_names)
+        'friends': friends_data
     }
     return JsonResponse({'success': True, 'user': user_data}, status=200)
 
@@ -261,3 +284,4 @@ def add_friend(request):
         friend_user.save()
     
     return JsonResponse({'success': True, 'message': 'Friend added successfully.'}, status=200)
+

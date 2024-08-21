@@ -1,8 +1,6 @@
 import {views} from "../../main/js/main.js"
 import { getUser } from "./user.js"
 
-
-
 // let user = {
 //     username: "teo123",
 //     displayName: "Teo",
@@ -19,6 +17,8 @@ import { getUser } from "./user.js"
 // 	}
 // };
 
+let user;
+
 views.setElement("/profile", (state) => {
 	//caso de merda a visualizar mudar block para flex
 	// if (state != "block") return;
@@ -34,18 +34,21 @@ views.setElement("/profile", (state) => {
 	[ "matchHistoryButton", "click",  (event) => showMatchHistory(event)]
 	);
 	
-function loadProfile() {
+async function loadProfile() {
+	user =  await getUser(views.props.display_name);
+	console.log("profile user = ", user);
+
 	const header = document.getElementById("header");
-	header.style.backgroundImage = `url(${window.user.banner_picture})`;
+	header.style.backgroundImage = `url(${user.banner_picture})`;
 
 	const profilePicture = document.getElementById("profilePicture");
-	profilePicture.setAttribute('src', window.user.profile_picture);
+	profilePicture.setAttribute('src', user.profile_picture);
 
 	const displayName = document.getElementById("displayName");
-	displayName.innerText = window.user.display_name;
+	displayName.innerText = user.display_name;
 
 	const winsRatio = document.getElementById("winsRatio");
-	winsRatio.innerText = `Wins: ${window.user.wins || 0}, Losses: ${window.user.losses || 0}`;
+	winsRatio.innerText = `Wins: ${user.wins || 0}, Losses: ${user.losses || 0}`;
 }
 
 function showMatchHistory(event){
@@ -58,7 +61,6 @@ function showMatchHistory(event){
 
 	let title;
 	if (!document.getElementById("matchHistoryTitle")) {
-		let user = window.user;
 		title = document.createElement('p');
 		title.innerText = `${user.display_name}'s Match History`;
 		title.id = "matchHistoryTitle"

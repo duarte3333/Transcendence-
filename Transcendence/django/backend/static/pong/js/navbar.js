@@ -18,7 +18,7 @@ views.setElement("/navbar", (state) => {
 .setEvents(
 	[ "settingsButton", "click", () => views.urlLoad("/settings")],
 	[ "logoutButton", "click", () => logout()],
-	[ "profileButton", "click", () => views.urlLoad("/profile")],
+	[ "profileButton", "click", () => views.urlLoad(`/profile?display_name=${window.user.display_name}`)],
 	[ "homeButton", "click", () => views.urlLoad("/home")],
 	[ "friendsButton", "click", () => generateFriendsList()],
 	[ "addFriendFinal", "click", () => addFriendInputCheck()],
@@ -31,15 +31,6 @@ views.setElement("/navbar", (state) => {
         alreadyFriend.style.display = "none";
 	}],
 );
-
-let users = [
-    { username: "Antonio", status: "online" },
-    { username: "Vasco", status: "offline" },
-    { username: "Nuno", status: "online" },
-    { username: "Joao", status: "offline" },
-    { username: "Maria", status: "offline" }
-];
-
 
 async function generateFriendsList() {
 	friends = await getUserFriends();
@@ -72,7 +63,7 @@ async function generateFriendsList() {
 
 		let span = document.createElement('span');
 		span.className = "text-start";
-		span.innerText = user;
+		span.innerText = user.display_name;
 
 		let profileButton = document.createElement('button');
 		profileButton.style.padding = "0px";
@@ -80,6 +71,7 @@ async function generateFriendsList() {
 		profileButton.innerHTML = `
 			<image height="16" width="16" src="/static/pong/img/account.png" style="filter: invert(1);"></image>
 		`;
+		profileButton.addEventListener('click', () => {views.urlLoad(`/profile?display_name=${user.display_name}`)});
 
 		let chatButton = document.createElement('button');
 		chatButton.className = "btn d-flex align-items-center";
@@ -92,7 +84,10 @@ async function generateFriendsList() {
 		onlineStatus.className = "image-end";
 		onlineStatus.setAttribute('height', '14');
 		onlineStatus.setAttribute('width', '14');
-		onlineStatus.setAttribute('src', `/static/pong/img/online.png`);
+		if (user.online == true)
+			onlineStatus.setAttribute('src', `/static/pong/img/online.png`);
+		else
+			onlineStatus.setAttribute('src', `/static/pong/img/offline.png`);
 
 		div.appendChild(span);
 		div.appendChild(profileButton);
