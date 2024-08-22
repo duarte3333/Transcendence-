@@ -53,9 +53,6 @@ export class Game {
     window.addEventListener('resize', () => {
       resizeCanvas();
     });
-    // console.log("GAME BETWEEN", controlsList);
-    // console.log("Game constructor: ", views.props);
-    //console.log(controlsList);
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
