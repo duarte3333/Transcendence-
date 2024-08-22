@@ -2,6 +2,7 @@ import {views} from "../../main/js/main.js"
 // import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
 // import {secureElement} from "../../main/js/main.js"	
 import { getCookie } from "./auxFts.js";
+// import { AppControl } from "../../main/js/AppControl.js";
 
 
 views.setElement("/home", async (state) => {
@@ -161,7 +162,7 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 		"number_of_players": numberPlayers
 	});
 	
-	fetch('https://localhost/api/game/match', {
+	fetch("https://localhost" + '/api/game/match', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

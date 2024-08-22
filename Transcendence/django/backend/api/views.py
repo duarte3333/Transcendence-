@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 def create_game(request):
     if request.method == 'POST':
         try:
-
             data = json.loads(request.body)
             game = Game().create(
                 players = data.get('players', []),

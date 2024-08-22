@@ -1,3 +1,4 @@
+import { views } from "../../main/js/main.js";
 import { checkCandies } from "./candy.js";
 import { bounceWalls } from "./map.js";
 import { bouncePlayers, checkPlayers } from "./paddles.js";
@@ -75,6 +76,21 @@ export class Ball {
             checkCandies(this, game);
             edge = null;
         }
+        if (views.props.type == "online")
+        { 
+            game.socket.send(JSON.stringify({
+                'type': 'ball_move',
+                'action': 'ball',
+                'x': this.x,
+                'y': this.y,
+            }))
+        }
+    }
+
+    setPostion(x, y){
+        this.x = x;
+        this.y = y;
+        console.log("ball: x: " + this.x + " y: " + this.y);
     }
 
     draw(context) {

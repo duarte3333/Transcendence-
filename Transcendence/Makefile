@@ -17,3 +17,6 @@ run:
 
 re:
 	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down && $(DOCKER_COMPOSE) -p $(PROJECT_NAME) up
+
+ipmac:
+	ipconfig getifaddr en0

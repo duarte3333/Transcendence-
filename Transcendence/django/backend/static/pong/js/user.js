@@ -1,4 +1,5 @@
 import { getCookie } from "./auxFts.js";
+// import { AppControl } from "../../main/js/AppControl.js";
 
 export async function getUser(display_name) {
     if (!display_name)
@@ -8,7 +9,7 @@ export async function getUser(display_name) {
 	});
 
     try {
-        const response = await fetch('https://localhost/api/user/profile', {
+        const response = await fetch("https://localhost" + '/api/user/profile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ export async function addFriend(friendDisplayName) {
 
 
 export async function updateUserProfile(updatedFields) {
-	const url = 'api/user/profile/update';
+	const url = '/api/user/profile/update';
 
 	// Create a FormData object to handle file uploads and other fields
 	const formData = new FormData();

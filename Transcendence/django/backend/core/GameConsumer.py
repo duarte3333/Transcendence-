@@ -34,6 +34,15 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
         if message_type == 'join':
             await self.join_game(content)
+        elif message_type == 'ball':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'ball_move',
+                'x': content.get('x'),
+                'y': content.get('y'),
+            }
+        )
         elif message_type == 'up' or message_type == 'down':
             await self.channel_layer.group_send(
             self.room_group_name,
@@ -43,7 +52,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 'move': message_type
             }
         )
-            
+
+    async def ball_move(self, content):
+        await self.send_json({
+            'type': 'ball_move',
+            'action': 'ball',
+            'x': content.get('x'),
+            'y': content.get('y'),
+        })
 
         # Add more message types as needed
 
@@ -59,48 +75,57 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def player_move(self, event):
-        logger.info(f'Event received: {event}')
         await self.send_json({
-            'type': 'player_move',
+            'type': 'move',
             'action': "move_" + event.get('move'),
             'move': event.get('move'),
             'playerId': event.get('playerId')
         })
         return
 
+
+    async def player_running(self):
+        return await self.send_json({
+                'type': 'player_running',
+                'action': 'running',
+                'players': self.game.player,
+                'playerHost': self.game.playerHost
+        })
+    
+
     # Receives a player_joined event from the group
     async def player_joined(self, event):
         try:
             from api.models import Game
 
-            game = await sync_to_async(Game.objects.get)(id=self.room_name)
+            self.game = await sync_to_async(Game.objects.get)(id=self.room_name)
             player_id = event.get('playerId')
-            if not player_id in game.player:
-                game.player.append(player_id)
-                max = len(game.player)
-                if (max == game.numberPlayers):
-                    game.status = "running"
+            if not player_id in self.game.player:
+                self.game.player.append(player_id)
+                max = len(self.game.player)
+                if (max == self.game.numberPlayers):
+                    self.game.status = "running"
                     await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         'type': 'player_running',
                     }
                 )
-                elif (max > game.numberPlayers):
+                elif (max > self.game.numberPlayers):
                     await self.send_json({
                         'type': 'player_joined',
                         'playerId': player_id,
                         'status': 'error',
                         'room_name': int(self.room_name)
                     })
-                await sync_to_async(game.save)()
+                await sync_to_async(self.game.save)()
             else:
                 self.playerId = player_id
-                self.gameId = game.id
+                self.gameId = self.game.id
                 await self.player_running()
                 return
             self.playerId = player_id
-            self.gameId = game.id
+            self.gameId = self.game.id
             await self.send_json({
                 'type': 'player_joined',
                 'playerId': player_id,
