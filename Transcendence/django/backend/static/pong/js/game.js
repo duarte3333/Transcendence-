@@ -31,7 +31,7 @@ export class Game {
     this.pause = false;
     this.speed = 2.5;
     this.isScoring = false;
-    this.events = new events(this);
+    // this.events = new events(this);
     this.candies = [];
     this.fps = 0;
     this.maxScore = 100;
@@ -43,7 +43,10 @@ export class Game {
     this.paddleNames = [];
     this.gameLoop = null;
     this.loser = null;
+    this.boundHandleKeyDownOnline = this.handleKeyDownOnline.bind(this);
+    this.boundHandleKeyUpOnline = this.handleKeyUpOnline.bind(this);
     this.canvas = document.getElementById("pongCanvas");
+    // resizeCanvas();
     window.addEventListener('resize', () => {
       resizeCanvas();
     });
@@ -56,15 +59,14 @@ export class Game {
     const row = document.getElementById("game");
     row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
-    console.log("views.props.type: ", views.props.type);
     if (views.props.type == 'online') {
       // this.pause = true;
-      document.addEventListener("keydown", this.handleKeyDownOnline.bind(this));
-      document.addEventListener("keyup", this.handleKeyUpOnline.bind(this));
+      document.addEventListener("keydown", this.boundHandleKeyDownOnline);
+      document.addEventListener("keyup", this.boundHandleKeyUpOnline);
 
     }
     else if (views.props.type == 'local'){
-      this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
+      // this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
     }
    this.setupGame(controlsList);
     if (views.props.type == 'online')
@@ -154,7 +156,7 @@ export class Game {
 
   cleanup() {
     clearInterval(this.gameLoop);
-    this.events.removeControls();
+    // this.events.removeControls();
     this.gameLoop = null;
     this.objects.clear();
     this.finish = false;
@@ -324,16 +326,6 @@ export class Game {
     writePaddleNames(this);
   }
 
-  updateGameSpeed(speed) {
-    this.speed = 2.5 * speed;
-    // console.log("Speed updated to: " + this.speed);
-    const ball = this.objects.get("ball");
-    const player_1 = this.objects.get("player_1");
-    const player_2 = this.objects.get("player_2");
-    ball.speed = 4 * this.speed;
-    player_1.speed = 3 * this.speed;
-    player_2.speed = 3 * this.speed;
-  }
 
   initializeWebSocket(id, playerId){
     this.socket = new WebSocket(
@@ -381,6 +373,9 @@ export class Game {
   }
 
   destroyer() {
+    console.log("destroying events")
+    document.removeEventListener("keydown", this.boundHandleKeyDownOnline);
+    document.removeEventListener("keyup", this.boundHandleKeyUpOnline);
     clearInterval(this.gameLoop);
   }
 }
@@ -406,7 +401,8 @@ views.setElement('/game', (state) => {
     game?.destroyer();
     game = undefined;
   }
-
+  views.get("/footer").display(state);
+	views.get("/navbar").display(state);
 })
 .setChilds(["/navbar", "/footer"])
 .setEvents();

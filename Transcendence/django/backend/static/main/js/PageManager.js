@@ -119,6 +119,7 @@ export class PageManager {
         }
         this.props = {};
 
+        
         urlParams.forEach((value, key) => {
             this.props[key] = value;
         });

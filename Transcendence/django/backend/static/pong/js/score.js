@@ -56,29 +56,29 @@ export function createScoreBoard(numberOfPlayers) {
     row.style.width = "100%";
     row.style.position = 'relative';
     row.style.overflow = 'hidden';
-    row.style.backgroundSize = "cover";
-    row.style.backgroundPosition = "center";
-    row.style.backgroundRepeat = "no-repeat";
+    // row.style.backgroundSize = "cover";
+    // row.style.backgroundPosition = "center";
+    // row.style.backgroundRepeat = "no-repeat";
 
-    // Setting up background images with transparency
-    if (!(i % 2)) {
-      row.style.backgroundImage = 
-          "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/vamo.png')";
-    } else if (!(i % 3)) {
-        row.style.backgroundImage = 
-            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala.png')";
-    } else if (!(i % 4)) {
-        row.style.backgroundImage = 
-            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala3.png')";
-    } else {
-        row.style.backgroundImage = 
-            "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala2.png')";
-    }
+    // // Setting up background images with transparency
+    // if (!(i % 2)) {
+    //   row.style.backgroundImage = 
+    //       "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/vamo.png')";
+    // } else if (!(i % 3)) {
+    //     row.style.backgroundImage = 
+    //         "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala.png')";
+    // } else if (!(i % 4)) {
+    //     row.style.backgroundImage = 
+    //         "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala3.png')";
+    // } else {
+    //     row.style.backgroundImage = 
+    //         "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala2.png')";
+    // }
     row.style.position = 'relative';
     row.style.overflow = 'hidden';
-    row.style.backgroundSize = "cover";
-    row.style.backgroundPosition = "center";
-    row.style.backgroundRepeat= "no-repeat";
+    // row.style.backgroundSize = "cover";
+    // row.style.backgroundPosition = "center";
+    // row.style.backgroundRepeat= "no-repeat";
     
     const col1 = document.createElement('div');
     col1.classList.add('col');
