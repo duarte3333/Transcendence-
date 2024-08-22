@@ -5,10 +5,30 @@ import { getCookie } from "./auxFts.js";
 
 
 views.setElement("/home", async (state) => {
+	const homeBody = document.getElementById("homeBody");
 	if (state == "block") {
+		homeBody.innerHTML = 
+		`<div class="row justify-content-center align-items-center" style="margin-bottom: 5rem; margin-top: 4rem;">
+		<h1 class="display-1 text-center">Welcome to Pong</h1>
+	</div>
+	<div class="displayDiv">
+		<div class="row justify-content-center gap-3" style="margin-bottom: 1rem;">
+			<button id="playOnline" type="button" class="btn btn-outline-dark w-25 bodyBtns">Play online</button>
+		</div>
+		<div class="row justify-content-center gap-3" style="margin-bottom: 3rem;">
+			<button id="playLocal" type="button" class="btn btn-outline-dark w-25 bodyBtns">Play local</button>
+		</div>
+	</div>
+		`
+		document.getElementById('playOnline').addEventListener('click', (event) => nextPage(event, "playOnline"));
+		document.getElementById('playLocal').addEventListener('click', (event) => nextPage(event, "playLocal"));
+	// 	this.setEvents(
+	// 		[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
+	// 		[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ] ,
+	// 	);
 	}
 	views.get("/navbar").display(state);
-	document.getElementById("homeBody").style.display = state;
+	homeBody.style.display = state;
 	views.get("/footer").display(state);
 })
 .setChilds(["/navbar", "/footer"])
