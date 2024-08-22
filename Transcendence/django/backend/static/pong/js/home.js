@@ -117,10 +117,6 @@ function onlineMatch() {
 	});
 }
 
-
-
-
-
 function playOnlineMatch(event, type, numberPlayers = 2) {
 
 	const container = event.target.closest('.container');

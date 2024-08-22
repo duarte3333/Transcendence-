@@ -6,6 +6,7 @@ export class events {
     }
 
     setupControls(handleKeyDown, handleKeyUp) {
+        
         if (document.getElementById("keydown") == null) {
             console.log("keydown está a ser chamado.");
         }

@@ -21,9 +21,6 @@ function resizeCanvas() {
 
 export class Game {
   constructor(numPlayers, controlsList) {
-    // console.log("controlsList")
-    // console.log(numPlayers)
-    // console.log(controlsList)
     this.playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
     this.objects = new Map();
     this.numCandies = 1;
@@ -47,9 +44,6 @@ export class Game {
     window.addEventListener('resize', () => {
       resizeCanvas();
     });
-    // console.log("GAME BETWEEN", controlsList);
-    // console.log("Game constructor: ", views.props);
-    //console.log(controlsList);
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
@@ -64,7 +58,10 @@ export class Game {
 
     }
     else if (views.props.type == 'local'){
-      this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
+      console.log("else if views.props.type == 'local' ", controlsList);
+      // this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
+      this.events.setupControls(this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
+      
     }
    this.setupGame(controlsList);
     if (views.props.type == 'online')
@@ -105,7 +102,6 @@ export class Game {
   }
 
   handleKeyDownOnline(event) {
-
     console.log("window.user.down_key ", window.user.down_key);
     let action = undefined;
     if (event.key == window.user.down_key || event.key == 'ArrowDown') 
@@ -206,11 +202,11 @@ export class Game {
   update() {
     const ball = this.objects.get("ball");
 
-    // for (let i = 1; i <= this.numberOfPlayers; i++) {
-    //   let paddle = this.objects.get("paddle_" + i);
-    //   paddle.move();
-    //   // this.client.updatePlayer(paddle);
-    // }
+    for (let i = 1; i <= this.numberOfPlayers; i++) {
+      let paddle = this.objects.get("paddle_" + i);
+      paddle.move();
+      // this.client.updatePlayer(paddle);
+    }
     ball.move(this);
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
@@ -398,7 +394,7 @@ views.setElement('/game', (state) => {
       "s"
     ]
   }
-  // console.log("game: ", game)
+  console.log("views.setElement game: ", game)
   if (state == "block")
     game = new Game(2, data);
   else
