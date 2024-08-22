@@ -1,7 +1,6 @@
 import { getCookie } from "./auxFts.js";
 
 export async function getUser(display_name) {
-    console.log("get user display name === ", display_name);
     if (!display_name)
         display_name = window.user.display_name
     const data = JSON.stringify({

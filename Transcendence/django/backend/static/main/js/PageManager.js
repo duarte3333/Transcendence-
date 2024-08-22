@@ -63,18 +63,31 @@ export class PageManager {
     }
 
     #domLoad(element) {
-        if (document.querySelector(`[page="${element}"]`))
-            return ;
+        if (document.querySelector(`[page="${element}"]`)) {
+            return;
+        }
+    
         let page = this.get(element);
-        if (!page.getHtml())
+    
+        if (!page.getHtml()) {
             console.log("trying to load not existing html " + element);
-        else
-            document.body.appendChild(page.getHtml());
-            // console.log(page.getHtml());
+        } else {
+            const htmlElement = page.getHtml();
             
+            // console.log("element ==> ", element);
+            if (element === '/navbar') {
+                document.body.prepend(htmlElement); // Insert navbar as the first child
+            } else if (element === '/footer') {
+                document.body.append(htmlElement); // Insert footer as the last child
+            } else {
+                document.body.appendChild(htmlElement); // Insert other elements normally
+            }
+    
+        }
+    
         this.#onDom.add(element);
     }
-
+    
     #domUnload(element) {
         if (!document.querySelector(`[page="${element}"]`)) {
             console.log("domUnload failed " + element);
