@@ -3,7 +3,7 @@ import {Edge} from "./map.js";
 
 export class Paddle {
   name;
-  displayName
+  displayName;
   type;
   width;
   height;
@@ -58,9 +58,10 @@ export class Paddle {
     if (this.width < 7)
         this.width = 7;
     if (this.vy < 0) {
-      [this.moveUpKey, this.moveDownKey] = controlsList;
-    } else {
       [this.moveDownKey, this.moveUpKey] = controlsList;
+    } else {
+      [this.moveUpKey, this.moveDownKey] = controlsList;
+      // [this.moveDownKey, this.moveUpKey] = controlsList;
     }
     this.x = this.edge.x1 + (this.vx * (this.edge.size / 2));
     this.y = this.edge.y1 + (this.vy * (this.edge.size / 2));
@@ -207,9 +208,6 @@ export class Paddle {
       this.updateRectMap();
     }
   }
-
-
-
 
   checkColision(x, y, radius) {
     for (let i = 1; i <= 4; i++) {

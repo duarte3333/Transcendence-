@@ -8,6 +8,7 @@ import { sleep } from "./auxFts.js";
 import { Banner } from "./banner.js";
 import { socket } from "./myWebSocket.js";
 import { views } from "../../main/js/main.js";
+// import { AppControl } from "../../main/js/AppControl.js";
 
 function resizeCanvas() {
   const canvas = document.getElementById("pongCanvas");
@@ -20,7 +21,12 @@ function resizeCanvas() {
 }
 
 export class Game {
-  constructor(numPlayers, controlsList) {
+  constructor(numPlayers, controlsList, playerHost = undefined) {
+    // console.log("controlsList")
+    // console.log(numPlayers)
+    // console.log(controlsList)
+    this.playerHost = playerHost;
+    this.players = new Map();
     this.playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
     this.objects = new Map();
     this.numCandies = 1;
@@ -28,7 +34,7 @@ export class Game {
     this.pause = false;
     this.speed = 2.5;
     this.isScoring = false;
-    // this.events = new events(this);
+    this.events = new events();
     this.candies = [];
     this.fps = 0;
     this.maxScore = 100;
@@ -40,8 +46,8 @@ export class Game {
     this.paddleNames = [];
     this.gameLoop = null;
     this.loser = null;
-    this.boundHandleKeyDownOnline = this.handleKeyDownOnline.bind(this);
-    this.boundHandleKeyUpOnline = this.handleKeyUpOnline.bind(this);
+    // this.boundHandleKeyDownOnline = this.handleKeyDownOnline.bind(this);
+    // this.boundHandleKeyUpOnline = this.handleKeyUpOnline.bind(this);
     this.canvas = document.getElementById("pongCanvas");
     // resizeCanvas();
     window.addEventListener('resize', () => {
@@ -50,21 +56,20 @@ export class Game {
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
+    console.log("paddle names = ", this.paddleNames);
     const row = document.getElementById("game");
     row.style.display = "flex";
     this.context = this.canvas.getContext("2d");
-    if (views.props.type == 'online') {
-      // this.pause = true;
-      document.addEventListener("keydown", this.boundHandleKeyDownOnline);
-      document.addEventListener("keyup", this.boundHandleKeyUpOnline);
+    // if (views.props.type == 'online') {
+    //   // this.pause = true;
+    //   document.addEventListener("keydown", this.boundHandleKeyDownOnline);
+    //   document.addEventListener("keydown", this.boundHandleKeyUpOnline);
 
-    }
-    else if (views.props.type == 'local'){
-      // this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
-    }
+    // }
+    // else if (views.props.type == 'local'){
+    //   // this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
+    // }
    this.setupGame(controlsList);
-    if (views.props.type == 'online')
-      this.initializeWebSocket(views.props.id, window.user.id);
   }
 
   handleKeyDown(event) {
@@ -100,31 +105,6 @@ export class Game {
     }
   }
 
-  handleKeyDownOnline(event) {
-    console.log("window.user.down_key ", window.user.down_key);
-    let action = undefined;
-    if (event.key == window.user.down_key || event.key == 'ArrowDown') 
-      action = "down" 
-    if (action)
-      this.socket.send(JSON.stringify({
-        'type': 'down',
-        'action': action,
-        'playerId': window.user.id
-      }));
-  }
-
-  handleKeyUpOnline(event) {
-    let action = undefined;
-    if (event.key == window.user.up_key || event.key == 'ArrowUp') 
-      action = "up"
-    if (action)
-      this.socket.send(JSON.stringify({
-        'type': 'up',
-        'action': action,
-        'playerId': window.user.id
-      }));
-  }
-
   setupGame(controlsList) {
     this.addMap(map);
     this.addPaddles(controlsList);
@@ -134,8 +114,6 @@ export class Game {
     this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
-    // if (!socket)
-    //   initializeWebSocket();
   }
 
   init() {
@@ -174,9 +152,11 @@ export class Game {
   addPaddles(controlsList) {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let temp = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]);
-      temp.draw(this.context);
-      this.objects.set(temp.name, temp);
+      let paddle = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]);
+
+      paddle.draw(this.context);
+      this.objects.set(paddle.name, paddle);
+      this.players.set(this.paddleNames[i-1], paddle);
     }
   }
 
@@ -201,12 +181,13 @@ export class Game {
   update() {
     const ball = this.objects.get("ball");
 
-    for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let paddle = this.objects.get("paddle_" + i);
-      paddle.move();
-      // this.client.updatePlayer(paddle);
-    }
-    ball.move(this);
+    // for (let i = 1; i <= this.numberOfPlayers; i++) {
+    //   let paddle = this.objects.get("paddle_" + i);
+    //   paddle.move();
+    //   // this.client.updatePlayer(paddle);
+    // }
+    if (views.props.type != "online" || window.user.id ==  this.playerHost)
+      ball.move(this);
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
       let temp = this.objects.get("candy_" + i);
@@ -224,8 +205,28 @@ export class Game {
     this.pause = !this.pause;
   }
 
+
+
+  handleKeyUpOnline(event) {
+    let paddle = this.players.get("" + window.user.id);
+    let action = this.events.getKeyPress(paddle.moveUpKey) ? "up" : this.events.getKeyPress(paddle.moveDownKey) ? "down" : undefined;
+    if (action != undefined)
+      this.socket.send(JSON.stringify({
+        'type': 'move',
+        'action': action,
+        'playerId': window.user.id
+      }));
+  }
+
+
+  updateEvents()
+  {
+    this.handleKeyUpOnline();
+  }
+
   draw() {
     this.fps++;
+    this.updateEvents();
     if (!this.pause && !this.finish) {
       this.update();
       this.context.clearRect(0, 0, this.canvas.width,this.canvas.height);
@@ -299,9 +300,6 @@ export class Game {
     clearScoreBoard();
     this.playerBanner.clearBanner();
     clearInterval(this.gameLoop);
-
-    // console.log("Game::Game acabouuu");
-
   }
 
   displayPaused() {
@@ -320,40 +318,14 @@ export class Game {
   }
 
 
-  initializeWebSocket(id, playerId){
-    this.socket = new WebSocket(
-       `ws://localhost:8000/ws/game/${id}/`
-    );
-  
-    this.socket.onmessage = function(e) {
-        try {
-          const data = JSON.parse(e.data);
-          // console.log('Message:', data);
-          // console.log("data.action == 'running': ", (data.action == 'running'))
-          if (data.action == 'running')
-            this.pause = false;
-          else if (data.type == 'player_move')
-            this.handlePlayerMove(data);
-        } catch {}
-    }.bind(this);
-  
-    this.socket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-    }.bind(this);
-  
-    // Enviar uma mensagem
-    this.socket.onopen = function(e) {
-      this.socket.send(JSON.stringify({
-        'playerId': playerId,
-        'action': 'join'
-      }));
-    }.bind(this);
-  
-  }
 
-  handlePlayerMove(data) {    
-    let paddle = game.objects.get("paddle_" + data.playerId);
 
+
+  handlePlayerMove(data) {   
+  //   console.log(typeof(data.playerId));
+    let paddle = this.players.get("" + data.playerId);
+    // console.log("paddle: ", paddle);    
+    // console.table(data);
     if (data.move === "up") {
       paddle.moveUp = false;
       paddle.moveDown = true;
@@ -366,34 +338,109 @@ export class Game {
   }
 
   destroyer() {
-    console.log("destroying events")
-    document.removeEventListener("keydown", this.boundHandleKeyDownOnline);
-    document.removeEventListener("keyup", this.boundHandleKeyUpOnline);
+    this.events.destroyer();
     clearInterval(this.gameLoop);
   }
 }
 
 let game = undefined;
+let socketGame = undefined;
+
+function initializeWebSocket(id, playerId)
+{
+  socketGame = new WebSocket(
+    `ws://localhost:8000/ws/game/${id}/`
+ );  
+
+  console.log("socket == ", socketGame);
+
+  socketGame.onmessage = function(e) {
+      try {
+        const data = JSON.parse(e.data);
+      
+        if (data.action == 'ball' && game && window.user.id != game.playerHost)
+        {
+          game.ball.setPostion(data.x, data.y);
+        }
+        // console.log("data.action == 'running': ", (data.action == 'running'))
+        else if (data.action == 'running')
+        {    
+        //   console.table(data);
+        //   const data2 = {
+        //     data.players[0]: [
+        //     "w",
+        //     "s"
+        //   ],
+        //   "1": [
+        //     "w",
+        //     "s"
+        //   ]
+        // }
+        const data2  = {}
+
+        data2["" + data.players[0]] = [
+          "w",
+          "s"
+        ]
+
+        data2["" + data.players[1]] = [
+          "w",
+          "s"
+        ]
+
+        if (game == undefined)
+        {
+              game = new Game(2, data2, data.playerHost);
+              game.socket = socketGame;
+              game.pause = false;
+          }
+        }
+        else if (data.type == 'move')
+          game.handlePlayerMove(data);
+      } catch {}
+  }.bind(this);
+
+  socketGame.onclose = function(e) {
+    console.error('Chat socket closed unexpectedly');
+  }.bind(this);
+
+  // const s = socketGame;
+
+  // Enviar uma mensagem
+  socketGame.onopen = () =>  {
+    socketGame.send(JSON.stringify({
+      'playerId': playerId,
+      'action': 'join'
+    }));
+  };
+
+  return socketGame;
+}
 
 views.setElement('/game', (state) => {
-  const data = {
-    "1": [
-      "ArrowUp",
-      "ArrowDown"
-    ],
-    "2": [
-      "w",
-      "s"
-    ]
-  }
-  console.log("views.setElement game: ", game)
+  // const data = {
+  //   "35": [
+  //     "w",
+  //     "s"
+  //   ],
+  //   "2": [
+  //     "w",
+  //     "s"
+  //   ]
+  // }
   if (state == "block")
-    game = new Game(2, data);
-  else
-  {
-    game?.destroyer();
-    game = undefined;
-  }
+  { 
+    if (views.props.type == 'online')
+      socketGame =  initializeWebSocket(views.props.id, window.user.id);
+    }
+  // console.log("game: ", data)
+  // if (state == "block")
+  //   game = new Game(2, data);
+  // else
+  // {
+  //   game?.destroyer();
+  //   game = undefined;
+  // }
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);
 })

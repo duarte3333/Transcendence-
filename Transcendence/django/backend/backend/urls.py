@@ -74,7 +74,6 @@ from django.urls import path, re_path
 from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game, add_friend, user_friends, update_profile
 from django.contrib.auth import views as auth_views
 
-
 urlpatterns = [
     path('admin', admin.site.urls),
     # API

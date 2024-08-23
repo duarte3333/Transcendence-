@@ -5,6 +5,8 @@ import { views } from "./main.js";
 export class AppControl {
 
     static #logged = false;
+    static url = "https://localhost";
+    static urlSocket = "localhost";
 
     constructor() {
     }
@@ -41,7 +43,7 @@ export class AppControl {
         }
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await fetch('https://localhost/api/user/profile', {
+                const response = await fetch("https://localhost" + '/api/user/profile', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -71,8 +73,9 @@ export class AppControl {
         try {
             name = "/" + name.replace(/^\/+/, "");
             // let find = "api" + name;
-            let find = "https://localhost/spa" + name;
+            let find = "https://localhost" + "/spa" + name;
             const response = await fetch(find);
+
             if (!response.ok)
                 throw new Error('Network response was not ok: ' + response.statusText);
             const appHtml = await response.text();
