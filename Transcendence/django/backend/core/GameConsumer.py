@@ -56,6 +56,16 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 'visibility': content.get('visibility'),
             }
         )
+        elif message_type == 'candy_powerup':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'candy_powerup',
+                'action': 'candy_powerup',
+                'player': content.get('player'),
+                'powerup': content.get('powerup'),
+            }
+        )
         elif message_type == 'up' or message_type == 'down':
             await self.channel_layer.group_send(
             self.room_group_name,
@@ -85,6 +95,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             'y': content.get('y'),
             'name': content.get('name'),
             'visibility': content.get('visibility'),
+        })
+
+    async def candy_powerup(self, content):
+        await self.send_json({
+            'type': 'candy_powerup',
+            'action': 'candy_powerup',
+            'player': content.get('player'),
+            'powerup': content.get('powerup'),
         })
 
     async def join_game(self, event):

@@ -1,5 +1,5 @@
 import { Ball } from "./ball.js";
-import { Candy } from "./candy.js";
+import { Candy, speedPowerUp, attackPowerUp, defencePowerUp } from "./candy.js";
 import { events } from "./events.js";
 import { Score, checkGameOver, createScoreBoard, clearScoreBoard } from "./score.js";
 import { map } from "./map.js";
@@ -177,7 +177,7 @@ export class Game {
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
       if (window.user.id == this.playerHost) {
-        console.log("inside if");
+        // console.log("inside if");
         candy.sendCandy(gameData.game);
       }
     }
@@ -189,6 +189,20 @@ export class Game {
     candy.x = data.x;
     candy.y = data.y;
     candy.visible = data.visibility;
+  }
+
+  activateCandy(data) {
+    const player = this.objects.get(data.player);
+    if (!player) {
+      console.log("couldn't get player, name data provided =", data.player);
+      return ;
+    }
+    if (data.powerup == "speed")
+      speedPowerUp(player, this);
+    else if (data.powerup == "defence")
+      defencePowerUp(player, this);
+    else if (data.powerup == "attack")
+      attackPowerUp(player, this);
   }
 
   //UPDATE OBJECTS
@@ -387,7 +401,9 @@ const  initializeWebSocket = (id, playerId) =>
             // console.log("candy action = ", data.action);
             gameData.game.setCandy(data);
           else if (data.type == 'move') 
-          gameData.game.handlePlayerMove(data);
+            gameData.game.handlePlayerMove(data);
+          else if (data.type == 'candy_powerup') 
+            gameData.game.activateCandy(data);
         }
         else if (data.action === 'running' && gameData.game == undefined)
         {    

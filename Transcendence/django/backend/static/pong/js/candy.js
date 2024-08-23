@@ -63,8 +63,15 @@ class Candy {
   choosePowerUp(player, game) {
     let num = Math.floor(Math.random() * this.numPowerUps + 1);
     const powerUP = this.powerUps.get(num);
-    if (powerUP)
+    if (powerUP) {
       powerUP(player, game);
+      if (num == 1)
+        sendPowerUp(game, player, "defence");
+      else if (num == 2)
+        sendPowerUp(game, player, "attack");
+      else if (num == 3)
+        sendPowerUp(game, player, "speed");
+    }
   }
 
   sendCandy(game) {
@@ -113,7 +120,7 @@ export function checkCandies(ball, game) {
   }
 }
 
-function defencePowerUp(player, game) {
+export function defencePowerUp(player, game) {
   player.height *= 2;
   if (player.height > player.edge.size)
       player.height = player.edge.size;
@@ -129,7 +136,7 @@ function defencePowerUp(player, game) {
   }, 8000);
 }
 
-function attackPowerUp(player, game) {
+export function attackPowerUp(player, game) {
   for (let i = 1; i <= game.numberOfPlayers; i++) {
     let temp = game.objects.get("paddle_" + i);
     if (temp.height >= temp.edge.size / 5 && temp.name != player.name) {
@@ -150,11 +157,20 @@ function attackPowerUp(player, game) {
   }, 6000);
 }
 
-function speedPowerUp(player, game) {
+export function speedPowerUp(player, game) {
   player.speed *= 2;
   player.color = "yellow";
   setTimeout(() => {
     player.speed /= 2;
     player.color = "black";
   }, 7000);
+}
+
+function sendPowerUp(game, player, type) {
+  game.socket.send(JSON.stringify({
+    'type': 'candy_powerup',
+    'action': 'candy_powerup',
+    'player': player.name,
+    'powerup': type,
+}))
 }
