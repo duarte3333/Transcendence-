@@ -1,0 +1,44 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap w/ Vite - Pong 42</title>
+    <link rel="stylesheet" href="{% static 'pong/css/styles.css' %}">
+
+  </head>
+
+  <body id="body">
+    <div id="chatContainer">
+
+        <!-- Chat -->
+        <!-- Botão para abrir o chat -->
+        <button id="chatButton" class="btn btn-primary" data-bs-toggle="button">Live Chat</button>
+        <!-- Janela de Chat -->
+        <div id="chatWindow" class="chat-window">
+        <div class="chat-sidebar" id="chatSideBar">
+            <!-- Adicione mais botões conforme necessário -->
+        </div>
+        <div class="chat-main">
+            <div class="chat-header">
+            <span id="chatHeader">Live Pong Chat</span>
+            <button id="blockUserButton" class="btn btn-danger" style="display:none;">Block User</button>
+            <button id="unblockUserButton" class="btn btn-danger" style="display:none;">Unblock User</button>
+            </div>
+            <div class="chat-body" id="chatBody">
+            <!-- Conteúdo do chat vai aqui -->
+            <div id="chatBodyChildren"></div>
+            </div>
+            <div class="chat-footer">
+            <input type="text" placeholder="Type a message..." id="chatInput" />
+            <button id="sendChatButton"> Send </button>
+            </div>
+        </div>
+        </div>
+    </div>
+<script type="module" src="{% static 'pong/js/chat.js' %}"></script>
+
+</body>
+</html>

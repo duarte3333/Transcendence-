@@ -31,8 +31,9 @@ views.setElement("/home", async (state) => {
 	views.get("/navbar").display(state);
 	homeBody.style.display = state;
 	views.get("/footer").display(state);
+	views.get("/chat").display(state);
 })
-.setChilds(["/navbar", "/footer"])
+.setChilds(["/navbar", "/footer", "/chat"])
 .setEvents(
 	[ "playOnline", "click",  (event) => nextPage(event, "playOnline") ],
 	[ "playLocal", "click",  (event) => nextPage(event, "playLocal") ] ,

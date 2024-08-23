@@ -7,6 +7,9 @@ def home(request):
 def navbar(request):
     return render (request, 'pong_navbar.html')
 
+def chat(request):
+    return render (request, 'pong_chat.html')
+
 def settings(request):
     return render(request, 'pong_profileSettings.html')
 

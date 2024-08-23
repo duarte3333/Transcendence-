@@ -1,4 +1,5 @@
 import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
+import { views } from "../../main/js/main.js";
 
 class Chat {
   constructor() {
@@ -7,194 +8,273 @@ class Chat {
     this.chatInput = document.getElementById('chatInput');
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatSideBar = document.getElementById('chatSideBar');
-    this.playerForm = document.getElementById('playerForm');
-    this.activePlayer = null;
+    this.blockUserButton = document.getElementById('blockUserButton');
+    this.unblockUserButton = document.getElementById('unblockUserButton');
+
+    this.SelectedPlayer = null;
     this.chatBody = null;
     this.open = false;
-    this.numberPlayers = 0;
     this.messages = {};
-    
+    this.General = {};
+    this.BlockedStatus = false;
+
+    this.chatHash = null;
+    this.messagesHistory = new Map();
+
     this.setupEventListeners();
-    this.closeChat();
+    this.chatWindow.style.display = "flex";
   }
 
+  
   setupEventListeners() {
     if (this.chatButton)
       this.chatButton.addEventListener('click', () => this.toggleChatWindow());
     if (this.sendChatButton)
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
-    if (this.playerForm)
-      this.playerForm.addEventListener('submit', (event) => this.handlePlayerFormSubmit(event));
-    socket.addEventListener('message', (event) => this.handleWebSocketMessage(event));
+    if (this.blockUserButton)
+      this.blockUserButton.addEventListener('click', () => this.blockUser());
+    if (this.unblockUserButton)
+      this.unblockUserButton.addEventListener('click', () => this.unBlockUser());
+    this.setup();
+  }
+
+  blockUser() {
+    if (socket && this.SelectedPlayer && !this.BlockedStatus) {
+      console.log("User blocked: ", this.SelectedPlayer);
+      socket.send(JSON.stringify({
+        'type': 'blocked_conversation',
+        'user': this.SelectedPlayer,
+        'hash': this.chatHash,
+      }))
+      this.BlockedStatus = !this.BlockedStatus;
+      this.unblockUserButton.style.display = 'flex';
+      this.blockUserButton.style.display = 'none';
+    }
+    console.log("User Status: ", this.BlockedStatus);
+  }
+
+  unBlockUser() {
+    if (socket && this.SelectedPlayer && this.BlockedStatus) {
+      console.log("User unblocked: ", this.SelectedPlayer);
+      socket.send(JSON.stringify({
+        'type': 'unblocked_conversation',
+        'user': this.SelectedPlayer,
+        'hash': this.chatHash,
+      }))
+      this.BlockedStatus = !this.BlockedStatus;
+      this.unblockUserButton.style.display = 'none';
+      this.blockUserButton.style.display = 'flex';
+    }
+    console.log("User Status: ", this.BlockedStatus);
+  }
+
+  createAndStoreHash(speaker, audience, context) {
+
+    console.log("createAndStoreHash() speaker " + speaker);
+    console.log("createAndStoreHash() audience " + audience);
+
+    this.chatHash = createChatHash(speaker, audience, context);
+    localStorage.setItem(`${speaker}_${audience}_chat`, this.chatHash);
+  }
+
+  async setup() {
+    while (socket.readyState !== WebSocket.OPEN) {
+      await new Promise(resolve => setTimeout(resolve, 5));
+    }
+    this.generatePlayerButtons(window.user.id);
+  }
+
+  sendBasicInfo(length) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+
+      console.log("Mensagem que será enviada ao Backend: " + window.user.id);
+      socket.send(JSON.stringify({
+        type: 'room_info',
+        'numplayers': length,
+        'players': window.user.id
+      }));
+    }
+  }
+
+  createButtonsOnChat(User) {
+    const button = document.createElement("button");
+        
+    button.innerText = User;
+    button.id = `chatButton_${User}`
+    button.onclick = () => {
+      this.SelectedPlayer = User;
+      this.selectChannel(User);
+    };
+    this.chatSideBar.appendChild(button);
+  }
+
+  generatePlayerButtons() {
+    this.chatSideBar.innerHTML = '';
+
+    let JsonArray = JSON.parse(ActiveUser);
+    let length = JsonArray.length;
+    let User;
+    if (name === 'Liberal') {
+      User = JSON.parse(ActiveUser2)[0].username;
+    } else if (name === 'Teo') {
+      User = JSON.parse(ActiveUser)[0].username;
+    } else {
+      User = JSON.parse(test)[0].username;
+    }
+    this.createButtonsOnChat("General");
+
+    for (let i = 0; i < length; i++)
+      this.createButtonsOnChat(User);
+
+    this.sendBasicInfo(length);
+  }
+
+  selectChannel(channel) {
+    //Apenas para testes
+    // localStorage.clear();
+    let User;
+    if (this.SelectedPlayer === 'Liberal') {
+      User = JSON.parse(ActiveUser2)[0].username;
+    } else {
+      User = JSON.parse(ActiveUser)[0].username;
+    }
+    //FIm dos Testes
+
+    this.blockUserButton.style.display = 'flex';
+    
+    //let hash = localStorage.getItem(hashkey);
+    this.createAndStoreHash(User, channel, 'chat');
+    if (!this.messagesHistory.has(this.chatHash))
+      this.messagesHistory.set(this.chatHash, []);
+    
+
+    console.log("User ", User);
+    console.log("channel ", channel);
+    console.log("hash ", this.chatHash);
+
+    this.appendChatMessage(User, this.SelectedPlayer);
+    
+    document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
+    console.log("SelectChannel() " + this.SelectedPlayer);
   }
 
   toggleChatWindow() {
     if (!socket)
       initializeWebSocket();
-    this.open ? this.closeChat() : this.openChat();
+    this.open ? this.chatWindow.style.display = "none" : this.chatWindow.style.display = "flex";
     this.open = !this.open;
-  }
-
-  closeChat() {
-    this.chatWindow.style.display = "none";
-  }
-
-  openChat() {
-    this.chatWindow.style.display = "flex";
   }
 
   sendChatMessage() {
     const message = this.chatInput.value;
+    if (message && socket && this.SelectedPlayer != null && !this.BlockedStatus) {
+      //Isso está aqui para teste e simulação
+      let User;
+      if (this.SelectedPlayer === 'Liberal') {
+        User = JSON.parse(ActiveUser2)[0].username;
+      } else {
+        User = JSON.parse(ActiveUser)[0].username;
+      }
 
-    if (message && socket) {
-      socket.send(JSON.stringify({
-        'type': 'chat_message',
-        'message': message,
-        'sender': this.activePlayer
-      }));
+      if (message && socket && this.chatHash != null) {
+        socket.send(JSON.stringify({
+          'type': 'chat_message',
+          'message': message,
+          'sender': User,
+          'receiver': this.SelectedPlayer,
+          'hash': this.chatHash
+        }));
+        this.chatInput.value = '';
+      }
+
+      const storedHash = localStorage.getItem(`${User}_${this.SelectedPlayer}_chat`);
+      console.log("sendChatMessage() storedHash", storedHash);
+      const fullMessage = `${User}: ${message + "<br>"}`;
+      this.storeMessages(User, this.SelectedPlayer, this.chatHash, fullMessage);
+      this.addToMessagesHistory(this.chatHash, fullMessage); 
+      this.appendChatMessage(User, this.SelectedPlayer);
+    } else {
+      console.error("sendChatMessage() Message not sent: invalid conditions.");
       this.chatInput.value = '';
-      const fullMessage = `${this.activePlayer}: ${message}`;
-      this.storeMessages(this.activePlayer, fullMessage);
-      const playerId = this.activePlayer.replace('Player', 'player_');
-      this.appendChatMessage(fullMessage, playerId);
     }
   }
 
-  appendChatMessage(message, player) {
-    const chatBody = document.getElementById(`chatBody`);
+  appendChatMessage(sender, receiver) {
+    const chatBodyChildren = document.getElementById(`chatBodyChildren`);
+    // console.log("appendChatMessage() hash ", hash);
+    const storedHash = localStorage.getItem(`${sender}_${receiver}_chat`);
 
-    if (chatBody) {
-      const messageElement = document.createElement('div');
-      messageElement.textContent = message;
-      chatBody.appendChild(messageElement);
-    } else {
-      console.error(`chatBody_${player} not found`);
-    }
-  }
+    console.log("appendChatMessage() storedHash: " + storedHash);
 
-  handlePlayerFormSubmit(event) {
-    event.preventDefault();
-    const numPlayers = document.getElementById("numPlayers").value;
-    const playerData = {
-      numPlayers: numPlayers
-    };
-    document.getElementById("playerData").value = JSON.stringify(playerData);
-    this.numberPlayers = numPlayers;
-    this.generatePlayerButtons(numPlayers);
-  }
-
-  sendBasicInfo(nPlayers) {
-    if (socket) {
-      const players = [];
-      for (let i = 1; i <= nPlayers; i++) {
-        players.push({ id: `player_${i}`, name: `player_${i}` });
-      }
-      socket.send(JSON.stringify({
-        type: 'room_info',
-        'numplayers': nPlayers,
-        'players': players
-      }));
-    }
-  }
-
-  generatePlayerButtons(nPlayers) {
-    this.chatSideBar.innerHTML = ''; // Limpa a barra lateral
-
-    // Acrescenta o botão General
-    const generalButton = document.createElement("button");
-    generalButton.innerText = "General";
-    generalButton.onclick = () => this.selectChannel('general');
-    this.chatSideBar.appendChild(generalButton);
-
-    for (let i = 1; i <= nPlayers; i++) {
-      const button = document.createElement("button");
-      button.innerText = `player_${i}`;
-      button.onclick = () => {
-        this.activePlayer = `player_${i}`;
-        this.selectChannel(`player_${i}`);
-      };
-      this.chatSideBar.appendChild(button);
-
-      // Cria um novo espaço de mensagens para cada jogador
-      const chatBody = document.createElement("div");
-      chatBody.id = `chatBody_player_${i}`;
-      chatBody.style.display = 'none';
-      document.body.appendChild(chatBody);
-    }
-
-    // Isso é temporário apenas enquanto não tenho acesso ao DB
-    this.sendBasicInfo(nPlayers);
-  }
-
-  selectChannel(channel) {
-    // Esconde todos os espaços de chat
-    if (this.chatBody)
-      this.chatBody.innerHTML = '';
-    for (let i = 1; i <= this.numberPlayers; i++) {
-      const chatBody = document.getElementById(`chatBody_player_${i}`);
-      if (chatBody) {
-        chatBody.style.display = 'none';
-      }
-    }
-
-    // Mostra o espaço de chat do canal selecionado
-    const chatBody = document.getElementById(`chatBody_${channel}`);
-    if (chatBody) {
-      chatBody.style.display = 'flex';
-      this.chatBody = chatBody;
-      console.log(`Channel switched to ${channel}`);
-    }
-
-    document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
-    this.loadMessages(channel);
-  }
-
-  handleWebSocketMessage(event) {
-    const data = JSON.parse(event.data);
-    if (data.type === 'chat_message') {
-      const message = `${data.sender}: ${data.message}`;
-      this.storeMessages(data.sender, message);
-      this.appendChatMessage(message, data.sender.replace('Player', 'player_'));
-      console.log("handleWebSocketMessage " + data.sender.replace('Player', 'player_'));
-    } else if (data.type === 'connection_established') {
-      console.log("handleWebSocketMessage channel_name: " + channel_name);
-    } else if (data.type === 'paddle_update') {
-      console.log("handleWebSocketMessage paddle_update: " + data.paddle_x + ", " + data.paddle_y);
-    } else if (data.type === 'ball_update') {
-      console.log("handleWebSocketMessage ball_update: " + data.ball_x + ", " + data.ball_y);
-    } else {
-      console.error("Received unexpected message type:", data.type);
-    }
-  }
-
-  storeMessages(player, message) {
-    const p = player.replace('Player', 'player_');
-    console.log("storeMessages " + p);
-    if (!this.messages[p])
-      this.messages[p] = [];
-    this.messages[p].push(message);
-  }
-
-  loadMessages(player) {
-    const id = player.replace('Player', 'player_');
-    this.chatBody.innerHTML = ''; 
-    const messages = this.messages[id] || [];
+    if (!this.messagesHistory.has(storedHash))
+      this.messagesHistory.set(storedHash, []);
     
-    // messages.forEach(message => this.appendChatMessage(message, id));
-    if (!this.lastLoadedMessageCount) {
-      this.lastLoadedMessageCount = {};
-    }
-  
-    if (this.lastLoadedMessageCount[id] !== messages.length && this.lastLoadedMessageCount[id] !== 0) {
-      this.chatBody.innerHTML = ''; // Limpa as mensagens atuais
-      messages.forEach(message => this.appendChatMessage(message, id));
-      this.lastLoadedMessageCount[id] = messages.length; // Atualiza o último comprimento carregado
-    }
+
+    let messages = this.messagesHistory.get(storedHash);
+    chatBodyChildren.innerHTML = "";
+      messages.forEach((msg) => chatBodyChildren.innerHTML += msg + "\n")
   }
+
+  storeMessages(sender, receiver, hash, message) {
+    if (!this.messagesHistory.has(hash)) {
+      this.messagesHistory.set(hash, []);
+    }
+    this.messagesHistory.get(hash).forEach((msg, index) => {
+      console.log(`Message ${index + 1}: ${msg}`);
+    });
+  }
+
+  addToMessagesHistory(hash, message) {
+    if (!this.messagesHistory.has(hash)) {
+      this.messagesHistory.set(hash, []);
+    }
+    this.messagesHistory.get(hash).push(message);
+    console.log(`Added to messagesHistory: Hash ${hash}, Message: ${message}`);
+    this.messagesHistory.get(hash).forEach((msg, index) => {
+      console.log(`Message ${index + 1}: ${msg}`);
+    });
+  } 
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  new Chat();
-})
+// Para solucionar o caso de usuários iguais terem o mesmo hash, eu poderei
+//acrescentar a esse hash o email do user. Assim garantimos que enquanto o 
+//user estiver logado ele terá acesso aos chatPrivados que ele tinha na 
+//sessão anterior.
 
+function djb2Hash(str) {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) + hash) + str.charCodeAt(i); // hash * 33 + c
+  }
+  return hash >>> 0; // Converte para um número não negativo de 32 bits
+}
+
+export function createChatHash(speaker, audience, context) {
+  const names = [speaker, audience].sort();
+  
+  const usernamesContext = `${names.join("_")}_${context})`;
+
+  const hash = djb2Hash(usernamesContext);
+
+  return hash.toString(16);
+}
+
+views.setElement("/chat", (state) => {
+  document.getElementById("chatContainer").style.display = state;
+  if ("block") {
+    initializeWebSocket(window.user.id);
+    window.chat = new Chat();
+  }
+  else {
+    //Supostamente, tenho de destruir a socket
+    //remover eventListeners, 
+    windows.chat = undefined;
+  }
+})
+.setEvents();
+
+document.addEventListener("DOMContentLoaded", function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('username') || 'test_user';
+})
 
