@@ -28,10 +28,11 @@ class Candy {
     this.name = name;
   }
 
-  reset() {
+  reset(game) {
     // Random position not too close to the walls
      setTimeout(() => {
           this.visible = true;
+          this.sendCandy(game);
         }, 5000);
   }
   
@@ -65,6 +66,18 @@ class Candy {
     if (powerUP)
       powerUP(player, game);
   }
+
+  sendCandy(game) {
+    // console.log("sending candy");
+    game.socket.send(JSON.stringify({
+      'type': 'candy',
+      'action': 'candy',
+      'name': this.name,
+      'x': this.x,
+      'y': this.y,
+      'visibility': this.visible,
+  }))
+  }
 }
 
 function generateXnY(map) {
@@ -95,7 +108,7 @@ export function checkCandies(ball, game) {
       const {x, y} = generateXnY(map); 
       temp.x = x;
       temp.y = y;
-      temp.reset();
+      temp.reset(game);
     }
   }
 }

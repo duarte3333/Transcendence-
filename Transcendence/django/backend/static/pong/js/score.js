@@ -30,6 +30,10 @@ let scoreboardContainer = null;
 
 export function createScoreBoard(numberOfPlayers) {
   scoreboardContainer = document.getElementById('scoreBoard');
+
+  if (scoreboardContainer.innerHTML != '')
+            return ;
+
   scoreboardContainer.classList.add('overflow-hidden');
   scoreboardContainer.style.paddingTop = "2%";
   scoreboardContainer.style.paddingLeft = "0%";

@@ -32,6 +32,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         # Handle different types of messages
         message_type = content.get('action')
 
+        # logger.info(f'receive json: {message_type}')
         if message_type == 'join':
             await self.join_game(content)
         elif message_type == 'ball':
@@ -41,6 +42,18 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 'type': 'ball_move',
                 'x': content.get('x'),
                 'y': content.get('y'),
+                'visibility': content.get('visibility'),
+            }
+        )
+        elif message_type == 'candy':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'candy',
+                'x': content.get('x'),
+                'y': content.get('y'),
+                'name': content.get('name'),
+                'visibility': content.get('visibility'),
             }
         )
         elif message_type == 'up' or message_type == 'down':
@@ -59,9 +72,20 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             'action': 'ball',
             'x': content.get('x'),
             'y': content.get('y'),
+            'visibility': content.get('visibility'),
         })
 
         # Add more message types as needed
+
+    async def candy(self, content):
+        await self.send_json({
+            'type': 'candy',
+            'action': 'candy',
+            'x': content.get('x'),
+            'y': content.get('y'),
+            'name': content.get('name'),
+            'visibility': content.get('visibility'),
+        })
 
     async def join_game(self, event):
         # Handle the 'join' message type
@@ -84,7 +108,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         return
 
 
-    async def player_running(self):
+    async def player_running(self, message=None):
         return await self.send_json({
                 'type': 'player_running',
                 'action': 'running',

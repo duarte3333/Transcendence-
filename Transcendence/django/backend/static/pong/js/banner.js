@@ -18,6 +18,10 @@ export class Banner {
         let user = window.user;
 
         const bannerContainer = document.getElementById('banner');
+
+        if (bannerContainer.innerHTML != '')
+            return ;
+
         bannerContainer.classList.add('d-flex', 'flex-column', 'justify-content-center', 'align-items-center');
         bannerContainer.style.padding = "20px";
         bannerContainer.style.borderRadius = "10px";

@@ -142,12 +142,12 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 
 	const container = event.target.closest('.container');
 	if (!container) return;
-	container.innerHTML = `<div class="row justify-content-center align-items-center" style="margin-bottom: 7rem; margin-top: 3rem;">
-	<h5 class="display-1 text-center" style="font-size:3.5rem">Searching for an opponent...</h5>
-	</div>
-	<div class="row justify-content-center align-items-center">
-		<div class="spinner-border text-primary" role="status"></div>
-	</div>`;
+	// container.innerHTML = `<div class="row justify-content-center align-items-center" style="margin-bottom: 7rem; margin-top: 3rem;">
+	// <h5 class="display-1 text-center" style="font-size:3.5rem">Searching for an opponent...</h5>
+	// </div>
+	// <div class="row justify-content-center align-items-center">
+	// 	<div class="spinner-border text-primary" role="status"></div>
+	// </div>`;
 
 
 	//request match to backend aqui
