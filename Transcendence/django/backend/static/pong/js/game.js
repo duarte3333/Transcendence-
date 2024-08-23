@@ -376,23 +376,24 @@ function initializeWebSocket(id, playerId)
         //     "s"
         //   ]
         // }
-        const data2  = {}
+          const data2  = {}
 
-        data2["" + data.players[0]] = [
-          "w",
-          "s"
-        ]
+          data2["" + data.players[0]] = [
+            "w",
+            "s"
+          ]
 
-        data2["" + data.players[1]] = [
-          "w",
-          "s"
-        ]
+          data2["" + data.players[1]] = [
+            "w",
+            "s"
+          ]
 
-        if (game == undefined)
-        {
-              game = new Game(2, data2, data.playerHost);
-              game.socket = socketGame;
-              game.pause = false;
+          if (game == undefined)
+          {
+            console.log("creating game");   
+            game = new Game(2, data2, data.playerHost);
+            game.socket = socketGame;
+            game.pause = false;
           }
         }
         else if (data.type == 'move')
@@ -432,15 +433,16 @@ views.setElement('/game', (state) => {
   { 
     if (views.props.type == 'online')
       socketGame =  initializeWebSocket(views.props.id, window.user.id);
-    }
+  }
   // console.log("game: ", data)
   // if (state == "block")
   //   game = new Game(2, data);
-  // else
-  // {
-  //   game?.destroyer();
-  //   game = undefined;
-  // }
+  else
+  {
+    game?.destroyer();
+    game = undefined;
+  }
+
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);
 })
