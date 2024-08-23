@@ -10,6 +10,9 @@ import { socket } from "./myWebSocket.js";
 import { views } from "../../main/js/main.js";
 // import { AppControl } from "../../main/js/AppControl.js";
 
+const gameData = {game:undefined};
+let socketGame = undefined;
+
 function resizeCanvas() {
   const canvas = document.getElementById("pongCanvas");
   const banner = document.getElementById('banner');
@@ -56,9 +59,8 @@ export class Game {
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
-    console.log("paddle names = ", this.paddleNames);
-    const row = document.getElementById("game");
-    row.style.display = "flex";
+    // console.log("paddle names = ", this.paddleNames);
+
     this.context = this.canvas.getContext("2d");
     // if (views.props.type == 'online') {
     //   // this.pause = true;
@@ -69,7 +71,7 @@ export class Game {
     // else if (views.props.type == 'local'){
     //   // this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
     // }
-   this.setupGame(controlsList);
+
   }
 
   handleKeyDown(event) {
@@ -174,10 +176,22 @@ export class Game {
       const candy = new Candy(map, "candy_" + i);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
-      sleep(400);
+      if (window.user.id == this.playerHost) {
+        console.log("inside if");
+        candy.sendCandy(gameData.game);
+      }
     }
   }
-    //UPDATE OBJECTS
+
+  setCandy(data) {
+    // console.log("set candy in client data action == ", data);
+    const candy = this.candies.find(candy => candy.name === data.name);
+    candy.x = data.x;
+    candy.y = data.y;
+    candy.visible = data.visibility;
+  }
+
+  //UPDATE OBJECTS
   update() {
     const ball = this.objects.get("ball");
 
@@ -186,8 +200,12 @@ export class Game {
     //   paddle.move();
     //   // this.client.updatePlayer(paddle);
     // }
-    if (views.props.type != "online" || window.user.id ==  this.playerHost)
+    if (views.props.type != "online" || window.user.id ==  this.playerHost) {
       ball.move(this);
+      this.candies.forEach( (candy) => {
+        candy.sendCandy(this);
+      })
+    }
     //send candy info to client
     for (let i = 1; i <= this.numCandies; i++) {
       let temp = this.objects.get("candy_" + i);
@@ -338,34 +356,43 @@ export class Game {
   }
 
   destroyer() {
+    // console.log("destryoing game");
     this.events.destroyer();
     clearInterval(this.gameLoop);
   }
 }
 
-let game = undefined;
-let socketGame = undefined;
 
-function initializeWebSocket(id, playerId)
+
+const  initializeWebSocket = (id, playerId) =>
 {
   socketGame = new WebSocket(
     `ws://localhost:8000/ws/game/${id}/`
  );  
 
-  console.log("socket == ", socketGame);
+  // console.log("socket == ", socketGame);
 
-  socketGame.onmessage = function(e) {
+  socketGame.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
-      
-        if (data.action == 'ball' && game && window.user.id != game.playerHost)
+        
+        if (gameData.game && window.user.id != gameData.game.playerHost)
         {
-          game.ball.setPostion(data.x, data.y);
+          // console.log("action ==> ", action);
+          if (data.action === 'ball') {
+            // console.log("ball action = ", data.action);
+            gameData.game.ball.setPostion(data.x, data.y, data.visibility);
+          }
+          else if (data.action === "candy")
+            // console.log("candy action = ", data.action);
+            gameData.game.setCandy(data);
+          else if (data.type == 'move') 
+          gameData.game.handlePlayerMove(data);
         }
-        // console.log("data.action == 'running': ", (data.action == 'running'))
-        else if (data.action == 'running')
+        else if (data.action === 'running' && gameData.game == undefined)
         {    
-        //   console.table(data);
+          // console.log("data.action == 'running': ", (data.action == 'running'))
+          // console.log(data);
         //   const data2 = {
         //     data.players[0]: [
         //     "w",
@@ -376,34 +403,44 @@ function initializeWebSocket(id, playerId)
         //     "s"
         //   ]
         // }
+          const row = document.getElementById("game");
+          row.style.display = "flex";
+          const matchmaking = document.getElementById("matchmaking");
+          matchmaking.style.display = "none";
+
+          
           const data2  = {}
-
+          
           data2["" + data.players[0]] = [
-            "w",
-            "s"
+            window.user.up_key,
+            window.user.down_key
           ]
-
+          
           data2["" + data.players[1]] = [
-            "w",
-            "s"
+            window.user.up_key,
+            window.user.down_key
           ]
+          
+          // if (game == undefined)
+          // {
+            // console.log("creating a game")
+            gameData.game = new Game(2, data2, data.playerHost);
+            gameData.game.socket = socketGame;
+            gameData.game.pause = false;
+            gameData.game.setupGame(data2);
 
-          if (game == undefined)
-          {
-            console.log("creating game");   
-            game = new Game(2, data2, data.playerHost);
-            game.socket = socketGame;
-            game.pause = false;
-          }
+        
         }
-        else if (data.type == 'move')
-          game.handlePlayerMove(data);
-      } catch {}
-  }.bind(this);
+        else if (data.type == 'move') 
+          gameData.game.handlePlayerMove(data);
+      } catch {
 
-  socketGame.onclose = function(e) {
-    console.error('Chat socket closed unexpectedly');
-  }.bind(this);
+      }
+  }
+
+  socketGame.onclose = (e) => {
+    console.error('Socket closed unexpectedly');
+  }
 
   // const s = socketGame;
 
@@ -431,7 +468,7 @@ views.setElement('/game', (state) => {
   // }
   if (state == "block")
   { 
-    if (views.props.type == 'online')
+    if (views.props.type == 'online' && socketGame == undefined)
       socketGame =  initializeWebSocket(views.props.id, window.user.id);
   }
   // console.log("game: ", data)
@@ -439,10 +476,13 @@ views.setElement('/game', (state) => {
   //   game = new Game(2, data);
   else
   {
-    game?.destroyer();
-    game = undefined;
+    const row = document.getElementById("game");
+    row.style.display = "none";
+    const matchmaking = document.getElementById("matchmaking");
+    matchmaking.style.display = "block";
+    gameData.game?.destroyer();
+    gameData.game = undefined;
   }
-
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);
 })

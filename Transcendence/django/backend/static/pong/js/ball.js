@@ -83,14 +83,16 @@ export class Ball {
                 'action': 'ball',
                 'x': this.x,
                 'y': this.y,
+                'visibility': this.visible,
             }))
         }
     }
 
-    setPostion(x, y){
+    setPostion(x, y, visibility){
         this.x = x;
         this.y = y;
-        console.log("ball: x: " + this.x + " y: " + this.y);
+        this.visible = visibility;
+        // console.log("ball: x: " + this.x + " y: " + this.y + " visibilty: " + visibility);
     }
 
     draw(context) {
