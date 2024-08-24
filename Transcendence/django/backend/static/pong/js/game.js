@@ -244,7 +244,9 @@ export class Game {
   }
 
   togglePause() {
-    this.sendPause();
+    this.pause = !this.pause;
+    if (views.props.type == 'online')
+      this.sendPause();
   }
 
   updateScore(paddle_name, flag) {
@@ -260,35 +262,47 @@ export class Game {
   }
 
   sendPause() {
-    console.log("sending pause =",!this.pause);
+    // console.log("sending pause =",!this.pause);
     this.socket.send(JSON.stringify({
       'type': 'pause_game',
       'action': 'pause_game',
-      'flag': !this.pause,
+      'flag': this.pause,
   }))
   }
 
   sendScore(display_name, score) {
-    this.socket.send(JSON.stringify({
-      'type': 'score',
-      'action': 'score_update',
-      'display_name': display_name,
-      'score': score,
-  }))
+    // sends all score 
+    for (const [key, value] of this.score.entries()) {
+        this.socket.send(JSON.stringify({
+            'type': 'score',
+            'action': 'score_update',
+            'display_name': key,
+            'score': value,
+        }))
+      }
+
+    //sends only score that change
+  //   this.socket.send(JSON.stringify({
+  //     'type': 'score',
+  //     'action': 'score_update',
+  //     'display_name': display_name,
+  //     'score': score,
+  // }))
   }
 
   handleKeyUpOnline(event) {
     let paddle = this.players.get("" + window.user.id);
-    let action = this.events.getKeyPress(paddle.moveUpKey) ? "up" : this.events.getKeyPress(paddle.moveDownKey) ? "down": undefined;
+    let action = this.events.getKeyPress(paddle.moveUpKey) ? "up" : this.events.getKeyPress(paddle.moveDownKey) ? "down": this.events.getKeyPress(" ") ? "pause" :undefined;
     if (action != undefined)
+      if (action == "pause") {
+        this.togglePause();
+        return ;
+      }
       this.socket.send(JSON.stringify({
         'type': 'move',
         'action': action,
         'playerId': window.user.id
       }));
-    let pause = this.events.getKeyPress(" ")
-    if (pause)
-      this.togglePause();
   }
 
 
@@ -449,6 +463,10 @@ const  initializeWebSocket = (id, playerId) =>
             gameData.game.score.set(data.display_name, data.score);
             atualizeScore(gameData.game)
           }
+          else if (data.action == 'pause_game')
+          {
+            gameData.game.pause = data.flag;
+          }
         }
         else if (data.action === 'running' && gameData.game == undefined)
         {    
@@ -496,7 +514,7 @@ const  initializeWebSocket = (id, playerId) =>
           gameData.game.handlePlayerMove(data);
         else if (data.action == 'pause_game')
         {
-          console.log("received pause flag =", data.flag);
+          // console.log("received pause flag =", data.flag);
           gameData.game.pause = data.flag;
         }
       } catch {

@@ -11,7 +11,9 @@ export class events {
 
     #handleKeyDownAction(event)
     {
-        event.preventDefault();
+        if (event.key == ' ' || event.key == window.user.down_key || event.key == window.user.up_key) {
+            event.preventDefault();
+        }
         const key1 = event.key.toUpperCase()
         this.#keys.set(key1, true);
     }
