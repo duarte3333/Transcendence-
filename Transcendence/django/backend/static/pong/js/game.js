@@ -1,7 +1,7 @@
 import { Ball } from "./ball.js";
 import { Candy, speedPowerUp, attackPowerUp, defencePowerUp } from "./candy.js";
 import { events } from "./events.js";
-import { Score, checkGameOver, createScoreBoard, clearScoreBoard } from "./score.js";
+import { atualizeScore, checkGameOver, createScoreBoard, clearScoreBoard } from "./score.js";
 import { map } from "./map.js";
 import { Paddle, writePaddleNames } from "./paddles.js";
 import { sleep } from "./auxFts.js";
@@ -29,14 +29,16 @@ export class Game {
     // console.log(numPlayers)
     // console.log(controlsList)
     this.playerHost = playerHost;
+
     this.players = new Map();
+    this.score = new Map();
     this.playerBanner = new Banner("/static/pong/img/banner.jpeg", "Player's Name", "Lord Pong", "Wins: 10,\n Losses: 2");
     this.objects = new Map();
     this.numCandies = 1;
     this.numberOfPlayers = numPlayers;
     this.pause = false;
     this.speed = 2.5;
-    this.isScoring = false;
+    // this.isScoring = false;
     this.events = new events();
     this.candies = [];
     this.fps = 0;
@@ -112,7 +114,7 @@ export class Game {
     this.addPaddles(controlsList);
     this.addBall();
     this.addCandies();
-    createScoreBoard(this.numberOfPlayers);
+    createScoreBoard(this.score);
     this.playerBanner.createBanner();
     resizeCanvas();
     this.init();
@@ -154,11 +156,12 @@ export class Game {
   addPaddles(controlsList) {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let paddle = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]);
+      let paddle = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]); // <-- last param display name
 
       paddle.draw(this.context);
       this.objects.set(paddle.name, paddle);
       this.players.set(this.paddleNames[i-1], paddle);
+      this.score.set(this.paddleNames[i - 1], 0);
     }
   }
 
@@ -226,18 +229,37 @@ export class Game {
       // this.client.updateCandy(temp);
     }
 
-    let final_i = checkGameOver(this.numberOfPlayers, this.maxScore);
-    if (final_i != -1) {
-      this.finish = true;
-      this.winner = final_i;
-    }
+    // let final_i = checkGameOver(this.numberOfPlayers, this.maxScore);
+    // if (final_i != -1) {
+    //   this.finish = true;
+    //   this.winner = final_i;
+    // }
   }
 
   togglePause() {
     this.pause = !this.pause;
   }
 
+  updateScore(paddle_name, flag) {
+    const display_name = this.objects.get(paddle_name).displayName;
+    let score = this.score.get(display_name);
+    if (flag)
+      score++;
+    else 
+      score--;
+    this.score.set(display_name, score);
+    this.sendScore(display_name, score);
+    atualizeScore(this);
+  }
 
+  sendScore(display_name, score) {
+    this.socket.send(JSON.stringify({
+      'type': 'score',
+      'action': 'score_update',
+      'display_name': display_name,
+      'score': score,
+  }))
+  }
 
   handleKeyUpOnline(event) {
     let paddle = this.players.get("" + window.user.id);
@@ -402,8 +424,12 @@ const  initializeWebSocket = (id, playerId) =>
             gameData.game.setCandy(data);
           else if (data.type == 'move') 
             gameData.game.handlePlayerMove(data);
-          else if (data.type == 'candy_powerup') 
+          else if (data.action == 'candy_powerup') 
             gameData.game.activateCandy(data);
+          else if (data.action == 'score_update') {
+            gameData.game.score.set(data.display_name, data.score);
+            atualizeScore(gameData.game)
+          }
         }
         else if (data.action === 'running' && gameData.game == undefined)
         {    

@@ -56,6 +56,15 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 'visibility': content.get('visibility'),
             }
         )
+        elif message_type == 'score_update':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'score_update',
+                'display_name': content.get('display_name'),
+                'score': content.get('score'),
+            }
+        )
         elif message_type == 'candy_powerup':
             await self.channel_layer.group_send(
             self.room_group_name,
@@ -86,6 +95,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         })
 
         # Add more message types as needed
+
+    async def score_update(self, content):
+        await self.send_json({
+            'type': 'score',
+            'action': 'score_update',
+            'display_name': content.get('display_name'),
+            'score': content.get('score'),
+        })
 
     async def candy(self, content):
         await self.send_json({
