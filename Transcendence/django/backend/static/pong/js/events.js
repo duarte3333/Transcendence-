@@ -11,6 +11,7 @@ export class events {
 
     #handleKeyDownAction(event)
     {
+        event.preventDefault();
         const key1 = event.key.toUpperCase()
         this.#keys.set(key1, true);
     }

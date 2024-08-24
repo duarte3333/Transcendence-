@@ -1,7 +1,7 @@
 import { Ball } from "./ball.js";
 import { Candy, speedPowerUp, attackPowerUp, defencePowerUp } from "./candy.js";
 import { events } from "./events.js";
-import { atualizeScore, checkGameOver, createScoreBoard, clearScoreBoard } from "./score.js";
+import { atualizeScore, createScoreBoard, clearScoreBoard } from "./score.js";
 import { map } from "./map.js";
 import { Paddle, writePaddleNames } from "./paddles.js";
 import { sleep } from "./auxFts.js";
@@ -42,7 +42,7 @@ export class Game {
     this.events = new events();
     this.candies = [];
     this.fps = 0;
-    this.maxScore = 100;
+    this.maxScore = 5;
     this.ball = new Ball();
     this.finish = false;
     this.winner = 0;
@@ -229,15 +229,22 @@ export class Game {
       // this.client.updateCandy(temp);
     }
 
-    // let final_i = checkGameOver(this.numberOfPlayers, this.maxScore);
-    // if (final_i != -1) {
-    //   this.finish = true;
-    //   this.winner = final_i;
-    // }
+    let gameOver = this.checkGameOver();
+    if (gameOver) {
+      this.finish = true;
+      this.winner = gameOver;
+    }
+  }
+
+  checkGameOver() {
+    for (const [key, value] of this.score.entries()) {
+      if (value >= this.maxScore)
+        return key;
+    }
   }
 
   togglePause() {
-    this.pause = !this.pause;
+    this.sendPause();
   }
 
   updateScore(paddle_name, flag) {
@@ -252,6 +259,15 @@ export class Game {
     atualizeScore(this);
   }
 
+  sendPause() {
+    console.log("sending pause =",!this.pause);
+    this.socket.send(JSON.stringify({
+      'type': 'pause_game',
+      'action': 'pause_game',
+      'flag': !this.pause,
+  }))
+  }
+
   sendScore(display_name, score) {
     this.socket.send(JSON.stringify({
       'type': 'score',
@@ -263,13 +279,16 @@ export class Game {
 
   handleKeyUpOnline(event) {
     let paddle = this.players.get("" + window.user.id);
-    let action = this.events.getKeyPress(paddle.moveUpKey) ? "up" : this.events.getKeyPress(paddle.moveDownKey) ? "down" : undefined;
+    let action = this.events.getKeyPress(paddle.moveUpKey) ? "up" : this.events.getKeyPress(paddle.moveDownKey) ? "down": undefined;
     if (action != undefined)
       this.socket.send(JSON.stringify({
         'type': 'move',
         'action': action,
         'playerId': window.user.id
       }));
+    let pause = this.events.getKeyPress(" ")
+    if (pause)
+      this.togglePause();
   }
 
 
@@ -475,6 +494,11 @@ const  initializeWebSocket = (id, playerId) =>
         }
         else if (data.type == 'move') 
           gameData.game.handlePlayerMove(data);
+        else if (data.action == 'pause_game')
+        {
+          console.log("received pause flag =", data.flag);
+          gameData.game.pause = data.flag;
+        }
       } catch {
 
       }

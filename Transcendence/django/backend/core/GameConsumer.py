@@ -75,6 +75,15 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 'powerup': content.get('powerup'),
             }
         )
+        elif message_type == 'pause_game':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'pause_game',
+                'action': 'pause_game',
+                'flag': content.get('flag'),
+            }
+        )
         elif message_type == 'up' or message_type == 'down':
             await self.channel_layer.group_send(
             self.room_group_name,
@@ -92,6 +101,13 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             'x': content.get('x'),
             'y': content.get('y'),
             'visibility': content.get('visibility'),
+        })
+
+    async def pause_game(self, content):
+        await self.send_json({
+            'type': 'pause_game',
+            'action': 'pause_game',
+            'flag': content.get('flag'),
         })
 
         # Add more message types as needed
