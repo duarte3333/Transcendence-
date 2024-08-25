@@ -1,6 +1,7 @@
 # myapp/consumers.py
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
+
 # from api.models import Game
 import logging
 
@@ -160,11 +161,20 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def player_running(self, message=None):
+        from login.models import PongUser
+        player_ids = [int(player) for player in self.game.player]
+        # Fetch all PongUser objects corresponding to the player IDs
+        players = await sync_to_async(list)(PongUser.objects.filter(id__in=player_ids).values('id', 'display_name'))
+
+        # Create a list of display names
+        players_displays = [player['display_name'] for player in players]
+
         return await self.send_json({
                 'type': 'player_running',
                 'action': 'running',
                 'players': self.game.player,
-                'playerHost': self.game.playerHost
+                'playerHost': self.game.playerHost,
+                'players_displays': players_displays,
         })
     
 

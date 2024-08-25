@@ -61,7 +61,9 @@ export class Game {
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
+    this.playerDisplays = Object.values(controlsList).map(arr => arr[2]);
     // console.log("paddle names = ", this.paddleNames);
+    // console.log("controllist = ", controlsList);
 
     this.context = this.canvas.getContext("2d");
     // if (views.props.type == 'online') {
@@ -156,12 +158,12 @@ export class Game {
   addPaddles(controlsList) {
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-      let paddle = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.paddleNames[i-1]); // <-- last param display name
+      let paddle = new Paddle(map, i, this.numberOfPlayers, controlsList[this.paddleNames[i-1]], this.playerDisplays[i-1]); // <-- last param display name
 
       paddle.draw(this.context);
       this.objects.set(paddle.name, paddle);
       this.players.set(this.paddleNames[i-1], paddle);
-      this.score.set(this.paddleNames[i - 1], 0);
+      this.score.set(this.playerDisplays[i-1], 0);
     }
   }
 
@@ -472,45 +474,26 @@ const  initializeWebSocket = (id, playerId) =>
         }
         else if (data.action === 'running' && gameData.game == undefined)
         {    
-          // console.log("data.action == 'running': ", (data.action == 'running'))
-          // console.log(data);
-        //   const data2 = {
-        //     data.players[0]: [
-        //     "w",
-        //     "s"
-        //   ],
-        //   "1": [
-        //     "w",
-        //     "s"
-        //   ]
-        // }
+          console.log("data == ", data);
+
           const row = document.getElementById("game");
           row.style.display = "flex";
           const matchmaking = document.getElementById("matchmaking");
           matchmaking.style.display = "none";
 
-          
           const data2  = {}
-          
-          data2["" + data.players[0]] = [
-            window.user.up_key,
-            window.user.down_key
-          ]
-          
-          data2["" + data.players[1]] = [
-            window.user.up_key,
-            window.user.down_key
-          ]
-          
-          // if (game == undefined)
-          // {
-            // console.log("creating a game")
-            gameData.game = new Game(2, data2, data.playerHost);
+
+          for (let i = 0; i < data.players.length; i++) {
+            data2["" + data.players[i]] = [
+              window.user.up_key,
+              window.user.down_key,
+              data.players_displays[i]
+            ]
+          }
+            gameData.game = new Game(data.players.length, data2, data.playerHost);
             gameData.game.socket = socketGame;
             gameData.game.pause = false;
             gameData.game.setupGame(data2);
-
-        
         }
         else if (data.type == 'move') 
           gameData.game.handlePlayerMove(data);

@@ -240,6 +240,7 @@ ONLINE_THRESHOLD = timedelta(minutes=5)
 def user_friends(request):
     user = request.user
     friend_ids = user.friends
+    logger.info(f'firends ids = {friend_ids}')
 
     # Fetch friends by their IDs, getting their display names and last_seen timestamps
     friends = PongUser.objects.filter(id__in=friend_ids).values('id', 'display_name', 'last_seen')
