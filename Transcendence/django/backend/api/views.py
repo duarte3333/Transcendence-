@@ -89,19 +89,36 @@ def update_game(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            game = Game.objects.get(id=data.get("id"))
+            dataID = data.get("id")
+            
+            if not dataID:
+                return JsonResponse({'error': 'ID not provided'}, status=400)
+            
+            try:
+                game = Game.objects.get(id=dataID)
+            except Game.DoesNotExist:
+                return JsonResponse({'error': 'Game not found'}, status=404)
 
             for field, value in data.items():
                 if hasattr(game, field):
                     setattr(game, field, value)
                 else:
                     return JsonResponse({'error': f'Field {field} does not exist on Game'}, status=400)
-            # Salvar as alterações
+
+            
+            # Save the changes
             game.save()
-            return JsonResponse({'success': True, 'game': game.toJson()}, status=201)
+            return JsonResponse({'success': True, 'game': game.toJson()}, status=200)
+
         except json.JSONDecodeError:
-            data = []
-    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            # Log the exception
+            logger.error(f'Unexpected error: {e}')
+            return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 
 @login_required

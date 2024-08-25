@@ -51,7 +51,7 @@ views.setElement("/home", async (state) => {
 // })
 
 function nextPage(event, type) {
-	console.log("type == " + type);
+	// console.log("type == " + type);
 	const oldParent = event.target.closest('.displayDiv');
     if (!oldParent) 
 		return;
@@ -131,11 +131,18 @@ function onlineMatch() {
 	// button_2.removeEventListener("click", playOnlineTournament());
 
 	button_1.addEventListener("click", (event) => {
-		playOnlineMatch(event, "Normal");
+		playOnlineMatch(event, "Normal", 2);
 	});
 	button_2.addEventListener("click", (event) => {
-		playOnlineMatch(event, "Fun");
+		funForm(event, "Fun");
 	});
+}
+
+function funForm(event, type) {
+	const oldParent = event.target.closest('.displayDiv');
+    if (!oldParent) 
+		return;
+	oldParent.style.setProperty('display', 'none', 'important');
 }
 
 function playOnlineMatch(event, type, numberPlayers = 2) {

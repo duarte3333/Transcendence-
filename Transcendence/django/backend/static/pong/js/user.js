@@ -30,7 +30,7 @@ export async function getUser(display_name) {
 
 export async function getUserFriends() {
     try {
-        const response = await fetch("https://localhost/" + 'api/user/userFriends', {
+        const response = await fetch("https://localhost" + '/api/user/userFriends', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
