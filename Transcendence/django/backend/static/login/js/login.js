@@ -156,11 +156,11 @@ function registerPost() {
         // Handle successful registration here (e.g., redirect user or show success message)
     })
     .catch(error => {
-        console.error('Error:', error);
-        // const errorMessage = error.message.replace(/^Error:\s*/, '');
-        // const errors = document.getElementById("errors");
-        // errors.style.display = "block";
-        // errors.innerText = errorMessage;
+        // console.error('Error:', error);
+        const errorMessage = error.message.replace(/^Error:\s*/, '');
+        const errors = document.getElementById("errors");
+        errors.style.display = "block";
+        errors.innerText = errorMessage;
         // Handle error here (e.g., show an error message to the user)
     });
 }

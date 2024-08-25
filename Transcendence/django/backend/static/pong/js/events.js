@@ -25,7 +25,15 @@ export class events {
     }
 
     getKeyPress(key){
-        return (this.#keys.get(key.toUpperCase()) || false);
+        //toggle and not hold
+        if (key == ' ') {
+            const result = (this.#keys.get(key.toUpperCase()) || false)
+            const key1 = key.toUpperCase()
+            this.#keys.set(key1, false);
+            return result;
+        }
+        else //Hold
+            return (this.#keys.get(key.toUpperCase()) || false);
     }
 
     destroyer()

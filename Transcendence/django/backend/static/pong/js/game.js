@@ -298,11 +298,13 @@ export class Game {
         this.togglePause();
         return ;
       }
-      this.socket.send(JSON.stringify({
-        'type': 'move',
-        'action': action,
-        'playerId': window.user.id
-      }));
+      if (!this.pause) {
+        this.socket.send(JSON.stringify({
+          'type': 'move',
+          'action': action,
+          'playerId': window.user.id
+        }));
+      }
   }
 
 
