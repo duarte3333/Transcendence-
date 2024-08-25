@@ -1,5 +1,6 @@
-import { initializeWebSocket, socket, channel_name } from "./myWebSocket.js";
+// import { chatSocket, channel_name } from "./myWebchatSocket.js";
 import { views } from "../../main/js/main.js";
+import { getCookie } from "./auxFts.js";
 
 class Chat {
   constructor() {
@@ -16,183 +17,238 @@ class Chat {
     this.open = false;
     this.messages = {};
     this.General = {};
-    this.BlockedStatus = false;
-
-    this.chatHash = null;
-    this.messagesHistory = new Map();
+    this.socket = undefined;
+    this.blockedStatus = false;
 
     this.setupEventListeners();
-    this.chatWindow.style.display = "flex";
+    this.chatWindow.style.display = "none";
+    this.fetchAndProcessData();
   }
 
+  async fetchAndProcessData() {
+    await this.listChatUsers();
+  }
+
+  async listChatUsers() {
+    fetch("https://localhost/api/user/list", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+      },
+    })
+		.then(async (response) => {
+      const { users } = await response.json();
+      console.table("tabela de users: ", users);
+      this.listUsers = users;
+      const channels = await this.listChannels();
+      for (const user of users)
+      {
+
+        if (user.id == window.user.id) continue;
+          const channel = channels.find((e) => {
+            return e.user.length == 2 && e.user.find(u => u.id == user.id)
+          } )
+
+        if (channel) {
+          const name = channel.name || channel.user.filter(e => e.id != window.user.id).map(e =>  e.name).join("_") || "tes";
+          channel.name = name
+          console.log("user. ", user, " channelw: ", channel.name)
+        }
+        else {
+          channels.push({
+            id: undefined,
+            name: user.username,
+            mensagens: [],
+            user: [
+              {
+                "id": window.user.id,
+                "name": window.user.username,
+              },
+              {
+                "id": user.id,
+                "name": user.username
+              }
+            ],
+            status: 'create'
+
+          })
+        }
+      }
+      this.listchannelsSubscribed = channels;
+      console.log("channels: " , channels)
+      this.generatePlayerButtons(channels);
+    })
+    .catch((error) => console.error(error));
+  }
+
+  async listChannels() {    
+    return fetch("https://localhost/api/chat/list", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({
+        "userId": window.user.id
+      }),
+      redirect: "follow"
+    })
+      .then(async (response) => {
+        const { chat } = await response.json();
+        console.log("channelsSubscribed: ", chat)
+        this.listchannelsSubscribed = chat;
+        return chat
+      })
+      .catch((error) => console.error(error));
+  }
   
+  // getUserChannels() {
+  //   const userChannelsList = this.listUsers.map(user => {
+  //     return {
+  //         userId: user.id,
+  //         channels: this.listchannelsSubscribed.filter(channel => channel.userId === user.id)
+  //     };
+  //   });
+  //   console.table("User Channels List: ", userChannelsList);
+  //   return userChannelsList;
+  // }
+
   setupEventListeners() {
     if (this.chatButton)
       this.chatButton.addEventListener('click', () => this.toggleChatWindow());
     if (this.sendChatButton)
       this.sendChatButton.addEventListener('click', () => this.sendChatMessage());
     if (this.blockUserButton)
-      this.blockUserButton.addEventListener('click', () => this.blockUser());
+      this.blockUserButton.addEventListener('click', () => this.blockUser(this.SelectedPlayer));
     if (this.unblockUserButton)
-      this.unblockUserButton.addEventListener('click', () => this.unBlockUser());
+      this.unblockUserButton.addEventListener('click', () => this.unBlockUser(this.SelectedPlayer));
     this.setup();
   }
 
-  blockUser() {
-    if (socket && this.SelectedPlayer && !this.BlockedStatus) {
-      console.log("User blocked: ", this.SelectedPlayer);
-      socket.send(JSON.stringify({
-        'type': 'blocked_conversation',
-        'user': this.SelectedPlayer,
-        'hash': this.chatHash,
-      }))
-      this.BlockedStatus = !this.BlockedStatus;
-      this.unblockUserButton.style.display = 'flex';
-      this.blockUserButton.style.display = 'none';
-    }
-    console.log("User Status: ", this.BlockedStatus);
+  blockUser(channel) {
+    this.socket.send(JSON.stringify({
+      'action': 'block',
+      'type': 'block',
+      'userId': window.user.id,
+      'channelId': channel
+    }))
+    this.blockedStatus = !this.blockedStatus;
+    this.unblockUserButton.style.display = 'flex';
+    this.blockUserButton.style.display = 'none';
+
+    console.log("User Status: ", this.blockedStatus);
   }
 
-  unBlockUser() {
-    if (socket && this.SelectedPlayer && this.BlockedStatus) {
-      console.log("User unblocked: ", this.SelectedPlayer);
-      socket.send(JSON.stringify({
-        'type': 'unblocked_conversation',
-        'user': this.SelectedPlayer,
-        'hash': this.chatHash,
-      }))
-      this.BlockedStatus = !this.BlockedStatus;
-      this.unblockUserButton.style.display = 'none';
-      this.blockUserButton.style.display = 'flex';
-    }
-    console.log("User Status: ", this.BlockedStatus);
+  unBlockUser(channel) {
+    this.blockedStatus = !this.blockedStatus;
+    this.unblockUserButton.style.display = 'none';
+    this.blockUserButton.style.display = 'flex';
+    console.log("User Status: ", this.blockedStatus);
   }
 
-  createAndStoreHash(speaker, audience, context) {
-
-    console.log("createAndStoreHash() speaker " + speaker);
-    console.log("createAndStoreHash() audience " + audience);
-
-    this.chatHash = createChatHash(speaker, audience, context);
-    localStorage.setItem(`${speaker}_${audience}_chat`, this.chatHash);
-  }
 
   async setup() {
-    while (socket.readyState !== WebSocket.OPEN) {
+    while (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
       await new Promise(resolve => setTimeout(resolve, 5));
     }
-    this.generatePlayerButtons(window.user.id);
   }
 
-  sendBasicInfo(length) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-
-      console.log("Mensagem que será enviada ao Backend: " + window.user.id);
-      socket.send(JSON.stringify({
-        type: 'room_info',
-        'numplayers': length,
-        'players': window.user.id
-      }));
-    }
+  createChannel(channel) {
+    const data = JSON.stringify({
+      "user": channel.user,
+      "status": "active",
+      "mensagens": []
+    });
+    
+    fetch("https://localhost/api/chat/create", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+      },
+      body:data
+    }).then(async (result) => {
+      const { chat } = await result.json()
+      channel.id = chat.id
+      if (channel.id) channel.button.style.backgroundColor = "yellow"
+      this.joinChannel(channel);
+    })
   }
 
-  createButtonsOnChat(User) {
+  joinChannel(channel){
+    this.socket.send(JSON.stringify({
+      'action': 'join',
+      'type': 'join',
+      'channelId': channel.id
+    }));
+    document.getElementById("chatHeader").innerText = `Chat - ${channel.name.charAt(0).toUpperCase() + channel.name.slice(1)}`;
+    this.blockUserButton.style.display = 'flex';
+    this.SelectedPlayer = channel.id;
+    console.log("this.SelectedPlayer ", this.SelectedPlayer);
+  }
+
+  createButtonsOnChat(channel) 
+  {
     const button = document.createElement("button");
-        
-    button.innerText = User;
-    button.id = `chatButton_${User}`
+    channel.button = button;
+    let username = channel.name;
+    button.innerText = username;
+    button.id = `chatButton_${username}`
+    button.setAttribute("channel", "create")
+    if (channel.id) button.style.backgroundColor = "yellow"
     button.onclick = () => {
-      this.SelectedPlayer = User;
-      this.selectChannel(User);
+      if (channel.id == undefined) {
+        this.createChannel(channel);
+      } else {
+        this.joinChannel(channel)
+      }
     };
     this.chatSideBar.appendChild(button);
   }
 
-  generatePlayerButtons() {
+  generatePlayerButtons(channels) {
     this.chatSideBar.innerHTML = '';
 
-    let JsonArray = JSON.parse(ActiveUser);
-    let length = JsonArray.length;
-    let User;
-    if (name === 'Liberal') {
-      User = JSON.parse(ActiveUser2)[0].username;
-    } else if (name === 'Teo') {
-      User = JSON.parse(ActiveUser)[0].username;
-    } else {
-      User = JSON.parse(test)[0].username;
+    // this.createButtonsOnChat("General");
+
+    for (const channel of channels) {
+      this.createButtonsOnChat(channel);
     }
-    this.createButtonsOnChat("General");
 
-    for (let i = 0; i < length; i++)
-      this.createButtonsOnChat(User);
-
-    this.sendBasicInfo(length);
+    // this.sendBasicInfo(length);
   }
 
   selectChannel(channel) {
-    //Apenas para testes
-    // localStorage.clear();
-    let User;
-    if (this.SelectedPlayer === 'Liberal') {
-      User = JSON.parse(ActiveUser2)[0].username;
-    } else {
-      User = JSON.parse(ActiveUser)[0].username;
-    }
-    //FIm dos Testes
-
     this.blockUserButton.style.display = 'flex';
     
-    //let hash = localStorage.getItem(hashkey);
-    this.createAndStoreHash(User, channel, 'chat');
-    if (!this.messagesHistory.has(this.chatHash))
-      this.messagesHistory.set(this.chatHash, []);
-    
-
-    console.log("User ", User);
-    console.log("channel ", channel);
-    console.log("hash ", this.chatHash);
-
-    this.appendChatMessage(User, this.SelectedPlayer);
+    this.appendChatMessage(window.user.id, this.SelectedPlayer);
     
     document.getElementById("chatHeader").innerText = `Chat - ${channel.charAt(0).toUpperCase() + channel.slice(1)}`;
-    console.log("SelectChannel() " + this.SelectedPlayer);
+    // console.log("SelectChannel() " + this.SelectedPlayer);
   }
 
   toggleChatWindow() {
-    if (!socket)
-      initializeWebSocket();
+    if (!this.socket)
+      this.InitializeWebSocket();
     this.open ? this.chatWindow.style.display = "none" : this.chatWindow.style.display = "flex";
     this.open = !this.open;
   }
 
   sendChatMessage() {
     const message = this.chatInput.value;
-    if (message && socket && this.SelectedPlayer != null && !this.BlockedStatus) {
-      //Isso está aqui para teste e simulação
-      let User;
-      if (this.SelectedPlayer === 'Liberal') {
-        User = JSON.parse(ActiveUser2)[0].username;
-      } else {
-        User = JSON.parse(ActiveUser)[0].username;
-      }
-
-      if (message && socket && this.chatHash != null) {
-        socket.send(JSON.stringify({
+    if (message && this.socket) {
+      if (message && this.socket) {
+        this.socket.send(JSON.stringify({
           'type': 'chat_message',
+          'action': 'chat_message',
           'message': message,
-          'sender': User,
-          'receiver': this.SelectedPlayer,
-          'hash': this.chatHash
+          'userId': window.user.id,
         }));
         this.chatInput.value = '';
       }
-
-      const storedHash = localStorage.getItem(`${User}_${this.SelectedPlayer}_chat`);
-      console.log("sendChatMessage() storedHash", storedHash);
-      const fullMessage = `${User}: ${message + "<br>"}`;
-      this.storeMessages(User, this.SelectedPlayer, this.chatHash, fullMessage);
-      this.addToMessagesHistory(this.chatHash, fullMessage); 
-      this.appendChatMessage(User, this.SelectedPlayer);
+      const fullMessage = `${window.user.id}: ${message}`;
+      // console.log("sendChatMessage() ", fullMessage);
     } else {
       console.error("sendChatMessage() Message not sent: invalid conditions.");
       this.chatInput.value = '';
@@ -201,80 +257,114 @@ class Chat {
 
   appendChatMessage(sender, receiver) {
     const chatBodyChildren = document.getElementById(`chatBodyChildren`);
-    // console.log("appendChatMessage() hash ", hash);
-    const storedHash = localStorage.getItem(`${sender}_${receiver}_chat`);
-
-    console.log("appendChatMessage() storedHash: " + storedHash);
-
-    if (!this.messagesHistory.has(storedHash))
-      this.messagesHistory.set(storedHash, []);
-    
-
-    let messages = this.messagesHistory.get(storedHash);
     chatBodyChildren.innerHTML = "";
-      messages.forEach((msg) => chatBodyChildren.innerHTML += msg + "\n")
   }
 
-  storeMessages(sender, receiver, hash, message) {
-    if (!this.messagesHistory.has(hash)) {
-      this.messagesHistory.set(hash, []);
-    }
-    this.messagesHistory.get(hash).forEach((msg, index) => {
-      console.log(`Message ${index + 1}: ${msg}`);
-    });
-  }
-
-  addToMessagesHistory(hash, message) {
-    if (!this.messagesHistory.has(hash)) {
-      this.messagesHistory.set(hash, []);
-    }
-    this.messagesHistory.get(hash).push(message);
-    console.log(`Added to messagesHistory: Hash ${hash}, Message: ${message}`);
-    this.messagesHistory.get(hash).forEach((msg, index) => {
-      console.log(`Message ${index + 1}: ${msg}`);
-    });
-  } 
-}
-
-// Para solucionar o caso de usuários iguais terem o mesmo hash, eu poderei
-//acrescentar a esse hash o email do user. Assim garantimos que enquanto o 
-//user estiver logado ele terá acesso aos chatPrivados que ele tinha na 
-//sessão anterior.
-
-function djb2Hash(str) {
-  let hash = 5381;
-  for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) + hash) + str.charCodeAt(i); // hash * 33 + c
-  }
-  return hash >>> 0; // Converte para um número não negativo de 32 bits
-}
-
-export function createChatHash(speaker, audience, context) {
-  const names = [speaker, audience].sort();
+  InitializeWebSocket() {
+    const wsUrl = `ws://localhost:8000/ws/chat/${window.user.id}/`;
   
-  const usernamesContext = `${names.join("_")}_${context})`;
+    this.socket = new WebSocket(wsUrl);
+    if (this.socket) {
+        // console.log("this.socket object" + this.socket.readyState + " this.socket url " + this.socket.url);
+        window.chatchatSocket = this.socket;
+    }
+  
+    this.socket.onopen = () => {
+        // console.log("WebchatSocket connection established. Status: ", this.socket.readyState);
+        // if (this.socket.readyState === WebSocket.OPEN) {
+        //   const message = JSON.stringify({
+        //       'action': 'join',
+        //       'userId': window.user.id,
+        //       'type': "run"
+        //   });
+        //   this.socket.send(message);
+        // }
+        // else {
+          // console.error("WebSocket is not open. Current state:", this.socket.readyState)
+        // }
+    }
 
-  const hash = djb2Hash(usernamesContext);
 
-  return hash.toString(16);
+    this.socket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        console.log("Received message data = ", data);
+
+        if (data.action === 'chat_message') {
+          this.handleWebchatSocketData(data);
+          // console.log("socket.onmessage ", data.message);
+        }
+        else if (data.action == 'join')
+        {
+          this.handleWebchatSocketData(undefined, true);
+          for (const message of data.message)
+          {
+            this.handleWebchatSocketData(message)
+          }
+        }
+        else if (data.action == "alertChannelCreated")
+        {
+          const user = data.user;
+           for (const channel of this.listchannelsSubscribed )
+           {
+              const isCheck =  user.length ==  channel.user.length && user.length == (channel.user.filter(e => user.find(u => u.id == e.id))).length;
+              // console.log("alertChannelCreated: ", isCheck , " u: ", user, " c: ", channel.user)
+              if (isCheck)
+              {
+                channel.id = data.channelId;
+                if (channel.id) channel.button.style.backgroundColor = "yellow"
+                break;
+              }
+           }
+        }
+    }
+  
+    this.socket.onclose = function(e) {
+        console.log("WebchatSocket connection closed");
+    }
+  
+    this.socket.onerror = function(e) {
+        console.log("WebchatSocket error: ", e);
+    }
+  
+    window.addEventListener('beforeunload', () => {
+        if (this.socket) {
+            this.socket.close();
+        }
+    })
+  }
+
+  handleWebchatSocketData(data, isClear = false) {
+    if (isClear == true)
+      chatBodyChildren.innerHTML = '';
+    else 
+    { 
+      const { message, userId} = data;
+
+      // console.log("handleWebchatSocketData() Message received from server:", data);
+      const fullMessage = `${userId}: ${message}`;
+      const chatBodyChildren = document.getElementById(`chatBodyChildren`);
+      chatBodyChildren.innerHTML += `<p>${fullMessage}</p>`;
+      // console.log("handleWebchatSocketData() ", fullMessage);
+    }
+
+  }
 }
 
 views.setElement("/chat", (state) => {
   document.getElementById("chatContainer").style.display = state;
   if ("block") {
-    initializeWebSocket(window.user.id);
     window.chat = new Chat();
   }
   else {
-    //Supostamente, tenho de destruir a socket
+    //Supostamente, tenho de destruir a chatSocket
     //remover eventListeners, 
-    windows.chat = undefined;
+    window.chat = undefined;
   }
 })
 .setEvents();
 
-document.addEventListener("DOMContentLoaded", function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const username = urlParams.get('username') || 'test_user';
-})
+// document.addEventListener("DOMContentLoaded", function() {
+//   const urlParams = new URLSearchParams(window.location.search);
+//   const username = urlParams.get('username') || 'test_user';
+// })
 

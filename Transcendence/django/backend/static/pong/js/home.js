@@ -32,6 +32,7 @@ views.setElement("/home", async (state) => {
 	homeBody.style.display = state;
 	views.get("/footer").display(state);
 	views.get("/chat").display(state);
+	
 })
 .setChilds(["/navbar", "/footer", "/chat"])
 .setEvents(

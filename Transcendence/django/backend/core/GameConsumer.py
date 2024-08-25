@@ -27,7 +27,6 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
-    # Recebe uma mensagem do WebSocket
     async def receive_json(self, content):
         # Handle different types of messages
         message_type = content.get('action')
@@ -97,7 +96,6 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-
     async def player_move(self, event):
         await self.send_json({
             'type': 'move',
@@ -107,7 +105,6 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         })
         return
 
-
     async def player_running(self, message=None):
         return await self.send_json({
                 'type': 'player_running',
@@ -116,8 +113,6 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 'playerHost': self.game.playerHost
         })
     
-
-    # Receives a player_joined event from the group
     async def player_joined(self, event):
         try:
             from api.models import Game
@@ -162,7 +157,6 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             'action': 'running',
             })
 
-    # Recebe uma mensagem do grupo de sala de chat
     async def chat_message(self, event):
         message = event['message']
 

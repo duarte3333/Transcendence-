@@ -335,10 +335,6 @@ export class Game {
     writePaddleNames(this);
   }
 
-
-
-
-
   handlePlayerMove(data) {   
   //   console.log(typeof(data.playerId));
     let paddle = this.players.get("" + data.playerId);
@@ -362,15 +358,11 @@ export class Game {
   }
 }
 
-
-
 const  initializeWebSocket = (id, playerId) =>
 {
   socketGame = new WebSocket(
     `ws://localhost:8000/ws/game/${id}/`
- );  
-
-  // console.log("socket == ", socketGame);
+ );
 
   socketGame.onmessage = (e) => {
       try {

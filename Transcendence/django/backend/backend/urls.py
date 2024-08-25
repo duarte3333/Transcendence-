@@ -71,7 +71,8 @@ from main.views import main_view
 from pong.views import home, navbar, settings, profile, tournamentLocal, footer, game, chat
 from django.contrib import admin
 from django.urls import path, re_path
-from api.views import create_game , list_game, update_game, deleted_game, user_profile, match_game, add_friend, user_friends, update_profile
+from chat.views import create_chat, list_chats, update_chat, deleted_chat
+from api.views import create_game , list_game, update_game, deleted_game, user_profile, list_users, match_game, add_friend, user_friends, update_profile
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -84,6 +85,12 @@ urlpatterns = [
     path('api/game/deleted', deleted_game),
     path('api/game/match', match_game),
 
+    #CHAT
+    path('api/chat/create', create_chat),
+    path('api/chat/list', list_chats),
+    path('api/chat/update', update_chat),
+    path('api/chat/deleted', deleted_chat),
+
     #   USER
     path('api/user/profile', user_profile),
     path('api/user/profile/update', update_profile),
@@ -93,6 +100,7 @@ urlpatterns = [
     path('api/login', login_view, name='login'),
     path('api/logout', auth_views.LogoutView.as_view(), name='logout'),
     path('api/register', register),
+    path('api/user/list', list_users),
     
     # END API
     # RUBENS

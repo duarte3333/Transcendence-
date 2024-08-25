@@ -34,12 +34,9 @@ def create_game(request):
 
             # Resposta de sucesso
             return JsonResponse({'success': True, 'game': data}, status=201)
-
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
 
 @login_required
 @csrf_exempt
@@ -67,8 +64,6 @@ def match_game(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-
 
 @login_required
 @csrf_exempt
@@ -102,7 +97,6 @@ def update_game(request):
         except json.JSONDecodeError:
             data = []
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
 
 @login_required
 @csrf_exempt
@@ -153,11 +147,11 @@ def user_profile(request):
             'banner_picture': user.banner_picture.url if user.banner_picture else 'static/userImages/banner.jpeg',
             'up_key': user.up_key if user.up_key else 'w',
             'down_key': user.down_key if user.down_key else 's',
+            'status': user.status,
         }
         return JsonResponse({'success': True, 'user': user_data}, status=200)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
 
 def update_user_properties(user: PongUser, updated_fields: dict):
     # List of allowed fields that can be updated
@@ -233,6 +227,29 @@ def update_profile(request):
         logger.exception("Unexpected error occurred")
         return JsonResponse({'status': 'error', 'message': 'An error occurred. ' + str(e)}, status=500)
 
+
+
+def serialize_pong_user(user):
+    user_dict = {
+        'id': user.id,
+        'username': user.username,
+        'display_name': user.display_name,
+        'profile_picture': user.profile_picture.url if user.profile_picture else None,
+        'status': user.status,
+    }
+    return user_dict
+
+@login_required
+@csrf_exempt
+def list_users(request):
+    try:
+        result = PongUser.objects.all()
+        pong_users_list = [serialize_pong_user(user) for user in result]
+        return JsonResponse({'success': True, 'users':  pong_users_list},  safe=False, status=201)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
 # Define the threshold for considering a user "online"
 ONLINE_THRESHOLD = timedelta(minutes=5)
 
@@ -283,4 +300,88 @@ def add_friend(request):
         friend_user.save()
     
     return JsonResponse({'success': True, 'message': 'Friend added successfully.'}, status=200)
+
+
+@login_required
+@csrf_exempt
+def create_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game = Game().create(
+                players = data.get('players', []),
+                game_type = data.get('type'),
+                playerHost = request.user.id,
+                numberPlayers =  data.get('number_of_players')
+            )
+            data["id"] = game.id
+
+            # Resposta de sucesso
+            return JsonResponse({'success': True, 'game': data}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+@login_required
+@csrf_exempt
+def match_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            result = Game().list(status = 'running', playerId=request.user.id)
+            if (len(result) == 1):
+                return JsonResponse({'success': True, 'game': result[0]}, status=201)
+            result = Game().list(status = 'pending')
+            logger.info(f'Match_game result: ${result}')
+            if (len(result) == 0):
+                game = Game().create(
+                    players = data.get('players', []),
+                    game_type = data.get('type'),
+                    playerHost = request.user.id,
+                    numberPlayers =  data.get('number_of_players')
+                )
+                data["id"] = game.id
+            else:
+                return JsonResponse({'success': True, 'game': result[0]}, status=201)
+            return JsonResponse({'success': True, 'game': data}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+@login_required
+@csrf_exempt
+def list_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            data = []
+        result = Game().list(status = data.get('status'), playerId = data.get('playerId'))
+        return JsonResponse({'success': True, 'game': result}, status=201)
+
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+@login_required
+@csrf_exempt
+def update_game(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game = Game.objects.get(id=data.get("id"))
+
+            for field, value in data.items():
+                if hasattr(game, field):
+                    setattr(game, field, value)
+                else:
+                    return JsonResponse({'error': f'Field {field} does not exist on Game'}, status=400)
+            # Salvar as alterações
+            game.save()
+            return JsonResponse({'success': True, 'game': game.toJson()}, status=201)
+        except json.JSONDecodeError:
+            data = []
+    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
 

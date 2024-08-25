@@ -24,6 +24,7 @@ class PongUser(AbstractUser):
     up_key = models.CharField(max_length=1, blank=True, null=True, default='w')
     friends = models.JSONField(default=list)
     last_seen = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=255, blank=False, default='offline')
 
     email = None
     first_name = None
@@ -51,6 +52,7 @@ class PongUser(AbstractUser):
             'banner_picture': self.banner_picture.url if self.banner_picture else None,
             'up_key': self.up_key if self.up_key else 'w',
             'down_key': self.down_key if self.down_key else 's',
+            'status': self.status,
         }
 
     def __str__(self):
