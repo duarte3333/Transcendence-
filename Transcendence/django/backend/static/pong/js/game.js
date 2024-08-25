@@ -61,7 +61,10 @@ export class Game {
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
-    this.playerDisplays = Object.values(controlsList).map(arr => arr[2]);
+    if (views.props.type == 'online')
+      this.playerDisplays = Object.values(controlsList).map(arr => arr[2]);
+    else
+      this.playerDisplays = this.paddleNames;
     // console.log("paddle names = ", this.paddleNames);
     // console.log("controllist = ", controlsList);
 

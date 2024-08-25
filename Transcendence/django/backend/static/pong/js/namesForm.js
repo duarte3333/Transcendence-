@@ -3,7 +3,9 @@ import { views } from "../../main/js/main.js";
 import { Match } from './match.js';
 
 views.setElement('/tournament/local', (state) => {
+	views.get("/navbar").display(state);
     document.getElementById('tournamentBody').style.display = state;
+	views.get("/footer").display(state);
 	loadNamesForm();
 })
 .setChilds(["/navbar", "/footer"])

@@ -44,7 +44,7 @@ async function generateFriendsList() {
 	}
 
 
-	console.log("friends ==>>>", friends)
+	// console.log("friends ==>>>", friends)
 	if (friends.length === 0) {
 		let li = document.createElement('li');
 		let div = document.createElement('div');
