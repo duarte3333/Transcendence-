@@ -54,7 +54,7 @@ def match_game(request):
             logger.info(f'Match_game result: ${result}')
             if (len(result) == 0):
                 game = Game().create(
-                    players = data.get('players', []),
+                    players = data.get('players', [request.user.id]),
                     game_type = data.get('type'),
                     playerHost = request.user.id,
                     numberPlayers =  data.get('number_of_players')

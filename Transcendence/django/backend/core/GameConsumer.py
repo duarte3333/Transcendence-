@@ -83,6 +83,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                     'flag': content.get('flag'),
                 }
             )
+        elif message_type == 'game_end':
+            await self.game_ends(content)
         elif message_type in ['up', 'down']:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -156,6 +158,37 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         })
         return
 
+    async def game_end(self, event):
+        await self.send_json({
+            'type': 'game_end',
+            'action': "game_end",
+            'winner': event.get('winner'),
+            'score': event.get('score')
+        })
+        return
+
+    async def game_ends(self, event):
+        try:
+            from api.models import Game
+            self.game = await sync_to_async(Game.objects.get)(id=self.room_name)
+            score = event.get('score')
+
+            if self.game and self.game.status == "running":
+                self.game.scoreList = score
+                self.game.status = "finished"
+                self.game.winner = event.get('winner')
+                await sync_to_async(self.game.save)()
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {'type': 'game_end'}
+                )
+            else:
+                await self.send_error("Unknown error in game ends")
+        except Exception as e:
+            logger.error(f"Error in game_ends: {str(e)}")
+        
+
     async def player_running(self, message=None):
         from login.models import PongUser
         player_ids = [int(player) for player in self.game.player]
@@ -184,8 +217,9 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
             self.game = await sync_to_async(Game.objects.get)(id=self.room_name)
             player_id = event.get('playerId')
-            if player_id not in self.game.player:
+            if self.game and player_id not in self.game.player and self.game.status == "pending":
                 self.game.player.append(player_id)
+                # logger.info(f'\n>>>>>>game players after append: {self.game.player}\n')
                 max_players = len(self.game.player)
                 if max_players == self.game.numberPlayers:
                     self.game.status = "running"
@@ -203,19 +237,18 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                         'room_name': int(self.room_name)
                     })
                 await sync_to_async(self.game.save)()
-            else:
+            elif self.game and player_id in self.game.player and not self.game.status == "finish":
                 self.playerId = player_id
                 self.gameId = self.game.id
-                await self.player_running()
+                if (self.game.status == "running"):
+                    await self.player_running()
                 return
-            self.playerId = player_id
-            self.gameId = self.game.id
-            await self.send_json({
-                'type': 'player_joined',
-                'playerId': player_id,
-                'gameid': "game.id",
-                'status': 'ok'
-            })
+            else:
+                await self.send_json({
+                'type': 'error',
+                'message': "unknown error"
+                })
+                return
         except:
             await self.send_json({
                 'type': 'player_running',

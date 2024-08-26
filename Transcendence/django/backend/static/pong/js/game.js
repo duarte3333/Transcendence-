@@ -52,13 +52,14 @@ export class Game {
     this.paddleNames = [];
     this.gameLoop = null;
     this.loser = null;
+    this.resizeCanvasEvent = () => {
+      resizeCanvas();
+    }
     // this.boundHandleKeyDownOnline = this.handleKeyDownOnline.bind(this);
     // this.boundHandleKeyUpOnline = this.handleKeyUpOnline.bind(this);
     this.canvas = document.getElementById("pongCanvas");
     // resizeCanvas();
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-    });
+    window.addEventListener('resize', this.resizeCanvasEvent);
 
     // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
@@ -230,10 +231,10 @@ export class Game {
       })
     }
     //send candy info to client
-    for (let i = 1; i <= this.numCandies; i++) {
-      let temp = this.objects.get("candy_" + i);
-      // this.client.updateCandy(temp);
-    }
+    // for (let i = 1; i <= this.numCandies; i++) {
+    //   let temp = this.objects.get("candy_" + i);
+    //   // this.client.updateCandy(temp);
+    // }
 
     let gameOver = this.checkGameOver();
     if (gameOver) {
@@ -244,8 +245,13 @@ export class Game {
   }
 
   checkGameOver() {
+    let display_name;
     for (const [key, value] of this.score.entries()) {
       if (value >= this.maxScore)
+        display_name = key;
+    }
+    for (const [key, value] of this.players.entries()) {
+      if (value.displayName == display_name)
         return key;
     }
   }
@@ -301,39 +307,45 @@ export class Game {
     const finalScore = []
 
     for (const [key, player] of this.players.entries()) {
-      // console.log("trying to add key=", key, "with player=", this.score.get(player.displayName))
-      // finalScore.set(key, this.score.get(player.displayName));
       finalScore.push({
-        id: key, // or player identifier, depending on your needs
-        score: this.score.get(player.displayName) || 0 // Provide a default value if score is undefined
+        id: key, 
+        score: this.score.get(player.displayName) || 0
       });
     }
 
-    console.log(">>>>>> ", finalScore);
+    // console.log(">>>>>> ", finalScore);
     // return ;
-    const data = JSON.stringify({
-      "id": views.props.id,
-      "status": "finish",
-      "scoreList": finalScore
-    });
-    try {
-      const response = await fetch("https://localhost" + '/api/game/update', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': getCookie('csrftoken')
-          },
-          body: data,
-      });
 
-       const message = await response.json();
-        if (!response.ok) {
-            console.error('Error:', message);
-        } else
-            console.log("Sucess: sent game over");
-    } catch (error) {
-        console.error('Request failed:', error);
-    }
+    this.socket.send(JSON.stringify({
+      'type': 'game_end',
+      'action': 'game_end',
+      'score': finalScore,
+      'winner': this.winner,
+  }))
+
+    // const data = JSON.stringify({
+    //   "id": views.props.id,
+    //   "status": "finish",
+    //   "scoreList": finalScore
+    // });
+    // try {
+    //   const response = await fetch("https://localhost" + '/api/game/update', {
+    //       method: 'POST',
+    //       headers: {
+    //           'Content-Type': 'application/json',
+    //           'X-CSRFToken': getCookie('csrftoken')
+    //       },
+    //       body: data,
+    //   });
+
+    //    const message = await response.json();
+    //     if (!response.ok) {
+    //         console.error('Error:', message);
+    //     } else
+    //         console.log("Sucess: sent game over");
+    // } catch (error) {
+    //     console.error('Request failed:', error);
+    // }
   }
 
   handleKeyUpOnline(event) {
@@ -394,44 +406,15 @@ export class Game {
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
       this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
       this.context.fillStyle = gradient;
-      this.context.fillText(`Player ${this.winner} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
+      this.context.fillText(`Player ${this.players.get(this.winner).displayName} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
     }
 
     setTimeout( async () => {
-      if (views.props.type == 'online')
+      if (views.props.type == 'online' && this.playerHost == window.user.id)
         await this.sendGameOver();
-      this.destroyer();
-    }, 1000);
-    
-
-    // this.cleanup();
-    // this.context.font = "bold 40px Poppins, sans-serif";
-    // this.context.fillStyle = "black";
-    // this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
-    // this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    // var gradient = this.context.createLinearGradient(0, 0, this.canvas.width, 0);
-    // gradient.addColorStop("0", "white");
-    // gradient.addColorStop("1", "#759ad7");
-    // this.context.fillStyle = gradient;
-    // this.context.fillText("Game Over", this.canvas.width / 2 - 100, this.canvas.height / 2);
-    // this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
-
-    // this.context.font = "bold 30px Poppins, sans-serif";
-    // this.context.fillStyle = "black";
-    // this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
-    // this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
-    // this.context.fillStyle = gradient;
-    // this.context.fillText(`Player ${this.winner} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
-    // this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
-
-    // document.getElementById("game").style.display = "none";
-    // document.getElementById("gameForm").style.display = "block";
-    // this.winnerName = this.paddleNames[this.winner - 1];
-    // this.events.removeControls();
-    // clearScoreBoard();
-    // this.playerBanner.clearBanner();
-    // clearInterval(this.gameLoop);
+      // this.destroyer();
+    }, 3500);
   }
 
   displayPaused() {
@@ -472,6 +455,7 @@ export class Game {
   destroyer() {
     // console.log("destryoing game");
     this.events.destroyer();
+    window.removeEventListener('resize', this.resizeCanvasEvent);
     clearInterval(this.gameLoop);
   }
 }
@@ -490,6 +474,11 @@ const  initializeWebSocket = (id, playerId) =>
       try {
         const data = JSON.parse(e.data);
         
+        // console.log("dta socket == ", data);
+        if (data.type == "error") {
+          console.log("resting you home, can't join that game");
+          views.urlLoad("/home");
+        }
         if (gameData.game && window.user.id != gameData.game.playerHost)
         {
           // console.log("action ==> ", action);
@@ -511,6 +500,10 @@ const  initializeWebSocket = (id, playerId) =>
           else if (data.action == 'pause_game')
           {
             gameData.game.pause = data.flag;
+          }
+          else if (data.action == "game_end")
+          {
+            views.urlLoad("/home");
           }
         }
         else if (data.action === 'running' && gameData.game == undefined)
@@ -540,6 +533,10 @@ const  initializeWebSocket = (id, playerId) =>
         }
         else if (data.type == 'move') 
           gameData.game.handlePlayerMove(data);
+        else if (data.action == "game_end")
+        {
+          views.urlLoad("/home");
+        }
         else if (data.action == 'pause_game')
         {
           // console.log("received pause flag =", data.flag);
@@ -594,6 +591,7 @@ views.setElement('/game', (state) => {
     matchmaking.style.display = "block";
     gameData.game?.destroyer();
     gameData.game = undefined;
+    socketGame =  undefined;
   }
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);

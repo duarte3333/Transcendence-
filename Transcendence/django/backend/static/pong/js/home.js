@@ -160,7 +160,7 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 	//request match to backend aqui
 
 	const data = JSON.stringify({
-		"players": [],
+		"players": [ window.user.id ],
 		"type": type,
 		"number_of_players": numberPlayers
 	});
