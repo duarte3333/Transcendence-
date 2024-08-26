@@ -322,30 +322,6 @@ export class Game {
       'score': finalScore,
       'winner': this.winner,
   }))
-
-    // const data = JSON.stringify({
-    //   "id": views.props.id,
-    //   "status": "finish",
-    //   "scoreList": finalScore
-    // });
-    // try {
-    //   const response = await fetch("https://localhost" + '/api/game/update', {
-    //       method: 'POST',
-    //       headers: {
-    //           'Content-Type': 'application/json',
-    //           'X-CSRFToken': getCookie('csrftoken')
-    //       },
-    //       body: data,
-    //   });
-
-    //    const message = await response.json();
-    //     if (!response.ok) {
-    //         console.error('Error:', message);
-    //     } else
-    //         console.log("Sucess: sent game over");
-    // } catch (error) {
-    //     console.error('Request failed:', error);
-    // }
   }
 
   handleKeyUpOnline(event) {

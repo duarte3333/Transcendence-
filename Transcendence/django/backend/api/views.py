@@ -175,6 +175,28 @@ def user_profile(request):
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+@login_required
+def get_user_by_id(request):
+    try:
+        data = json.loads(request.body)
+        # logger.info(f'\n\n>>>> data == {data}\n\n')
+        try:
+            user = PongUser.objects.get(id=data['id'])
+        except PongUser.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User does not exist.'}, status=404)
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'display_name': user.display_name,
+            'profile_picture': user.profile_picture.url if user.profile_picture else 'static/userImages/p1.png',
+            'banner_picture': user.banner_picture.url if user.banner_picture else 'static/userImages/banner.jpeg',
+            'up_key': user.up_key if user.up_key else 'w',
+            'down_key': user.down_key if user.down_key else 's',
+        }
+        return JsonResponse({'success': True, 'user': user_data}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
 
 def update_user_properties(user: PongUser, updated_fields: dict):
     # List of allowed fields that can be updated
@@ -301,4 +323,3 @@ def add_friend(request):
         friend_user.save()
     
     return JsonResponse({'success': True, 'message': 'Friend added successfully.'}, status=200)
-

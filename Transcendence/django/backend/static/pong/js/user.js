@@ -28,6 +28,33 @@ export async function getUser(display_name) {
     }
 }
 
+export async function getUserById(id) {
+    if (!id)
+        id = window.user.id
+    const data = JSON.stringify({
+		"id": id,
+	});
+
+    try {
+        const response = await fetch("https://localhost" + '/api/user/get', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: data,
+        });
+
+        const user = await response.json();
+        if (!response.ok) {
+            console.error('Error:', user.message);
+        }
+        return user.user;
+    } catch (error) {
+        console.error('Request failed:', error);
+    }
+}
+
 export async function getUserFriends() {
     try {
         const response = await fetch("https://localhost" + '/api/user/userFriends', {
