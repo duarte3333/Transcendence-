@@ -62,12 +62,12 @@ export class Game {
       this.playerDisplays = Object.values(controlsList).map(arr => arr[2]);
     else
       this.playerDisplays = this.paddleNames;
-    console.log("paddle names = ", this.paddleNames);
+    // console.log("paddle names = ", this.paddleNames);
     // console.log("controllist = ", controlsList);
 
     this.context = this.canvas.getContext("2d");
 
-    console.log("fun =", views.props.fun)
+    // console.log("fun =", views.props.fun)
     if (views.props.fun == "false") {
       this.candies = 0;
     }

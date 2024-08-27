@@ -3,7 +3,7 @@ export let theNames = []; // para usar no botao submit controls
 
 export function displayExtendedForm(names, numberOfPlayers) {
     return new Promise((resolve) => {
-        console.log("display Extend form")
+        // console.log("display Extend form")
         const controls = {};
         const gameForm = document.getElementById("gameForm");
         gameForm.style.display = "block"
