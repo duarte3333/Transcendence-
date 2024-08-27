@@ -161,7 +161,7 @@ async function getMatchHistory(id) {
 		"playerId": id
 	});
 	try {
-	const response = await fetch("https://localhost" + '/api/game/list', {
+	const response = await fetch(window.hostUrl + '/api/game/list', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

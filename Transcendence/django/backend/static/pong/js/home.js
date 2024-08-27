@@ -165,7 +165,7 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
 		"number_of_players": numberPlayers
 	});
 	
-	fetch("https://localhost" + '/api/game/match', {
+	fetch(window.hostUrl + '/api/game/match', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

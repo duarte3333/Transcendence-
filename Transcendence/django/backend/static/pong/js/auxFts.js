@@ -41,7 +41,7 @@ export function deleteCookie(name, path = '/', domain) {
 export  async function loginPage(){
     if (window.user != undefined)
         return window.user;
-    return await fetch("https://localhost" + '/api/user/profile', {
+    return await fetch(window.hostUrl + '/api/user/profile', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

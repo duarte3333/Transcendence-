@@ -5,7 +5,7 @@ export function initializeWebSocket() {
     if (!socket) {
         const protocol = 'wss://';
         const host = window.location.host;
-        const wsUrl = `${protocol}${host}/ws/`;
+        const wsUrl = `${protocol}${host}/wss/`;
 
         console.log("WebSocket URL:", wsUrl);
         socket = new WebSocket(wsUrl);

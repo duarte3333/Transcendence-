@@ -9,7 +9,7 @@ export async function getUser(display_name) {
 	});
 
     try {
-        const response = await fetch("https://localhost" + '/api/user/profile', {
+        const response = await fetch(window.hostUrl + '/api/user/profile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export async function getUserById(id) {
 	});
 
     try {
-        const response = await fetch("https://localhost" + '/api/user/get', {
+        const response = await fetch(window.hostUrl + '/api/user/get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export async function getUserById(id) {
 
 export async function getUserFriends() {
     try {
-        const response = await fetch("https://localhost" + '/api/user/userFriends', {
+        const response = await fetch(window.hostUrl + '/api/user/userFriends', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ export async function getUserFriends() {
 
 export async function addFriend(friendDisplayName) {
     try {
-        const response = await fetch('api/user/addFriend', {
+        const response = await fetch(window.hostUrl + '/api/user/addFriend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -104,7 +104,7 @@ export async function addFriend(friendDisplayName) {
 
 
 export async function updateUserProfile(updatedFields) {
-	const url = '/api/user/profile/update';
+	const url = window.hostUrl + '/api/user/profile/update';
 
 	// Create a FormData object to handle file uploads and other fields
 	const formData = new FormData();

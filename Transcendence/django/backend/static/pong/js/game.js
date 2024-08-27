@@ -475,8 +475,8 @@ export class Game {
 const  initializeWebSocket = (id, playerId) =>
 {
   socketGame = new WebSocket(
-    `ws://localhost:8000/ws/game/${id}/`
- );  
+    `wss://${window.location.host}/wss/game/${id}/`
+  );
 
   // console.log("socket == ", socketGame);
 

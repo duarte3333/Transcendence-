@@ -5,8 +5,8 @@ import { views } from "./main.js";
 export class AppControl {
 
     static #logged = false;
-    static url = "https://localhost";
-    static urlSocket = "localhost";
+    static url = window.hostUrl;
+    static urlSocket = window.location.host;
 
     constructor() {
     }
@@ -43,7 +43,7 @@ export class AppControl {
         }
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await fetch("https://localhost" + '/api/user/profile', {
+                const response = await fetch(window.hostUrl + '/api/user/profile', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export class AppControl {
         try {
             name = "/" + name.replace(/^\/+/, "");
             // let find = "api" + name;
-            let find = "https://localhost" + "/spa" + name;
+            let find = window.hostUrl + "/spa" + name;
             const response = await fetch(find);
 
             if (!response.ok)
