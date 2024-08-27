@@ -12,6 +12,7 @@ def create_chat(request):
             data = json.loads(request.body)
             chat = Chat.objects.create(
                 user=data.get('user', []),
+                name=data.get('name', ""),
                 status=data.get('status', 'pending'),
                 mensagens=data.get('mensagens', []),
             )

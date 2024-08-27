@@ -61,6 +61,7 @@ def register(request):
         user = PongUser.objects.create_user(username=username, password=password)
         user.display_name = display_name  # Use the display name as first name or as desired
         user.save()
+        chat = 
 
         # Log the user in
         login(request, user)

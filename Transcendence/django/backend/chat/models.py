@@ -6,14 +6,16 @@ class Chat(models.Model):
     user = models.JSONField(default=list)
     status = models.CharField(max_length=255)
     block = models.JSONField(default=list)
+    name = models.CharField(max_length=400)
     mensagens = models.JSONField(default=list)
     createDate = models.DateField(default=timezone.now)
 
-    def create(self, users, status='pending', block=False, mensagens=None, **extra_fields):
+    def create(self, users, name="", status='pending', block=False, mensagens=None, **extra_fields):
         chat = Chat(
             user=users,
             status=status,
             block=block,
+            name=name,
             mensagens=mensagens or [],
             **extra_fields
         )
@@ -36,6 +38,7 @@ class Chat(models.Model):
     def to_json(self):
         return {
             'id': self.id,
+            'name': self.name,
             'status': self.status,
             'block': self.block,
             'user': self.user,
@@ -45,3 +48,4 @@ class Chat(models.Model):
 
     def __str__(self):
         return f"{self.status} - {self.status}"
+    

@@ -270,8 +270,9 @@ body {
       position: fixed;
       bottom: 60px;
       right: 20px;
-      width: 400px;
-      max-width: 90%; /* Responsivo */
+      min-width: 400px;
+      /* width: 400px; */
+      max-width: 50%; /* Responsivo */
       height: 400px;
       max-height: 70%; /* Responsivo */
       background-color: #f8f9fa; /* Fundo claro */
@@ -285,7 +286,7 @@ body {
     }
 
     .chat-sidebar {
-      width: 100px;
+      width: -webkit-fill-available;
       background-color: #343a40;
       color: white;
       display: flex;
@@ -315,6 +316,7 @@ body {
       display: flex;
       flex-direction: column;
       flex: 1;
+      min-width: 350px;
     }
 
     .chat-header {

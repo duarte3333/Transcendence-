@@ -121,28 +121,30 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'action': 'chat_message',
             'message': event.get('message'),
             'userId': event.get('userId'),
-            'channelId': self.channelId
+            'channelId': self.channelId,
+            'block': event.get('block')
         })
 
     async def chat_messages(self, event):
         from chat.models import Chat
         channel = await sync_to_async(Chat.objects.get)(id=self.channelId)
 
-        blocked_user_id = event.get('userId')
+        user_id = event.get('userId')
+
         is_user_blocked = any(
-            block['blocked_user_id'] == blocked_user_id 
-            for block in channel.block
+        block['userId'] == user_id 
+        for block in channel.block
         )
-        #Check se está a correr bem    
-        if is_user_blocked:
-            logger.info(f'User {blocked_user_id} is blocked in chat {self.channelId}')
+        if (is_user_blocked):
             await self.send_json({
                 'type': 'error',
-                'action': 'chat_message',
-                'channelId': self.channelId
+                'action': 'me_block',
+                'message': 'Chat does not exist',
             })
             return
-
+        
+        # self.channelId = event.get('channelId')
+        
         await self.channel_layer.group_send(
             self.channelName,
             {
@@ -150,46 +152,41 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 'action': 'chat_message',
                 'message': event.get('message'),
                 'userId': event.get('userId'),
-                'channelId': self.channelId
+                'channelId': self.channelId,
+                'block': channel.block
             }
         )
         
-        if (channel):
+        if channel:
             channel.mensagens.append({
                 'message': event.get('message'),
-                'userId': event.get('userId'),
+                'userId': user_id,
                 'createdAt': datetime.now().isoformat()
             })
             await sync_to_async(channel.save)(update_fields=['mensagens'])
      
     async def block_users(self, event):
-        logger.info(f'Block {event}')
-        self.channelId = event.get('channelId')
         from chat.models import Chat
         try:
             chat = await sync_to_async(Chat.objects.get)(id=self.channelId)
-
-            blocking_user_id = event.get('userId')
-            blocked_user_id = event.get('channelId')
+            blocker = event.get('userId')
 
             is_already_blocked = any(
-                block['blocked_user_id'] == blocked_user_id and 
-                block['blocking_user_id'] == blocking_user_id 
+                block['userId'] == event.get('userId') 
                 for block in chat.block)
+
             if not is_already_blocked:
                 chat.block.append({
-                    'blocking_user_id': blocking_user_id,
-                    'blocked_user_id': blocked_user_id
+                    'userId': event.get('userId'),
+                    'userOwner': self.user_id
                 })
                 await sync_to_async(chat.save)(update_fields=['block'])
-                logger.info(f'User {blocked_user_id} blocked in chat {self.channelId} by {blocking_user_id}')
-            await self.send_json({
+                await self.send_json({
                 'type': 'block',
                 'action': 'block',
-                'message': f'User {blocked_user_id} has been blocked by {blocking_user_id}',
+                'message': f'User {self.channelId} has been blocked by {blocker}',
                 'channelId': self.channelId,
-                'blockedUserId': blocked_user_id,
-                'blockingUserId': blocking_user_id
+                'block': chat.block
             })
         except Chat.DoesNotExist:
             logger.error(f'Chat {self.channelId} does not exist')

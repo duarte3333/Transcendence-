@@ -10,6 +10,8 @@ class Chat {
     this.sendChatButton = document.getElementById('sendChatButton');
     this.chatSideBar = document.getElementById('chatSideBar');
     this.blockUserButton = document.getElementById('blockUserButton');
+    this.backUserButton = document.getElementById('backUserButton');
+
     this.unblockUserButton = document.getElementById('unblockUserButton');
 
     this.SelectedPlayer = null;
@@ -26,6 +28,7 @@ class Chat {
   }
 
   async fetchAndProcessData() {
+    document.getElementById("chatMain").style.display = "none";
     await this.listChatUsers();
   }
 
@@ -47,7 +50,7 @@ class Chat {
 
         if (user.id == window.user.id) continue;
           const channel = channels.find((e) => {
-            return e.user.length == 2 && e.user.find(u => u.id == user.id)
+            return e.user.length == 2 && e.user.find(u => u.id == user.id) && e.name == ""
           } )
 
         if (channel) {
@@ -70,12 +73,18 @@ class Chat {
                 "name": user.username
               }
             ],
-            status: 'create'
+            status: 'create',
+            zIndex: 5
 
           })
         }
       }
-      this.listchannelsSubscribed = channels;
+
+      this.listchannelsSubscribed = channels.sort((a, b) => {
+        const nameA = a.zIndex || (a.name == "Geral" ? -5 : 0)
+        const nameB = b.zIndex || (b.name == "Geral" ? -5 : 0)
+         return nameA - nameB;
+      });
       console.log("channels: " , channels)
       this.generatePlayerButtons(channels);
     })
@@ -123,6 +132,10 @@ class Chat {
       this.blockUserButton.addEventListener('click', () => this.blockUser(this.SelectedPlayer));
     if (this.unblockUserButton)
       this.unblockUserButton.addEventListener('click', () => this.unBlockUser(this.SelectedPlayer));
+    if (this.backUserButton)
+      this.backUserButton.addEventListener('click', () => {
+        this.fetchAndProcessData();
+      });
     this.setup();
   }
 
@@ -182,10 +195,13 @@ class Chat {
       'type': 'join',
       'channelId': channel.id
     }));
+    document.getElementById("chatMain").style.display = "flex";
+    this.backUserButton.style.display = "flex";
     document.getElementById("chatHeader").innerText = `Chat - ${channel.name.charAt(0).toUpperCase() + channel.name.slice(1)}`;
-    this.blockUserButton.style.display = 'flex';
+    // if (this.unblockUserButton.style.display != 'flex')
+    //   this.blockUserButton.style.display = 'flex';
     this.SelectedPlayer = channel.id;
-    console.log("this.SelectedPlayer ", this.SelectedPlayer);
+    this.generateUsersButtons(channel);
   }
 
   createButtonsOnChat(channel) 
@@ -196,7 +212,7 @@ class Chat {
     button.innerText = username;
     button.id = `chatButton_${username}`
     button.setAttribute("channel", "create")
-    if (channel.id) button.style.backgroundColor = "yellow"
+    if (channel.id) button.style.backgroundColor = "lightblue"
     button.onclick = () => {
       if (channel.id == undefined) {
         this.createChannel(channel);
@@ -206,6 +222,34 @@ class Chat {
     };
     this.chatSideBar.appendChild(button);
   }
+
+  createUsersButtonsOnChat(user) 
+  {
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.gap = "3px";
+    div.style.flexDirection = "row"
+    const button = document.createElement("button");
+    button.style.minWidth = "100px";
+    user.button = button;
+    let username = user.name || user.username;
+    button.innerText = username;
+    button.id = `chatButton_${username}`
+    button.setAttribute("user", "create")
+    if (user.id) button.style.backgroundColor = "lightblue"
+    button.onclick = () => {
+      // if (channel.id == undefined) {
+      //   this.createChannel(channel);
+      // } else {
+      //   this.joinChannel(channel)
+      // }
+    };
+    const button2 = document.createElement("button");
+    button2.innerText = "Block"
+    div.append(button, button2)
+    this.chatSideBar.appendChild(div);
+  }
+
 
   generatePlayerButtons(channels) {
     this.chatSideBar.innerHTML = '';
@@ -219,6 +263,19 @@ class Chat {
     // this.sendBasicInfo(length);
   }
 
+
+  generateUsersButtons(channel) {
+    this.chatSideBar.innerHTML = '';
+
+    // this.createButtonsOnChat("General");
+
+    for (const user of channel.user) {
+      if (user.id != window.user.id)
+      this.createUsersButtonsOnChat(user);
+    }
+
+    // this.sendBasicInfo(length);
+  }
   selectChannel(channel) {
     this.blockUserButton.style.display = 'flex';
     
@@ -311,7 +368,8 @@ class Chat {
               if (isCheck)
               {
                 channel.id = data.channelId;
-                if (channel.id) channel.button.style.backgroundColor = "yellow"
+                if (channel.id) channel.button.style.backgroundColor = "lightgreen"
+                
                 break;
               }
            }
