@@ -39,11 +39,10 @@ export class Game {
     this.numberOfPlayers = numPlayers;
     this.pause = false;
     this.speed = 2.5;
-    // this.isScoring = false;
     this.events = new events();
     this.candies = [];
     this.fps = 0;
-    this.maxScore = 5;
+    this.maxScore = 1;
     this.ball = new Ball();
     this.finish = false;
     this.winner = undefined;
@@ -55,13 +54,9 @@ export class Game {
     this.resizeCanvasEvent = () => {
       resizeCanvas();
     }
-    // this.boundHandleKeyDownOnline = this.handleKeyDownOnline.bind(this);
-    // this.boundHandleKeyUpOnline = this.handleKeyUpOnline.bind(this);
     this.canvas = document.getElementById("pongCanvas");
-    // resizeCanvas();
     window.addEventListener('resize', this.resizeCanvasEvent);
 
-    // this.client = new ClientGame(numPlayers, controlsList, "paddle_2");
     this.paddleNames = Object.keys(controlsList);
     if (views.props.type == 'online')
       this.playerDisplays = Object.values(controlsList).map(arr => arr[2]);
@@ -77,15 +72,14 @@ export class Game {
       this.candies = 0;
     }
 
-    // if (views.props.type == 'online') {
-    //   // this.pause = true;
-    //   document.addEventListener("keydown", this.boundHandleKeyDownOnline);
-    //   document.addEventListener("keydown", this.boundHandleKeyUpOnline);
-
-    // }
-    // else if (views.props.type == 'local'){
-    //   // this.events.setupControls(controlsList, this.handleKeyDown.bind(this), this.handleKeyUp.bind(this));
-    // }
+    if (views.props.type == "local") {
+      const matchmaking = document.getElementById("matchmaking");
+      if (matchmaking)
+        matchmaking.style.display = "none";
+      const row = document.getElementById("game");
+      row.style.display = "flex";
+      this.setupGame(controlsList);
+    }
 
   }
 
@@ -108,18 +102,17 @@ export class Game {
   }
 
   handleKeyUp(event) {
-    // console.log("handleKeyUp")
     for (let i = 1; i <= this.numberOfPlayers; i++) {
-        let temp = this.objects.get("paddle_" + i);
-        if (event.key == temp.moveUpKey) {
-            event.preventDefault();
-            temp.moveUp = false;
-        }
-        else if (event.key == temp.moveDownKey) {
-            event.preventDefault();
-            temp.moveDown = false;
-        }
+      let paddle = this.objects.get("paddle_" + i);
+      let action = this.events.getKeyPress(paddle.moveUpKey);
+      if (action != undefined)
+        paddle.moveDown = action;
+      action = this.events.getKeyPress(paddle.moveDownKey);
+      if (action != undefined)
+          paddle.moveUp = action;
     }
+    if (this.events.getKeyPress(' '))
+      this.togglePause();
   }
 
   setupGame(controlsList) {
@@ -194,7 +187,7 @@ export class Game {
       const candy = new Candy(map, "candy_" + i);
       this.candies.push(candy);
       this.objects.set(`candy_${i}`, candy);
-      if (window.user.id == this.playerHost) {
+      if (window.user.id == this.playerHost && views.props.type == "online") {
         // console.log("inside if");
         candy.sendCandy(gameData.game);
       }
@@ -227,30 +220,27 @@ export class Game {
   update() {
     const ball = this.objects.get("ball");
 
-    // for (let i = 1; i <= this.numberOfPlayers; i++) {
-    //   let paddle = this.objects.get("paddle_" + i);
-    //   paddle.move();
-    //   // this.client.updatePlayer(paddle);
-    // }
+    if (views.props.type == "local") {
+      for (let i = 1; i <= this.numberOfPlayers; i++) {
+        let paddle = this.objects.get("paddle_" + i);
+        paddle.move();
+      }
+    }
+
     if (views.props.type != "online" || window.user.id ==  this.playerHost) {
       ball.move(this);
-      if (this.candies > 0) {
+      if (this.candies > 0 && views.props.type == "online") {
         this.candies.forEach( (candy) => {
           candy.sendCandy(this);
         })
       }
     }
-    //send candy info to client
-    // for (let i = 1; i <= this.numCandies; i++) {
-    //   let temp = this.objects.get("candy_" + i);
-    //   // this.client.updateCandy(temp);
-    // }
 
     let gameOver = this.checkGameOver();
     if (gameOver) {
-      console.log("players final ==", this.players);
-      console.log("score final ==", this.score);
+      // console.log("players final ==", this.players);
       this.winner = gameOver;
+      // console.log("winner ==", this.winner);
     }
   }
 
@@ -267,7 +257,8 @@ export class Game {
   }
 
   togglePause() {
-    this.pause = !this.pause;
+    if (this.finish == false)
+      this.pause = !this.pause;
     if (views.props.type == 'online')
       this.sendPause();
   }
@@ -280,7 +271,8 @@ export class Game {
     else 
       score--;
     this.score.set(display_name, score);
-    this.sendScore(display_name, score);
+    if (views.props.type == "online")
+      this.sendScore(display_name, score);
     atualizeScore(this);
   }
 
@@ -379,7 +371,10 @@ export class Game {
 
   updateEvents()
   {
-    this.handleKeyUpOnline();
+    if (views.props.type == "online")
+      this.handleKeyUpOnline();
+    else
+      this.handleKeyUp();
   }
 
   draw() {
@@ -452,10 +447,6 @@ export class Game {
     writePaddleNames(this);
   }
 
-
-
-
-
   handlePlayerMove(data) {   
   //   console.log(typeof(data.playerId));
     let paddle = this.players.get("" + data.playerId);
@@ -475,6 +466,14 @@ export class Game {
   destroyer() {
     // console.log("destryoing game");
     this.events.destroyer();
+    const row = document.getElementById("game");
+      row.innerHTML = `
+      <div class="col-sm-12 col-md-3 col-xl-3 justify-content-center" id="banner"></div>
+			<div class="col-sm-12 col-md-5 col-xl-5 justify-content-center">
+					<canvas id="pongCanvas" width="800" height="800"></canvas>
+			</div>
+			<div class="col-sm-12 col-md-3 col-xl-3 justify-content-top" id="scoreBoard"></div>
+      `;
     window.removeEventListener('resize', this.resizeCanvasEvent);
     clearInterval(this.gameLoop);
   }

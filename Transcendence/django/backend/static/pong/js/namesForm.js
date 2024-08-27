@@ -2,7 +2,7 @@ import { Tournament } from './tournament.js';
 import { views } from "../../main/js/main.js";
 import { Match } from './match.js';
 
-views.setElement('/tournament/local', (state) => {
+views.setElement('/namesForm', (state) => {
 	views.get("/navbar").display(state);
     document.getElementById('tournamentBody').style.display = state;
 	views.get("/footer").display(state);
@@ -13,14 +13,14 @@ views.setElement('/tournament/local', (state) => {
 	["nb_button", "click", generateInputFields],
 );
 
-views.setElement('/game', (state) => {
-    document.getElementById('tournamentBody').style.display = state;
-	loadNamesForm();
-})
-.setChilds(["/navbar", "/footer"])
-.setEvents(
-	["nb_button", "click", generateInputFields],
-);
+// views.setElement('/game', (state) => {
+//     document.getElementById('tournamentBody').style.display = state;
+// 	loadNamesForm();
+// })
+// .setChilds(["/navbar", "/footer"])
+// .setEvents(
+// 	["nb_button", "click", generateInputFields],
+// );
 
 function generateInputFields() {
 	var number = document.getElementById('numberOfPlayers').value;
@@ -54,13 +54,12 @@ function loadNamesForm() {
 		document.getElementById('gameForm').style.display = 'block';
 		
 		let tournament;
-		if (window.location.href.includes("tournament"))
+		if (views.props.tournament == "true")
 			tournament =  new Tournament(number, names); // Using Singleton pattern
 		else {
-			console.log('AQUIIII')
             const match = new Match("local", "normal", number, names, player1);
-			let winner =  await match.startLocalMatch();
-            console.log("Match::winner", winner);
+			await match.startLocalMatch();
+            views.urlLoad("/home");
 		}
     });
 }

@@ -78,7 +78,7 @@ function nextPage(event, type) {
 		match.addEventListener('click', onlineMatch);
 	else {
 		match.addEventListener('click', () => {
-			views.urlLoad('/game');
+			views.urlLoad("/namesForm?type=local&fun=true&tournament=false")
 		});
 	}
 	rowButtons.appendChild(match);
@@ -90,7 +90,7 @@ function nextPage(event, type) {
 	tournament.textContent = "Tournament";
 	if (type == "playLocal") {
 		tournament.addEventListener('click', () => {
-			views.urlLoad("/tournament/local")
+			views.urlLoad("/namesForm?type=local&fun=true&tournament=true")
 		});
 		rowButtons.appendChild(tournament);
 	}

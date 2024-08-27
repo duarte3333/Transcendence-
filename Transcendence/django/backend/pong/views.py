@@ -13,8 +13,8 @@ def settings(request):
 def profile(request):
     return render(request, 'pong_profile.html')
 
-def tournamentLocal(request):
-    return render(request, 'pong_tournament.html')
+def namesForm(request):
+    return render(request, 'pong_namesForm.html')
 
 def game(request):
     return render(request, 'pong_game.html')
