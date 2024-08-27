@@ -72,7 +72,8 @@ export class Game {
 
     this.context = this.canvas.getContext("2d");
 
-    if (views.props.fun == false) {
+    console.log("fun =", views.props.fun)
+    if (views.props.fun == "false") {
       this.candies = 0;
     }
 
@@ -186,6 +187,8 @@ export class Game {
   }
 
   addCandies() {
+    if (this.candies <= 0)
+      return ;
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numCandies; i++) {
       const candy = new Candy(map, "candy_" + i);
@@ -231,9 +234,11 @@ export class Game {
     // }
     if (views.props.type != "online" || window.user.id ==  this.playerHost) {
       ball.move(this);
-      this.candies.forEach( (candy) => {
-        candy.sendCandy(this);
-      })
+      if (this.candies > 0) {
+        this.candies.forEach( (candy) => {
+          candy.sendCandy(this);
+        })
+      }
     }
     //send candy info to client
     // for (let i = 1; i <= this.numCandies; i++) {

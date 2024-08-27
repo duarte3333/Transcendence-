@@ -105,6 +105,8 @@ function generateXnY(map) {
 export { Candy };
 
 export function checkCandies(ball, game) {
+  if (game.candies <= 0)
+    return ;
   let map = game.objects.get("map");
   for (let i = 1; i <= game.numCandies; i++) {
     let temp = game.objects.get("candy_" + i);

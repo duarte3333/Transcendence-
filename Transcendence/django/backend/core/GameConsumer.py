@@ -235,6 +235,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             player_id = event.get('playerId')
             if self.game and player_id not in self.game.player and self.game.status == "pending":
                 self.game.player.append(player_id)
+                self.playerId = player_id
                 # logger.info(f'\n>>>>>>game players after append: {self.game.player}\n')
                 max_players = len(self.game.player)
                 if max_players == self.game.numberPlayers:
@@ -253,7 +254,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                         'room_name': int(self.room_name)
                     })
                 await sync_to_async(self.game.save)()
-            elif self.game and player_id in self.game.player and not self.game.status == "finish":
+            elif self.game and player_id in self.game.player and not self.game.status == "finished":
                 self.playerId = player_id
                 self.gameId = self.game.id
                 if (self.game.status == "running"):
