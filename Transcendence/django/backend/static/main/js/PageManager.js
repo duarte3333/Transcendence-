@@ -107,6 +107,7 @@ export class PageManager {
     }
 
     async urlLoad(name) {
+        // console.log("trying to load =", name);
         await loginPage();
         const nameOrigin = name;
         const urlParams = new URLSearchParams(name.split("?")[1]);

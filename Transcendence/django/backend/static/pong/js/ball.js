@@ -2,7 +2,6 @@ import { views } from "../../main/js/main.js";
 import { checkCandies } from "./candy.js";
 import { bounceWalls } from "./map.js";
 import { bouncePlayers, checkPlayers } from "./paddles.js";
-import { updateScore } from "./score.js";
 
 
 // Ball object
@@ -69,7 +68,7 @@ export class Ball {
                 }
             }
             else if (edge && edge.class == "goal") {
-                this.goal(edge, game.speed);
+                this.goal(edge, game.speed, game);
             }
             this.x += this.speedX;
             this.y += this.speedY;
@@ -105,13 +104,13 @@ export class Ball {
         }
     }
 
-    goal(edge, gameSpeed) {
+    goal(edge, gameSpeed, game) {
         if (edge.goalKeeper != this.last_hit && this.last_hit)
-            updateScore(this.last_hit, 1);
+            game.updateScore(this.last_hit, 1);
         else if (this.last_hitBK)
-            updateScore(this.last_hitBK, 1);
+            game.updateScore(this.last_hitBK, 1);
         else
-            updateScore(edge.goalKeeper, 0);
+            game.updateScore(edge.goalKeeper, 0);
         this.restartBall(gameSpeed);
         this.last_hit = 0;
         this.last_hitBK = 0;

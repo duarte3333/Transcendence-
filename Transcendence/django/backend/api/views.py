@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.files.images import get_image_dimensions
 from django.core.files.storage import default_storage
 from django.utils import timezone
+from django.contrib.auth.password_validation import validate_password, ValidationError
 from datetime import timedelta
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ def match_game(request):
             logger.info(f'Match_game result: ${result}')
             if (len(result) == 0):
                 game = Game().create(
-                    players = data.get('players', []),
+                    players = data.get('players', [request.user.id]),
                     game_type = data.get('type'),
                     playerHost = request.user.id,
                     numberPlayers =  data.get('number_of_players')
@@ -78,25 +79,60 @@ def list_game(request):
 
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+def list_game_wins(player_id=None):
+    if player_id:
+        result = Game().list(status="finished", playerId=player_id)
+        result = [game for game in result if game.get('winner') == str(player_id)]
+        return len(result)
+    return 0
+
+def list_game_losses(player_id=None):
+    if player_id:
+        result = Game().list(status="finished", playerId=player_id)
+
+        result = [game for game in result if game.get('winner') != str(player_id)]
+
+        return len(result)
+
+    return 0
+
 @login_required
 @csrf_exempt
 def update_game(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            game = Game.objects.get(id=data.get("id"))
+            dataID = data.get("id")
+            
+            if not dataID:
+                return JsonResponse({'error': 'ID not provided'}, status=400)
+            
+            try:
+                game = Game.objects.get(id=dataID)
+            except Game.DoesNotExist:
+                return JsonResponse({'error': 'Game not found'}, status=404)
 
             for field, value in data.items():
                 if hasattr(game, field):
                     setattr(game, field, value)
                 else:
                     return JsonResponse({'error': f'Field {field} does not exist on Game'}, status=400)
-            # Salvar as alterações
+
+            
+            # Save the changes
             game.save()
-            return JsonResponse({'success': True, 'game': game.toJson()}, status=201)
+            return JsonResponse({'success': True, 'game': game.toJson()}, status=200)
+
         except json.JSONDecodeError:
-            data = []
-    return JsonResponse({'error': 'Invalid JSON'}, status=400)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            # Log the exception
+            logger.error(f'Unexpected error: {e}')
+            return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
 
 @login_required
 @csrf_exempt
@@ -147,7 +183,32 @@ def user_profile(request):
             'banner_picture': user.banner_picture.url if user.banner_picture else 'static/userImages/banner.jpeg',
             'up_key': user.up_key if user.up_key else 'w',
             'down_key': user.down_key if user.down_key else 's',
-            'status': user.status,
+            'wins': list_game_wins(user.id),
+            'losses': list_game_losses(user.id),
+        }
+        return JsonResponse({'success': True, 'user': user_data}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+@login_required
+def get_user_by_id(request):
+    try:
+        data = json.loads(request.body)
+        # logger.info(f'\n\n>>>> data == {data}\n\n')
+        try:
+            user = PongUser.objects.get(id=data['id'])
+        except PongUser.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User does not exist.'}, status=404)
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'display_name': user.display_name,
+            'profile_picture': user.profile_picture.url if user.profile_picture else 'static/userImages/p1.png',
+            'banner_picture': user.banner_picture.url if user.banner_picture else 'static/userImages/banner.jpeg',
+            'up_key': user.up_key if user.up_key else 'w',
+            'down_key': user.down_key if user.down_key else 's',
+            'wins': list_game_wins(user.id),
+            'losses': list_game_losses(user.id),
         }
         return JsonResponse({'success': True, 'user': user_data}, status=200)
     except json.JSONDecodeError:
@@ -165,12 +226,17 @@ def update_user_properties(user: PongUser, updated_fields: dict):
         'friends'
     }
     
+    # Apply the updates and validation
     for field, value in updated_fields.items():
         if field not in allowed_fields:
             raise ValidationError(f"Field '{field}' is not allowed to be updated.")
         
         setattr(user, field, value)
     
+    # Additional validation: down_key and up_key should not be the same
+    if ('down_key' in updated_fields or 'up_key' in updated_fields) and user.down_key == user.up_key:
+        raise ValidationError("The 'down_key' and 'up_key' cannot be the same.")
+
     # Validate the updated user instance
     # user.full_clean()  # This will raise a ValidationError if any fields are invalid
     
@@ -203,6 +269,10 @@ def update_profile(request):
             new_password = data.pop('password')
             if not new_password.strip():
                 raise ValidationError('Password cannot be empty.')
+            try:
+                validate_password(new_password)
+            except ValidationError as e:
+                return JsonResponse({'error': e.messages}, status=400)
             user.set_password(new_password)
 
         # Validate non-empty fields
@@ -210,7 +280,6 @@ def update_profile(request):
             if not value.strip():
                 raise ValidationError(f'{key.replace("_", " ").title()} cannot be empty.')
             setattr(user, key, value)
-
 
         # Update other fields using the helper function
         updated_user = update_user_properties(user, data)
@@ -250,6 +319,7 @@ def list_users(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 
+
 # Define the threshold for considering a user "online"
 ONLINE_THRESHOLD = timedelta(minutes=5)
 
@@ -257,6 +327,7 @@ ONLINE_THRESHOLD = timedelta(minutes=5)
 def user_friends(request):
     user = request.user
     friend_ids = user.friends
+    # logger.info(f'firends ids = {friend_ids}')
 
     # Fetch friends by their IDs, getting their display names and last_seen timestamps
     friends = PongUser.objects.filter(id__in=friend_ids).values('id', 'display_name', 'last_seen')
@@ -300,88 +371,3 @@ def add_friend(request):
         friend_user.save()
     
     return JsonResponse({'success': True, 'message': 'Friend added successfully.'}, status=200)
-
-
-@login_required
-@csrf_exempt
-def create_game(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            game = Game().create(
-                players = data.get('players', []),
-                game_type = data.get('type'),
-                playerHost = request.user.id,
-                numberPlayers =  data.get('number_of_players')
-            )
-            data["id"] = game.id
-
-            # Resposta de sucesso
-            return JsonResponse({'success': True, 'game': data}, status=201)
-
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-    return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-@login_required
-@csrf_exempt
-def match_game(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            result = Game().list(status = 'running', playerId=request.user.id)
-            if (len(result) == 1):
-                return JsonResponse({'success': True, 'game': result[0]}, status=201)
-            result = Game().list(status = 'pending')
-            logger.info(f'Match_game result: ${result}')
-            if (len(result) == 0):
-                game = Game().create(
-                    players = data.get('players', []),
-                    game_type = data.get('type'),
-                    playerHost = request.user.id,
-                    numberPlayers =  data.get('number_of_players')
-                )
-                data["id"] = game.id
-            else:
-                return JsonResponse({'success': True, 'game': result[0]}, status=201)
-            return JsonResponse({'success': True, 'game': data}, status=201)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-    return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-@login_required
-@csrf_exempt
-def list_game(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            data = []
-        result = Game().list(status = data.get('status'), playerId = data.get('playerId'))
-        return JsonResponse({'success': True, 'game': result}, status=201)
-
-    return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-@login_required
-@csrf_exempt
-def update_game(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            game = Game.objects.get(id=data.get("id"))
-
-            for field, value in data.items():
-                if hasattr(game, field):
-                    setattr(game, field, value)
-                else:
-                    return JsonResponse({'error': f'Field {field} does not exist on Game'}, status=400)
-            # Salvar as alterações
-            game.save()
-            return JsonResponse({'success': True, 'game': game.toJson()}, status=201)
-        except json.JSONDecodeError:
-            data = []
-    return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-

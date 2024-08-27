@@ -68,11 +68,11 @@ Including another URLconf
 
 from login.views import login_view, logout_view, register, user_info, index
 from main.views import main_view
-from pong.views import home, navbar, settings, profile, tournamentLocal, footer, game, chat
+from pong.views import home, navbar, settings, profile, namesForm, footer, game, chat
 from django.contrib import admin
 from django.urls import path, re_path
 from chat.views import create_chat, list_chats, update_chat, deleted_chat
-from api.views import create_game , list_game, update_game, deleted_game, user_profile, list_users, match_game, add_friend, user_friends, update_profile
+from api.views import create_game , list_game, update_game, deleted_game, user_profile, list_users, match_game, add_friend, user_friends, update_profile, get_user_by_id
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -93,6 +93,7 @@ urlpatterns = [
 
     #   USER
     path('api/user/profile', user_profile),
+    path('api/user/get', get_user_by_id),
     path('api/user/profile/update', update_profile),
     path('api/user/addFriend', add_friend),
     path('api/user/userFriends', user_friends),
@@ -110,12 +111,11 @@ urlpatterns = [
     path('spa/home', home),
     path('spa/logout', logout_view),
     path('spa/login', index, name='index'),
-    path('spa/tournament/local', tournamentLocal, name='tournamentLocal'),
+    path('spa/namesForm', namesForm),
     path('spa/footer', footer, name='footer'),
     path('spa/navbar', navbar),
     path('spa/chat', chat),
     path('spa/settings', settings),
-    path('spa/tournament/local', tournamentLocal),
     path('spa/profile', profile),
     re_path(r'^.*$', main_view),  # Captura todas as URLs
 ]

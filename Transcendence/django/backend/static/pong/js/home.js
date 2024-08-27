@@ -53,7 +53,7 @@ views.setElement("/home", async (state) => {
 // })
 
 function nextPage(event, type) {
-	console.log("type == " + type);
+	// console.log("type == " + type);
 	const oldParent = event.target.closest('.displayDiv');
     if (!oldParent) 
 		return;
@@ -65,6 +65,7 @@ function nextPage(event, type) {
 
 	const div = document.createElement('div');
 	div.id = type +  "div";
+	div.className = "align-items-center"
 
 	const rowButtons = document.createElement('div');
 	rowButtons.className = "row justify-content-center gap-3";
@@ -79,7 +80,7 @@ function nextPage(event, type) {
 		match.addEventListener('click', onlineMatch);
 	else {
 		match.addEventListener('click', () => {
-			views.urlLoad('/game');
+			views.urlLoad("/namesForm?type=local&fun=true&tournament=false")
 		});
 	}
 	rowButtons.appendChild(match);
@@ -91,10 +92,10 @@ function nextPage(event, type) {
 	tournament.textContent = "Tournament";
 	if (type == "playLocal") {
 		tournament.addEventListener('click', () => {
-			views.urlLoad("/tournament/local")
+			views.urlLoad("/namesForm?type=local&fun=true&tournament=true")
 		});
+		rowButtons.appendChild(tournament);
 	}
-	rowButtons.appendChild(tournament);
 
 	const rowBack = document.createElement('div');
 	rowBack.className = "row d-flex align-items-center";
@@ -124,43 +125,67 @@ function goBack(div, oldParent) {
 function onlineMatch() {
 
 	const button_1 = document.getElementById("button_1");
-	const button_2 = document.getElementById("button_2");
-
-	button_1.innerText = "Normal";
+	const button_2 = document.createElement('button');
+	button_2.className = "btn btn-outline-dark w-25 bodyBtns";
+	button_2.id = "button_2";
+	button_2.type = "button";
 	button_2.innerText = "Fun";
+	button_1.innerText = "Normal";
+	const row = event.target.closest('.row');
+	row.appendChild(button_2);
 
 	button_1.removeEventListener("click", onlineMatch);
 	// button_2.removeEventListener("click", playOnlineTournament());
 
 	button_1.addEventListener("click", (event) => {
-		playOnlineMatch(event, "Normal");
+		playOnlineMatch(event, "Normal", 2);
 	});
 	button_2.addEventListener("click", (event) => {
-		playOnlineMatch(event, "Fun");
+		funForm(event, "Fun");
 	});
+}
+
+function funForm(event, type) {
+	// console.log("aAQUII")
+	const row = event.target.closest('.row');
+	row.innerHTML = `
+	<select class="form-select w-50" id="numPlayersForm">
+              <option value="0" selected="">Select number of players</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+              <option value="4">Four</option>
+              <option value="5">Five</option>
+            </select>
+	`;
+
+	
+	const form = document.getElementById("numPlayersForm");
+	const confirm = document.createElement('button');
+	confirm.className = "btn btn-outline-dark w-25 bodyBtns";
+	confirm.id = "confirm";
+	confirm.type = "button";
+	confirm.textContent = "confirm";
+	confirm.addEventListener('click',() => {
+		const numPlayers = form.value;
+		if (numPlayers != 0 && numPlayers != 1) {
+			playOnlineMatch(event, "Fun", numPlayers);
+		} else {
+			alert("Need to choose one - five players")
+		}
+
+	})
+	row.appendChild(confirm);
 }
 
 function playOnlineMatch(event, type, numberPlayers = 2) {
 
-	const container = event.target.closest('.container');
-	if (!container) return;
-	// container.innerHTML = `<div class="row justify-content-center align-items-center" style="margin-bottom: 7rem; margin-top: 3rem;">
-	// <h5 class="display-1 text-center" style="font-size:3.5rem">Searching for an opponent...</h5>
-	// </div>
-	// <div class="row justify-content-center align-items-center">
-	// 	<div class="spinner-border text-primary" role="status"></div>
-	// </div>`;
-
-
-	//request match to backend aqui
-
 	const data = JSON.stringify({
-		"players": [],
+		"players": [ window.user.id ],
 		"type": type,
 		"number_of_players": numberPlayers
 	});
 	
-	fetch("https://localhost" + '/api/game/match', {
+	fetch(window.hostUrl + '/api/game/match', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -170,37 +195,9 @@ function playOnlineMatch(event, type, numberPlayers = 2) {
     })
     .then(async (response) => {
 		const { game } = await response.json();
-		views.urlLoad(`/game?id=${game.id}&type=online`);
-
-		// function checkConditionUntilTimeout() {
-		// 	let attempts = 0;
-		// 	const maxAttempts = 30;
-		
-		// 	const intervalId = setInterval(() => {
-		// 		attempts++;
-		
-		// 		// Sua condição de verificação aqui
-		// 		const conditionMet = yourConditionCheckFunction(); // Substitua isso pela sua função de verificação
-		
-		// 		if (conditionMet) {
-		// 			console.log("Condição satisfeita!");
-		// 			clearInterval(intervalId); // Para o intervalo se a condição for satisfeita
-		// 		} else if (attempts >= maxAttempts) {
-		// 			console.log("Tempo limite atingido, condição não satisfeita.");
-		// 			clearInterval(intervalId); // Para o intervalo se atingir o tempo limite
-		// 		}
-		
-		// 		console.log(`Tentativa ${attempts}`);
-		// 	}, 1000); // Checa a cada 1 segundo (1000 milissegundos)
-		// }
-		
+		views.urlLoad(`/game?id=${game.id}&type=online&fun=${(type == "Fun")}`);
 		console.log(game)
 		console.log(game.id)
-		// initializeWebSocket(game.id, window.user.id);
-		// console.log(response)
 	});
 
 }
-
-
-

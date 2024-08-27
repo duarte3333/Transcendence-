@@ -9,7 +9,34 @@ export async function getUser(display_name) {
 	});
 
     try {
-        const response = await fetch("https://localhost" + '/api/user/profile', {
+        const response = await fetch(window.hostUrl + '/api/user/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: data,
+        });
+
+        const user = await response.json();
+        if (!response.ok) {
+            console.error('Error:', user.message);
+        }
+        return user.user;
+    } catch (error) {
+        console.error('Request failed:', error);
+    }
+}
+
+export async function getUserById(id) {
+    if (!id)
+        id = window.user.id
+    const data = JSON.stringify({
+		"id": id,
+	});
+
+    try {
+        const response = await fetch(window.hostUrl + '/api/user/get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -30,7 +57,7 @@ export async function getUser(display_name) {
 
 export async function getUserFriends() {
     try {
-        const response = await fetch('api/user/userFriends', {
+        const response = await fetch(window.hostUrl + '/api/user/userFriends', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,7 +79,7 @@ export async function getUserFriends() {
 
 export async function addFriend(friendDisplayName) {
     try {
-        const response = await fetch('api/user/addFriend', {
+        const response = await fetch(window.hostUrl + '/api/user/addFriend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -77,7 +104,7 @@ export async function addFriend(friendDisplayName) {
 
 
 export async function updateUserProfile(updatedFields) {
-	const url = '/api/user/profile/update';
+	const url = window.hostUrl + '/api/user/profile/update';
 
 	// Create a FormData object to handle file uploads and other fields
 	const formData = new FormData();
@@ -103,7 +130,8 @@ export async function updateUserProfile(updatedFields) {
             let errorMessage = 'An unknown error occurred';
             try {
                 const errorData = await response.json();
-                errorMessage = errorData.message || errorMessage;
+                errorMessage = errorData.error || errorMessage;
+                // console.log("error data ==", errorData);
             } catch (e) {
                 // If parsing fails, fallback to default error message
                 errorMessage = 'Failed to parse error response';

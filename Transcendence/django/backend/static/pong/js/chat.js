@@ -323,7 +323,7 @@ class Chat {
   }
 
   InitializeWebSocket() {
-    const wsUrl = `ws://localhost:8000/ws/chat/${window.user.id}/`;
+    const wsUrl = `wss://localhost:8000/ws/chat/${window.user.id}/`;
   
     this.socket = new WebSocket(wsUrl);
     if (this.socket) {

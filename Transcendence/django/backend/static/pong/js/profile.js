@@ -1,5 +1,6 @@
 import {views} from "../../main/js/main.js"
-import { getUser } from "./user.js"
+import { getUser, getUserById } from "./user.js"
+import { getCookie } from "./auxFts.js";
 
 // let user = {
 //     username: "teo123",
@@ -18,6 +19,7 @@ import { getUser } from "./user.js"
 // };
 
 let user;
+let userMatchHistory;
 
 views.setElement("/profile", (state) => {
 	//caso de merda a visualizar mudar block para flex
@@ -35,8 +37,16 @@ views.setElement("/profile", (state) => {
 	);
 	
 async function loadProfile() {
+	const matchHistory = document.getElementById("matchHistory");
+	matchHistory.innerHTML = ``;
+	matchHistory.setAttribute("style", "display: none !important;");
+
 	user =  await getUser(views.props.display_name);
-	console.log("profile user = ", user);
+	userMatchHistory =  await getMatchHistory(user.id);
+	userMatchHistory.sort((a, b) => b.id - a.id);
+
+	// console.log("profile user = ", user);
+	console.log("match history = ", userMatchHistory);
 
 	const header = document.getElementById("header");
 	header.style.backgroundImage = `url(${user.banner_picture})`;
@@ -48,10 +58,10 @@ async function loadProfile() {
 	displayName.innerText = user.display_name;
 
 	const winsRatio = document.getElementById("winsRatio");
-	winsRatio.innerText = `Wins: ${user.wins || 0}, Losses: ${user.losses || 0}`;
+	winsRatio.innerText = `Wins: ${user.wins || 0} Losses: ${user.losses || 0}`;
 }
 
-function showMatchHistory(event){
+async function showMatchHistory(event){
 	const matchHistory = document.getElementById("matchHistory");
 	if (matchHistory.style.display == "block") {
 		matchHistory.setAttribute("style", "display: none !important;");
@@ -68,7 +78,7 @@ function showMatchHistory(event){
 		title.style.marginBottom = "2rem";
 		matchHistory.appendChild(title);
 
-		if (!user.matchHistory) {
+		if (!userMatchHistory) {
 			const row = document.createElement('div');
 			row.className = "row row-matchHistory text-center";
 			row.style.justifyContent = "center"
@@ -79,13 +89,24 @@ function showMatchHistory(event){
 			return ;
 		}
 
-		for (const matchId in user.matchHistory) {
-			if (user.matchHistory.hasOwnProperty(matchId)) {
-				const match = user.matchHistory[matchId];
+		for (const matchId in userMatchHistory) {
+			if (userMatchHistory.hasOwnProperty(matchId)) {
+				const match = userMatchHistory[matchId];
+				// console.log("got match =", match);
+
+				const displayMap = new Map();
+				for (let i = 0; i < match.numberPlayers; i++) {
+					let userTemp =  await getUserById(match.player[i]);
+					displayMap.set(userTemp.id, userTemp.display_name);
+				}
 
 				const row = document.createElement('div');
 				row.className = "row row-matchHistory text-center";
 				row.style.width = "100%";
+				if (displayMap.get(parseInt(match.winner)) != user.display_name && match.winner != "disconnect")
+					row.style.backgroundColor = "rgba(255, 3, 3, 0.6)";
+				else if (match.winner != "disconnect")
+					row.style.backgroundColor = "rgba(36, 135, 0, 0.6)";
 
 				// TYPE AND DATE
 				const col1 = document.createElement('div');
@@ -95,11 +116,11 @@ function showMatchHistory(event){
 				col1.style.paddingBottom = "1rem";
 
 				const type = document.createElement('h5');
-				type.innerText = `Type: ${match.type}`;
+				type.innerText = `Type: ${match.game_type}`;
 				col1.appendChild(type);
 
 				const date = document.createElement('h5');
-				date.innerText = `Date: ${match.date}`;
+				date.innerText = `Date: ${match.createDate}`;
 				col1.appendChild(date);
 
 				row.appendChild(col1);
@@ -111,7 +132,10 @@ function showMatchHistory(event){
 				col2.style.paddingBottom = "1rem";
 
 				const winner = document.createElement('h1');
-				winner.innerText = `Winner: ${match.winner}`;
+				if (displayMap.get(parseInt(match.winner)))
+					winner.innerText = `Winner: ${displayMap.get(parseInt(match.winner))}`;
+				else
+					winner.innerText = `Disconnected`;
 				col2.appendChild(winner);
 
 				row.appendChild(col2);
@@ -127,9 +151,9 @@ function showMatchHistory(event){
 				playersTitle.innerText = `Players:`;
 				col3.appendChild(playersTitle);
 
-				for (let i = 0; i < match.numPlayers; i++) {
+				for (let i = 0; i < match.numberPlayers; i++) {
 					const player = document.createElement("h5");
-					player.innerText = `${match.players[i]}: ${match.finalscore[match.players[i]]}`;
+					player.innerText = `${displayMap.get(match.player[i])}: ${match.scoreList.find(item => parseInt(item.id) === match.player[i]).score}`;
 					col3.appendChild(player);
 				}
 
@@ -138,5 +162,30 @@ function showMatchHistory(event){
 				matchHistory.appendChild(row);
 			}
 		}
+	}
+}
+
+async function getMatchHistory(id) {
+	if (!id)
+	id = window.user.id;
+	const data = JSON.stringify({
+		"status": "finished",
+		"playerId": id
+	});
+	try {
+	const response = await fetch(window.hostUrl + '/api/game/list', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken')
+		},
+		body: data,
+	});
+		const result = await response.json();
+		if (!response.ok)
+			console.error('Error on getMatchHistory: ', result.status);
+		return result.game;
+	} catch (error) {
+		console.error('Request failed:', error);
 	}
 }

@@ -22,7 +22,7 @@ class PongUserAdmin(UserAdmin):
     )
 
     # Fields to display in the user list page
-    list_display = ('username', 'display_name', 'is_staff', 'friends')
+    list_display = ('username', 'display_name', 'is_staff', 'friends', 'id')
 
     # Fields to filter by in the user list page
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'friends')

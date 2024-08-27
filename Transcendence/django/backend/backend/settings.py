@@ -36,6 +36,7 @@ CSRF_COOKIE_SECURE = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*', "10.19.248.132"]
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://172.20.10.15',
     'http://10.19.248.132:8080',
     'http://localhost:8080',
     'http://0.0.0.0:8080'
@@ -86,6 +87,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
+    'http://172.20.10.15',
     'http://localhost:8080',
     'http://0.0.0.0:8080',
     "http://127.0.0.1:8000",
@@ -155,6 +157,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,  # You can set the minimum length here
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

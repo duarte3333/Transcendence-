@@ -1,34 +1,10 @@
 import { sleep } from "./auxFts.js";
 
-export class Score {
-  constructor() {
-    this.value = 0;
-  }
-
-  addScore() {
-    this.value += 1;
-  }
-
-  getScore() {
-    return this.value;
-  } 
-
-  showScore(objects, context, canvas) {
-    context.fillStyle = "white";
-    const player_1 = objects.get("player_1");
-    const player_2 = objects.get("player_2");
-    context.font = "25px Verdana, sans-serif";
-    context.fillText(player_1.score.getScore(), canvas.width / 4, 50);
-    context.fillText(player_2.score.getScore(),(canvas.width / 4) * 3, 50);
-  }
-
-}
-
 let h3 = null;
 let rows = [];
 let scoreboardContainer = null;
 
-export function createScoreBoard(numberOfPlayers) {
+export function createScoreBoard(gameScore) {
   scoreboardContainer = document.getElementById('scoreBoard');
 
   if (scoreboardContainer.innerHTML != '')
@@ -46,13 +22,18 @@ export function createScoreBoard(numberOfPlayers) {
   scoreboardContainer.style.justifyContent = "flex-start";
 
 
-  h3 = document.createElement('h3');
-  h3.classList.add('centered-text');
+  h3 = document.createElement('row');
+  h3.className = 'centered-text h3';
   h3.textContent = "ScoreBoard";
+  h3.style.width = "100%";
+  h3.style.borderBottom = "2px solid #000000";
+  h3.style.marginBottom = "0px";
+
   scoreboardContainer.appendChild(h3);
 
   sleep(100);
-  for (let i = 1; i <= numberOfPlayers; i++) {
+
+  for (const [key, value] of gameScore.entries()) {
     const row = document.createElement('div');
     rows.push(row);
     row.classList.add('row', 'centerAll');
@@ -60,29 +41,6 @@ export function createScoreBoard(numberOfPlayers) {
     row.style.width = "100%";
     row.style.position = 'relative';
     row.style.overflow = 'hidden';
-    // row.style.backgroundSize = "cover";
-    // row.style.backgroundPosition = "center";
-    // row.style.backgroundRepeat = "no-repeat";
-
-    // // Setting up background images with transparency
-    // if (!(i % 2)) {
-    //   row.style.backgroundImage = 
-    //       "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/vamo.png')";
-    // } else if (!(i % 3)) {
-    //     row.style.backgroundImage = 
-    //         "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala.png')";
-    // } else if (!(i % 4)) {
-    //     row.style.backgroundImage = 
-    //         "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala3.png')";
-    // } else {
-    //     row.style.backgroundImage = 
-    //         "linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/pong/img/lala2.png')";
-    // }
-    row.style.position = 'relative';
-    row.style.overflow = 'hidden';
-    // row.style.backgroundSize = "cover";
-    // row.style.backgroundPosition = "center";
-    // row.style.backgroundRepeat= "no-repeat";
     
     const col1 = document.createElement('div');
     col1.classList.add('col');
@@ -97,17 +55,17 @@ export function createScoreBoard(numberOfPlayers) {
     const img = document.createElement('img');
     img.classList.add('imgAvatar');
     img.src = "/static/pong/img/p1.png";
-    img.alt = `Player_${i}'s avatar`;
+    img.alt = `Player_${key}'s avatar`;
 
     const playerName = document.createElement('h5');
     playerName.style.marginBottom = "0px";
-    playerName.textContent = "Player_" + i;
+    playerName.textContent = key;
     playerName.style.padding = "10px 20px";
 
     const playerScore = document.createElement('h5');
     playerScore.style.marginBottom = "0px";
-    playerScore.textContent = 0;
-    playerScore.id = "playerScore_" + i;
+    playerScore.textContent = value;
+    playerScore.id = "playerScore_" + key;
 
     col1.appendChild(img);
     col2.appendChild(playerName);
@@ -116,7 +74,7 @@ export function createScoreBoard(numberOfPlayers) {
     row.appendChild(col2);
     row.appendChild(col3);
     scoreboardContainer.appendChild(row);
-  }
+    }
 }
 
 export function clearScoreBoard() {
@@ -127,24 +85,11 @@ export function clearScoreBoard() {
 
 
 
-export function updateScore(playerName, flag) {
-  const score = document.getElementById("playerScore_" + playerName.charAt(playerName.length - 1));
-  if (flag)
-    score.textContent++;
-  else
-    score.textContent--;
-}
-
-export function checkGameOver(numberOfPlayers, maxScore) {
-  for (let i = 1; i <= numberOfPlayers; i++) {
-    const score = document.getElementById("playerScore_" + i);
-    if (score.textContent >= maxScore) {
-      const score1 = document.getElementById("playerScore_1");
-      const score2 = document.getElementById("playerScore_2");
-      score1.textContent = 0;
-      score2.textContent = 0;
-      return i;
+export function atualizeScore(game) {
+  for (const [key, value] of game.score.entries()) {
+    const html = document.getElementById("playerScore_" + key);
+    if (html) {
+        html.innerHTML = value;
     }
-  }
-  return -1;
+}
 }

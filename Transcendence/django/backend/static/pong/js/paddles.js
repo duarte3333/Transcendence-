@@ -1,4 +1,3 @@
-import { Score } from "./score.js";
 import {Edge} from "./map.js";
 
 export class Paddle {
@@ -20,7 +19,6 @@ export class Paddle {
   angle;
   edge; //baliza
   speed;
-  score;
   moveDown;
   moveUp;
   moveUpKey;
@@ -34,7 +32,6 @@ export class Paddle {
     this.type = "player";
     this.moveDown = false;
     this.moveUp = false;
-    this.score = new Score();
     this.color = "black";
     let edgeNumber;
     if (numberOfPlayers != 2)

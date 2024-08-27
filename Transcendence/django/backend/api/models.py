@@ -17,6 +17,7 @@ class Game(models.Model):
     player = models.JSONField(default=list)
     game_type = models.CharField(max_length=255, blank=False)
     status = models.CharField(max_length=255, default='pending')
+    winner = models.CharField(max_length=255, default='null')
     createDate = models.DateField(default=timezone.now)
     scoreList = models.JSONField(default=list)
     playerHost = models.CharField(max_length=255)
@@ -59,7 +60,8 @@ class Game(models.Model):
             'createDate': self.createDate.strftime('%Y-%m-%d'),  # Formatação da data
             'scoreList': self.scoreList,
             'playerHost': self.playerHost,
-            'numberPlayers': self.numberPlayers
+            'numberPlayers': self.numberPlayers,
+            'winner': self.winner
         }
 
     def __str__(self):
