@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.files.images import get_image_dimensions
 from django.core.files.storage import default_storage
 from django.utils import timezone
+from django.contrib.auth.password_validation import validate_password, ValidationError
 from datetime import timedelta
 
 logger = logging.getLogger(__name__)
@@ -253,6 +254,10 @@ def update_profile(request):
             new_password = data.pop('password')
             if not new_password.strip():
                 raise ValidationError('Password cannot be empty.')
+            try:
+                validate_password(new_password)
+            except ValidationError as e:
+                return JsonResponse({'error': e.messages}, status=400)
             user.set_password(new_password)
 
         # Validate non-empty fields

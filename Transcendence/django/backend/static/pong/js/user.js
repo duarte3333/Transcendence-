@@ -130,7 +130,8 @@ export async function updateUserProfile(updatedFields) {
             let errorMessage = 'An unknown error occurred';
             try {
                 const errorData = await response.json();
-                errorMessage = errorData.message || errorMessage;
+                errorMessage = errorData.error || errorMessage;
+                // console.log("error data ==", errorData);
             } catch (e) {
                 // If parsing fails, fallback to default error message
                 errorMessage = 'Failed to parse error response';

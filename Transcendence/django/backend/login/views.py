@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm
 from login.models import PongUser
 from django.http import JsonResponse
+from django.contrib.auth.password_validation import validate_password, ValidationError
 import json
 import logging
 
@@ -53,13 +54,21 @@ def register(request):
 
         if PongUser.objects.filter(username=username).exists():
             return JsonResponse({'error': 'Username already taken.'}, status=400)
-        
+
         if PongUser.objects.filter(display_name=display_name).exists():
             return JsonResponse({'error': 'Display Name already taken.'}, status=400)
 
+        # Validate password strength
+        if username == password:
+            return JsonResponse({'error': 'Password can not be equal to username.'}, status=400)
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            return JsonResponse({'error': e.messages}, status=400)
+
         # Create a new user
         user = PongUser.objects.create_user(username=username, password=password)
-        user.display_name = display_name  # Use the display name as first name or as desired
+        user.display_name = display_name  # Use the display name as desired
         user.save()
 
         # Log the user in
@@ -67,7 +76,6 @@ def register(request):
 
         # Respond with success
         return JsonResponse({'success': True})
-        # return render(request, 'index.html')
 
 @login_required
 def user_info(request):
