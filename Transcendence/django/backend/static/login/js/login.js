@@ -96,25 +96,6 @@ function loginPost() {
         errors.innerText = errorMessage;
         // Handle error here (e.g., show an error message to the user)
     });
-
-    //TRYING TO GET GAME TO CREATE
-    // const game = {
-    //     players: ["1", "2"],
-    //     game_type: "normal",
-    //     number_of_players: 2,
-    // }
-
-    // fetch('/api/game/create', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'X-CSRFToken': getCookie('csrftoken')
-    //     },
-    //     body: JSON.stringify(game),
-    // })
-    // .then(async (response) => {
-    //     console.log((await response.json()))
-    // })
 }
 
 function registerPost() {

@@ -43,7 +43,7 @@ export class Game {
     this.events = new events();
     this.candies = [];
     this.fps = 0;
-    this.maxScore = 1;
+    this.maxScore = 5;
     this.ball = new Ball();
     this.finish = false;
     this.winner = undefined;
@@ -71,6 +71,11 @@ export class Game {
     // console.log("controllist = ", controlsList);
 
     this.context = this.canvas.getContext("2d");
+
+    if (views.props.fun == false) {
+      this.candies = 0;
+    }
+
     // if (views.props.type == 'online') {
     //   // this.pause = true;
     //   document.addEventListener("keydown", this.boundHandleKeyDownOnline);
@@ -603,6 +608,12 @@ views.setElement('/game', (state) => {
   { 
     if (views.props.type == 'online' && socketGame == undefined)
       socketGame =  initializeWebSocket(views.props.id, window.user.id);
+    else if (views.props.type != 'online') {
+      const matchmaking = document.getElementById("matchmaking");
+      matchmaking.style.display = "none";
+      const row = document.getElementById("game");
+      row.style.display = "flex";
+    }
   }
   // console.log("game: ", data)
   // if (state == "block")
