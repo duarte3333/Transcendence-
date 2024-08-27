@@ -12,7 +12,9 @@ export const views = new PageManager(fullPath);
 
 document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener('popstate', () => {
-        views.urlLoad(fullPath);
+            // console.log("aqui fullpath =", fullPath);
+            // console.log("antigo==", window.location.pathname);
+        views.urlLoad(window.location.pathname);
     });
 
     // views.urlLoad("/");
