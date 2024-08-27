@@ -246,8 +246,8 @@ def list_users(request):
         result = PongUser.objects.all()
         pong_users_list = [serialize_pong_user(user) for user in result]
         return JsonResponse({'success': True, 'users':  pong_users_list},  safe=False, status=201)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 
 # Define the threshold for considering a user "online"

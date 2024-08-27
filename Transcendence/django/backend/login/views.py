@@ -5,9 +5,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm
 from login.models import PongUser
+from chat.models import Chat
 from django.http import JsonResponse
 import json
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +63,9 @@ def register(request):
         user = PongUser.objects.create_user(username=username, password=password)
         user.display_name = display_name  # Use the display name as first name or as desired
         user.save()
-        # chat = 
+
+        # Adiciona o novo usuário ao chat "geral"
+        Chat.add_user_to_general_chat(pong_user=user)        
 
         # Log the user in
         login(request, user)

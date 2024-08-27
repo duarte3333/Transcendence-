@@ -85,7 +85,7 @@ class Chat {
         const nameB = b.zIndex || (b.name == "Geral" ? -5 : 0)
          return nameA - nameB;
       });
-      console.log("channels: " , channels)
+      // console.log("channels: " , channels)
       this.generatePlayerButtons(channels);
     })
     .catch((error) => console.error(error));
@@ -139,27 +139,29 @@ class Chat {
     this.setup();
   }
 
-  blockUser(channel) {
-    this.socket.send(JSON.stringify({
+  blockUser(blocked) {
+    let message = JSON.stringify({
       'action': 'block',
       'type': 'block',
       'userId': window.user.id,
-      'channelId': channel
-    }))
-    this.blockedStatus = !this.blockedStatus;
-    this.unblockUserButton.style.display = 'flex';
-    this.blockUserButton.style.display = 'none';
-
-    console.log("User Status: ", this.blockedStatus);
+      'blocked': blocked
+    })
+    this.socket.send(message)
+    console.log("Blocking users: ", message);
+    this.blockedStatus = true;
   }
 
-  unBlockUser(channel) {
-    this.blockedStatus = !this.blockedStatus;
-    this.unblockUserButton.style.display = 'none';
-    this.blockUserButton.style.display = 'flex';
+  unBlockUser(unblocked) {
+    let message = JSON.stringify({
+      'action': 'unblock',
+      'type': 'unblock',
+      'userId': window.user.id,
+      'unblocked': unblocked.id
+    })
+    this.socket.send(message)
     console.log("User Status: ", this.blockedStatus);
+    this.blockedStatus = false;
   }
-
 
   async setup() {
     while (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
@@ -237,15 +239,22 @@ class Chat {
     button.id = `chatButton_${username}`
     button.setAttribute("user", "create")
     if (user.id) button.style.backgroundColor = "lightblue"
-    button.onclick = () => {
-      // if (channel.id == undefined) {
-      //   this.createChannel(channel);
-      // } else {
-      //   this.joinChannel(channel)
-      // }
-    };
     const button2 = document.createElement("button");
-    button2.innerText = "Block"
+    button2.innerText = "Block";
+    button2.onclick = () => {
+      console.log("Blocker button ", this.blockedStatus);
+      if (this.blockedStatus == false) {
+        button2.innerText = "Unblock"
+        this.blockUser(user);
+        this.blockedStatus = true;
+      }
+      else if (this.blockedStatus == true){
+        button2.innerText = "Block";
+        console.log("entrei no else")
+        this.unBlockUser(user);
+        this.blockedStatus = false;
+      }
+    };
     div.append(button, button2)
     this.chatSideBar.appendChild(div);
   }
@@ -254,13 +263,9 @@ class Chat {
   generatePlayerButtons(channels) {
     this.chatSideBar.innerHTML = '';
 
-    // this.createButtonsOnChat("General");
-
     for (const channel of channels) {
       this.createButtonsOnChat(channel);
     }
-
-    // this.sendBasicInfo(length);
   }
 
 
@@ -346,7 +351,7 @@ class Chat {
         const data = JSON.parse(e.data);
         console.log("Received message data = ", data);
 
-        if (data.action === 'chat_message') {
+        if (data.action == 'chat_message') {
           this.handleWebchatSocketData(data);
           // console.log("socket.onmessage ", data.message);
         }
@@ -357,6 +362,20 @@ class Chat {
           {
             this.handleWebchatSocketData(message)
           }
+        }
+        else if (data.action == 'block') {
+          this.blockedStatus = true;
+          // this.unblockUserButton.style.display = 'flex';
+          // this.blockUserButton.style.display = 'none';
+
+          console.log("User Status: ", this.blockedStatus);
+        }
+        else if (data.action == 'unblock') {
+          this.blockedStatus = false;
+          // this.unblockUserButton.style.display = 'none';
+          // this.blockUserButton.style.display = 'flex';
+
+          console.log("User Status: ", this.blockedStatus);
         }
         else if (data.action == "alertChannelCreated")
         {

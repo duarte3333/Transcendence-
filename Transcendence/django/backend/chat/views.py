@@ -30,11 +30,13 @@ def list_chats(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            if not isinstance(data, dict):
+                return JsonResponse({'error': 'Invalid JSON format. Expected a dictionary.'}, status=400)
         except json.JSONDecodeError:
-            data = []
-        result = Chat().list(status = data.get('status'), user_id= data.get('userId'))
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        
+        result = Chat().list(status=data.get('status'), user_id=data.get('userId'))
         return JsonResponse({'success': True, 'chat': result}, status=201)
-
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
 @login_required

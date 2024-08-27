@@ -63,6 +63,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.chat_messages(text_data)
         elif action == 'block':
             await self.block_users(text_data)
+        elif action == 'unblock':
+            logger.info(f'aaaaaaaaaaaaaaaaaaaaaaa\n\n\n\nChegueiii')
+            await self.unblock_users(text_data)
         else:
             logger.warning(f'Unknown action received: {action}')
         
@@ -132,8 +135,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         user_id = event.get('userId')
 
         is_user_blocked = any(
-        block['userId'] == user_id 
-        for block in channel.block
+            block['userId'] == user_id or block['blocked']['id'] == user_id
+            for block in channel.block
         )
         if (is_user_blocked):
             await self.send_json({
@@ -142,8 +145,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 'message': 'Chat does not exist',
             })
             return
-        
-        # self.channelId = event.get('channelId')
         
         await self.channel_layer.group_send(
             self.channelName,
@@ -170,6 +171,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         try:
             chat = await sync_to_async(Chat.objects.get)(id=self.channelId)
             blocker = event.get('userId')
+            blocked = event.get('blocked')
 
             is_already_blocked = any(
                 block['userId'] == event.get('userId') 
@@ -177,21 +179,50 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
             if not is_already_blocked:
                 chat.block.append({
-                    'userId': event.get('userId'),
-                    'userOwner': self.user_id
+                    'userId': blocker,
+                    'blocked': blocked
                 })
                 await sync_to_async(chat.save)(update_fields=['block'])
                 await self.send_json({
-                'type': 'block',
-                'action': 'block',
-                'message': f'User {self.channelId} has been blocked by {blocker}',
-                'channelId': self.channelId,
-                'block': chat.block
-            })
+                    'type': 'block',
+                    'action': 'block',
+                    'message': f'User {self.channelId} has been blocked by {blocker}',
+                    'channelId': self.channelId,
+                    'blocked': blocked
+                })
         except Chat.DoesNotExist:
             logger.error(f'Chat {self.channelId} does not exist')
             await self.send_json({
                 'type': 'error',
                 'action': 'block',
+                'message': 'Chat does not exist',
+            })
+
+    async def unblock_users(self, event):
+        from chat.models import Chat
+        try:
+            chat = await sync_to_async(Chat.objects.get)(id=self.channelId)
+            unblocker = event.get('userId')
+            unblocked = event.get('unblocked')
+
+            block_to_remove = next((block for block in chat.block if block['userId'] == unblocker and block['blocked']['id'] == unblocked), None)
+            logger.info(f'sfgsdfgsdgsdgdsgdsgdsgfsdg\n\n\n\Seraaaaa block_to_remove {block_to_remove}\n unblocker{unblocker}\n unblocked{unblocked}')
+
+            if block_to_remove:
+                chat.block.remove(block_to_remove)
+                await sync_to_async(chat.save)(update_fields=['block'])
+
+                await self.send_json({
+                    'action': 'unblock',
+                    'type': 'unblock',
+                    'message': f'User {unblocked} was unblocked by {unblocker}',
+                    'channelId': self.channelId,
+                    'unblocked': unblocked
+                })
+        except Chat.DoesNotExist:
+            logger.error(f'Chat {self.channelId} does not exist')
+            await self.send_json({
+                'type': 'error',
+                'action': 'unblock',
                 'message': 'Chat does not exist',
             })
