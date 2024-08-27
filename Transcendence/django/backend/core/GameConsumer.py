@@ -20,11 +20,27 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+        # logger.info(f'\ndisconnect called\n')
         # Sai da sala do grupo
+        await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                     'type': 'sendDisconnect',
+                     'action': 'disconnect',
+                    }
+                )
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+
+    async def sendDisconnect(self, event):
+        await self.send_json({
+            'type': 'sendDisconnect',
+            'action': 'disconnect',
+            'playerId': self.playerId
+        })
+        return
 
     # Recebe uma mensagem do WebSocket
     async def receive_json(self, content):
@@ -83,7 +99,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                     'flag': content.get('flag'),
                 }
             )
-        elif message_type == 'game_end':
+        elif message_type == 'game_end' and self.game.status == "running":
             await self.game_ends(content)
         elif message_type in ['up', 'down']:
             await self.channel_layer.group_send(

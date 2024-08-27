@@ -210,12 +210,17 @@ def update_user_properties(user: PongUser, updated_fields: dict):
         'friends'
     }
     
+    # Apply the updates and validation
     for field, value in updated_fields.items():
         if field not in allowed_fields:
             raise ValidationError(f"Field '{field}' is not allowed to be updated.")
         
         setattr(user, field, value)
     
+    # Additional validation: down_key and up_key should not be the same
+    if ('down_key' in updated_fields or 'up_key' in updated_fields) and user.down_key == user.up_key:
+        raise ValidationError("The 'down_key' and 'up_key' cannot be the same.")
+
     # Validate the updated user instance
     # user.full_clean()  # This will raise a ValidationError if any fields are invalid
     
@@ -256,7 +261,6 @@ def update_profile(request):
                 raise ValidationError(f'{key.replace("_", " ").title()} cannot be empty.')
             setattr(user, key, value)
 
-
         # Update other fields using the helper function
         updated_user = update_user_properties(user, data)
 
@@ -271,6 +275,7 @@ def update_profile(request):
     except Exception as e:
         logger.exception("Unexpected error occurred")
         return JsonResponse({'status': 'error', 'message': 'An error occurred. ' + str(e)}, status=500)
+
 
 # Define the threshold for considering a user "online"
 ONLINE_THRESHOLD = timedelta(minutes=5)

@@ -87,13 +87,13 @@ async function showMatchHistory(event){
 		for (const matchId in userMatchHistory) {
 			if (userMatchHistory.hasOwnProperty(matchId)) {
 				const match = userMatchHistory[matchId];
+				// console.log("got match =", match);
 
 				const displayMap = new Map();
 				for (let i = 0; i < match.numberPlayers; i++) {
 					let userTemp =  await getUserById(match.player[i]);
 					displayMap.set(userTemp.id, userTemp.display_name);
 				}
-				// console.log("")
 
 				const row = document.createElement('div');
 				row.className = "row row-matchHistory text-center";
@@ -123,7 +123,7 @@ async function showMatchHistory(event){
 				col2.style.paddingBottom = "1rem";
 
 				const winner = document.createElement('h1');
-				winner.innerText = `Winner: ${displayMap.get(parseInt(match.winner))}`;
+				winner.innerText = `Winner: ${displayMap.get(parseInt(match.winner)) || "disconnect"}`;
 				col2.appendChild(winner);
 
 				row.appendChild(col2);
@@ -157,7 +157,7 @@ async function getMatchHistory(id) {
 	if (!id)
 	id = window.user.id;
 	const data = JSON.stringify({
-		"status": "",
+		"status": "finished",
 		"playerId": id
 	});
 	try {

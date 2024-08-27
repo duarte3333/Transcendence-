@@ -46,7 +46,7 @@ export class Game {
     this.maxScore = 1;
     this.ball = new Ball();
     this.finish = false;
-    this.winner = 0;
+    this.winner = undefined;
     this.winnerName = null;
     this.tournament = null;
     this.paddleNames = [];
@@ -283,6 +283,38 @@ export class Game {
   }))
   }
 
+  disconnect(disconnectId) {
+    // console.log("i am disconnecting");
+    const finalScore = []
+
+    for (const [key, player] of this.players.entries()) {
+      if (key == disconnectId) {
+        finalScore.push({
+          id: key, 
+          score: "disconnect"
+        });
+      } else {
+        finalScore.push({
+          id: key, 
+          score: this.score.get(player.displayName) || 0
+        });
+      }
+    }
+    this.winner = "disconnect";
+    // console.log(">>>>>> ", finalScore);
+    // return ;
+
+    setTimeout( async () => {
+      if (views.props.type == 'online')
+        await this.socket.send(JSON.stringify({
+          'type': 'game_end',
+          'action': 'game_end',
+          'score': finalScore,
+          'winner': this.winner,
+      }))
+    }, 3500);
+  }
+
   sendScore(display_name, score) {
     // sends all score 
     for (const [key, value] of this.score.entries()) {
@@ -293,13 +325,6 @@ export class Game {
             'score': value,
         }))
       }
-    //sends only score that change
-  //   this.socket.send(JSON.stringify({
-  //     'type': 'score',
-  //     'action': 'score_update',
-  //     'display_name': display_name,
-  //     'score': score,
-  // }))
   }
 
   async sendGameOver() {
@@ -356,12 +381,19 @@ export class Game {
       this.objects.forEach((element) => {
         element.draw(this.context);
       });
+     }else if (this.winner && !this.finish) {
+      if (this.pause) { //reset canvas so that game over doesnt display over the paused
+        this.pause = false;
+        this.context.clearRect(0, 0, this.canvas.width,this.canvas.height);
+        this.objects.forEach((element) => {
+          element.draw(this.context);
+        });
+      }
+      this.finish = true;
+      this.displayGameOver();
     }
     else if(this.pause){
       this.displayPaused();
-    } else if (this.winner && !this.finish) {
-      this.finish = true;
-      this.displayGameOver();
     }
   }
 
@@ -382,14 +414,16 @@ export class Game {
       this.context.shadowColor = "rgba(0, 0, 0, 0.5)";
       this.context.shadowOffsetX = 1; this.context.shadowOffsetY = 1; this.context.shadowBlur = 1;
       this.context.fillStyle = gradient;
-      this.context.fillText(`Player ${this.players.get(this.winner).displayName} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
+      if (this.winner != "disconnect")
+        this.context.fillText(`Player ${this.players.get(this.winner).displayName} wins`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
+      else
+        this.context.fillText(`Player disconnected`, this.canvas.width / 2 - 100, this.canvas.height / 2 + 50);
       this.context.shadowOffsetX = 0; this.context.shadowOffsetY = 0; this.context.shadowBlur = 0;
     }
 
     setTimeout( async () => {
       if (views.props.type == 'online' && this.playerHost == window.user.id)
         await this.sendGameOver();
-      // this.destroyer();
     }, 3500);
   }
 
@@ -481,6 +515,13 @@ const  initializeWebSocket = (id, playerId) =>
           {
             views.urlLoad("/home");
           }
+          else if (data.action == "disconnect")
+          {
+            console.log(data.playerId, "disconnected");
+            gameData.game.disconnect(data.playerId);
+          }
+          // else
+          //   console.log("action unkown =", data.action);
         }
         else if (data.action === 'running' && gameData.game == undefined)
         {    
@@ -518,8 +559,15 @@ const  initializeWebSocket = (id, playerId) =>
           // console.log("received pause flag =", data.flag);
           gameData.game.pause = data.flag;
         }
+        else if (data.action == "disconnect")
+        {
+          console.log(data.playerId, "disconnected");
+          gameData.game.disconnect(data.playerId);
+        }
+        // else
+        //   console.log("action unkown =", data.action);
       } catch {
-
+        
       }
   }
 
@@ -565,10 +613,14 @@ views.setElement('/game', (state) => {
     row.style.display = "none";
     const matchmaking = document.getElementById("matchmaking");
     matchmaking.style.display = "block";
+    // if (gameData.game?.winner == undefined)
+    //   gameData.game.disconnecting();
     gameData.game?.destroyer();
     gameData.game = undefined;
+    if (socketGame.readyState === WebSocket.OPEN || socketGame.readyState === WebSocket.CONNECTING)
+      socketGame.close();
     socketGame =  undefined;
-  }
+  } 
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);
 })
