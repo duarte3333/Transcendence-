@@ -37,8 +37,13 @@ views.setElement("/profile", (state) => {
 	);
 	
 async function loadProfile() {
+	const matchHistory = document.getElementById("matchHistory");
+	matchHistory.innerHTML = ``;
+	matchHistory.setAttribute("style", "display: none !important;");
+
 	user =  await getUser(views.props.display_name);
 	userMatchHistory =  await getMatchHistory(user.id);
+	userMatchHistory.sort((a, b) => b.id - a.id);
 
 	// console.log("profile user = ", user);
 	console.log("match history = ", userMatchHistory);
@@ -53,7 +58,7 @@ async function loadProfile() {
 	displayName.innerText = user.display_name;
 
 	const winsRatio = document.getElementById("winsRatio");
-	winsRatio.innerText = `Wins: ${user.wins || 0}, Losses: ${user.losses || 0}`;
+	winsRatio.innerText = `Wins: ${user.wins || 0} Losses: ${user.losses || 0}`;
 }
 
 async function showMatchHistory(event){
@@ -98,6 +103,10 @@ async function showMatchHistory(event){
 				const row = document.createElement('div');
 				row.className = "row row-matchHistory text-center";
 				row.style.width = "100%";
+				if (displayMap.get(parseInt(match.winner)) != user.display_name && match.winner != "disconnect")
+					row.style.backgroundColor = "rgba(255, 3, 3, 0.6)";
+				else if (match.winner != "disconnect")
+					row.style.backgroundColor = "rgba(36, 135, 0, 0.6)";
 
 				// TYPE AND DATE
 				const col1 = document.createElement('div');
@@ -123,7 +132,10 @@ async function showMatchHistory(event){
 				col2.style.paddingBottom = "1rem";
 
 				const winner = document.createElement('h1');
-				winner.innerText = `Winner: ${displayMap.get(parseInt(match.winner)) || "disconnect"}`;
+				if (displayMap.get(parseInt(match.winner)))
+					winner.innerText = `Winner: ${displayMap.get(parseInt(match.winner))}`;
+				else
+					winner.innerText = `Disconnected`;
 				col2.appendChild(winner);
 
 				row.appendChild(col2);

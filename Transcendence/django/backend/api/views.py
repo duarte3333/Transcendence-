@@ -84,6 +84,23 @@ def list_game(request):
 
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+def list_game_wins(player_id=None):
+    if player_id:
+        result = Game().list(status="finished", playerId=player_id)
+        result = [game for game in result if game.get('winner') == str(player_id)]
+        return len(result)
+    return 0
+
+def list_game_losses(player_id=None):
+    if player_id:
+        result = Game().list(status="finished", playerId=player_id)
+
+        result = [game for game in result if game.get('winner') != str(player_id)]
+
+        return len(result)
+
+    return 0
+
 @login_required
 @csrf_exempt
 def update_game(request):
@@ -171,6 +188,8 @@ def user_profile(request):
             'banner_picture': user.banner_picture.url if user.banner_picture else 'static/userImages/banner.jpeg',
             'up_key': user.up_key if user.up_key else 'w',
             'down_key': user.down_key if user.down_key else 's',
+            'wins': list_game_wins(user.id),
+            'losses': list_game_losses(user.id),
         }
         return JsonResponse({'success': True, 'user': user_data}, status=200)
     except json.JSONDecodeError:
@@ -193,6 +212,8 @@ def get_user_by_id(request):
             'banner_picture': user.banner_picture.url if user.banner_picture else 'static/userImages/banner.jpeg',
             'up_key': user.up_key if user.up_key else 'w',
             'down_key': user.down_key if user.down_key else 's',
+            'wins': list_game_wins(user.id),
+            'losses': list_game_losses(user.id),
         }
         return JsonResponse({'success': True, 'user': user_data}, status=200)
     except json.JSONDecodeError:
@@ -289,7 +310,7 @@ ONLINE_THRESHOLD = timedelta(minutes=5)
 def user_friends(request):
     user = request.user
     friend_ids = user.friends
-    logger.info(f'firends ids = {friend_ids}')
+    # logger.info(f'firends ids = {friend_ids}')
 
     # Fetch friends by their IDs, getting their display names and last_seen timestamps
     friends = PongUser.objects.filter(id__in=friend_ids).values('id', 'display_name', 'last_seen')

@@ -65,7 +65,7 @@ export class Banner {
         // nicknameText.style.fontSize = "0.8rem"; // Smaller text size for nickname
 
         const statsText = document.createElement('p');
-        statsText.textContent = `Wins: ${user.wins || 0}, Losses: ${user.losses || 0}`;
+        statsText.textContent = `Wins: ${user.wins || 0}  Losses: ${user.losses || 0}`;
         statsText.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
         statsText.style.color = "white";
         statsText.style.padding = "5px 10px";

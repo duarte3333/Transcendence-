@@ -149,7 +149,6 @@ function funForm(event, type) {
 	row.innerHTML = `
 	<select class="form-select w-50" id="numPlayersForm">
               <option value="0" selected="">Select number of players</option>
-              <option value="1">One</option>
               <option value="2">Two</option>
               <option value="3">Three</option>
               <option value="4">Four</option>
@@ -166,7 +165,7 @@ function funForm(event, type) {
 	confirm.textContent = "confirm";
 	confirm.addEventListener('click',() => {
 		const numPlayers = form.value;
-		if (numPlayers != 0) {
+		if (numPlayers != 0 && numPlayers != 1) {
 			playOnlineMatch(event, "Fun", numPlayers);
 		} else {
 			alert("Need to choose one - five players")
