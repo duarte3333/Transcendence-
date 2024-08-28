@@ -42,6 +42,8 @@ async function loadProfile() {
 	matchHistory.setAttribute("style", "display: none !important;");
 
 	user =  await getUser(views.props.display_name);
+	if (user == undefined)
+		views.urlLoad("/home");
 	userMatchHistory =  await getMatchHistory(user.id);
 	userMatchHistory.sort((a, b) => b.id - a.id);
 

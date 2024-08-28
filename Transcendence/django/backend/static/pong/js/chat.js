@@ -11,6 +11,7 @@ class Chat {
     this.chatSideBar = document.getElementById('chatSideBar');
     this.blockUserButton = document.getElementById('blockUserButton');
     this.backUserButton = document.getElementById('backUserButton');
+    this.porfileButton = document.getElementById('profileButtonChat');
 
     this.unblockUserButton = document.getElementById('unblockUserButton');
 
@@ -33,7 +34,7 @@ class Chat {
   }
 
   async listChatUsers() {
-    fetch("https://localhost/api/user/list", {
+    fetch(window.hostUrl + "/api/user/list", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -92,7 +93,7 @@ class Chat {
   }
 
   async listChannels() {    
-    return fetch("https://localhost/api/chat/list", {
+    return fetch(window.hostUrl + "/api/chat/list", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
@@ -136,7 +137,18 @@ class Chat {
       this.backUserButton.addEventListener('click', () => {
         this.fetchAndProcessData();
       });
+    if (this.porfileButton) {
+      this.porfileButton.addEventListener('click', () => this.goToProfile());
+    }
     this.setup();
+  }
+
+  goToProfile() {
+    console.log("aqui")
+    const chatHeader = document.getElementById('chatHeader');
+    const name = chatHeader.innerHTML.split('Chat - ')[1];
+    console.log("name = ", name);
+    views.urlLoad(`/profile?display_name=${name}`);
   }
 
   blockUser(blocked) {
@@ -176,7 +188,7 @@ class Chat {
       "mensagens": []
     });
     
-    fetch("https://localhost/api/chat/create", {
+    fetch(window.hostUrl + "/api/chat/create", {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -199,7 +211,7 @@ class Chat {
     }));
     document.getElementById("chatMain").style.display = "flex";
     this.backUserButton.style.display = "flex";
-    document.getElementById("chatHeader").innerText = `Chat - ${channel.name.charAt(0).toUpperCase() + channel.name.slice(1)}`;
+    document.getElementById("chatHeader").innerText = `Chat - ${channel.name}`;
     // if (this.unblockUserButton.style.display != 'flex')
     //   this.blockUserButton.style.display = 'flex';
     this.SelectedPlayer = channel.id;
@@ -323,7 +335,7 @@ class Chat {
   }
 
   InitializeWebSocket() {
-    const wsUrl = `wss://localhost:8000/ws/chat/${window.user.id}/`;
+    const wsUrl = `wss://${window.location.host}/wss/chat/${window.user.id}/`;
   
     this.socket = new WebSocket(wsUrl);
     if (this.socket) {

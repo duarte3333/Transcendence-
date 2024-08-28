@@ -6,7 +6,7 @@ class Chat(models.Model):
     user = models.JSONField(default=list)
     status = models.CharField(max_length=255)
     block = models.JSONField(default=list)
-    name = models.CharField(max_length=400)
+    name = models.CharField(max_length=400, default='Default Chat Name')
     mensagens = models.JSONField(default=list)
     createDate = models.DateField(default=timezone.now)
 

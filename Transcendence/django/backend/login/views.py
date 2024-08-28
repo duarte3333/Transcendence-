@@ -74,7 +74,7 @@ def register(request):
         user.save()
 
         # Adiciona o novo usuário ao chat "geral"
-        Chat.add_user_to_general_chat(pong_user=user)        
+        # Chat.add_user_to_general_chat(pong_user=user)        
 
         # Log the user in
         login(request, user)
