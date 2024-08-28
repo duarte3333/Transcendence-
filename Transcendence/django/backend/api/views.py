@@ -342,7 +342,8 @@ def user_friends(request):
         is_online = (now - friend['last_seen']) <= ONLINE_THRESHOLD if friend['last_seen'] else False
         friends_data.append({
             'display_name': friend['display_name'],
-            'online': is_online
+            'online': is_online,
+            'id': friend['id']
         })
 
     user_data = {

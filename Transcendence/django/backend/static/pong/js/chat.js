@@ -227,7 +227,7 @@ class Chat {
     channel.button = button;
     let username = channel.name;
     button.innerText =  channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
-    button.id = `chatButton_${username}`
+    button.id = `chatButton_${channel.id}`
     button.setAttribute("channel", "create")
     if (channel.id) button.style.backgroundColor = "lightblue"
     button.onclick = () => {
@@ -252,7 +252,7 @@ class Chat {
     user.button = button;
     let username = user.name || user.username;
     button.innerText = channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
-    button.id = `chatButton_${username}`
+    button.id = `chatButton_${channel.id}`
     button.setAttribute("user", "create")
     if (user.id) button.style.backgroundColor = "lightblue"
     const button2 = document.createElement("button");
@@ -275,6 +275,30 @@ class Chat {
     this.chatSideBar.appendChild(div);
   }
 
+  async clickPlayerChatById(id) {
+    const channels = await this.listChannels();
+
+    if (this.chatWindow.style.display == "none")
+				this.toggleChatWindow();
+    if (document.getElementById('chatMain').style.display != "none") {
+				this.fetchAndProcessData();
+				this.chatSideBar.style.width = "100%";
+			}
+
+    console.log("channels ==> ", channels);
+    console.log("id ==> ", id);
+    for (const channel of channels) {
+      if (channel.user.some(user => user.id === id)) {
+        console.log("ENTROU")
+        document.getElementById("chatMain").style.display = "flex";
+        this.backUserButton.style.display = "flex";
+        document.getElementById("chatHeader").innerText = `Chat - ${channel.name}`;
+        this.SelectedPlayer = channel.id;
+        this.generateUsersButtons(channel);
+        this.chatSideBar.style.width = "40%";
+      }
+    }    
+  }
 
   generatePlayerButtons(channels) {
     this.chatSideBar.innerHTML = '';
@@ -445,12 +469,13 @@ class Chat {
 }
 
 views.setElement("/chat", (state) => {
-  document.getElementById("chatContainer").style.display = state;
+  // document.getElementById("chatContainer").style.display = state;
   if ("block") {
     if (window.chat == undefined)
       window.chat = new Chat();
     const chatbutton = document.getElementById("chatButton");
-    chatbutton.className="btn btn-primary";
+    if (chatbutton)
+      chatbutton.className="btn btn-primary";
   }
   else {
     //Supostamente, tenho de destruir a chatSocket

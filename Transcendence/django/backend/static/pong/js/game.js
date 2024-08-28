@@ -636,8 +636,9 @@ views.setElement('/game', (state) => {
   } 
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);
+	views.get("/chat").display(state);
 })
-.setChilds(["/navbar", "/footer"])
+.setChilds(["/navbar", "/footer", "/chat"])
 .setEvents();
 
 

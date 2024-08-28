@@ -8,7 +8,7 @@ views.setElement('/namesForm', (state) => {
 	views.get("/footer").display(state);
 	loadNamesForm();
 })
-.setChilds(["/navbar", "/footer"])
+.setChilds(["/navbar", "/footer", "/chat"])
 .setEvents(
 	["nb_button", "click", generateInputFields],
 );

@@ -29,9 +29,10 @@ views.setElement("/profile", (state) => {
 		loadProfile();
 	views.get("/footer").display(state);
 	views.get("/navbar").display(state);
+	views.get("/chat").display(state);
 	document.getElementById("profileBody").style.display = state;
 })
-.setChilds(["/navbar", "/footer"])
+.setChilds(["/navbar", "/footer", "/chat"])
 .setEvents(
 	[ "matchHistoryButton", "click",  (event) => showMatchHistory(event)]
 	);

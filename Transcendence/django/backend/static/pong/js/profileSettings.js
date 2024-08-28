@@ -29,8 +29,9 @@ views.setElement("/settings", (state) => {
 	if (state == "block")
 		loadProfileSettings();
 	views.get("/footer").display(state);
+	views.get("/chat").display(state);
 })
-.setChilds(["/navbar", "/footer"])
+.setChilds(["/navbar", "/footer", "/chat"])
 .setEvents(
 	[ "changeUsername", "click",  (event) => changeText(event, "username")],
 	[ "changeDisplayName", "click",  (event) => changeText(event, "display_name")],

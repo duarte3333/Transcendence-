@@ -79,6 +79,10 @@ async function generateFriendsList() {
 		chatButton.innerHTML = `
 			<image height="16" width="16" src="/static/pong/img/chat.png" style="filter: invert(1);"></image>
 		`;
+		chatButton.addEventListener('click', async () => {
+			document.getElementById('menuClose').click();
+			await window.chat.clickPlayerChatById(user.id);
+		})
 
 		let onlineStatus = document.createElement('img');
 		onlineStatus.className = "image-end";
