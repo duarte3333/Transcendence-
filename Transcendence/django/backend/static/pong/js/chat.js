@@ -55,23 +55,25 @@ class Chat {
           } )
 
         if (channel) {
-          const name = channel.name || channel.user.filter(e => e.id != window.user.id).map(e =>  e.name).join("_") || "tes";
+          const name = channel.name || channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name).join("_") || "tes";
           channel.name = name
           console.log("user. ", user, " channelw: ", channel.name)
         }
         else {
           channels.push({
             id: undefined,
-            name: user.username,
+            name: user.display_name,
             mensagens: [],
             user: [
               {
                 "id": window.user.id,
                 "name": window.user.username,
+                "display_name": window.user.display_name,
               },
               {
                 "id": user.id,
-                "name": user.username
+                "name": user.username,
+                "display_name": user.display_name,
               }
             ],
             status: 'create',
@@ -223,7 +225,7 @@ class Chat {
     const button = document.createElement("button");
     channel.button = button;
     let username = channel.name;
-    button.innerText = username;
+    button.innerText =  channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
     button.id = `chatButton_${username}`
     button.setAttribute("channel", "create")
     if (channel.id) button.style.backgroundColor = "lightblue"
@@ -237,7 +239,7 @@ class Chat {
     this.chatSideBar.appendChild(button);
   }
 
-  createUsersButtonsOnChat(user) 
+  createUsersButtonsOnChat(user, channel) 
   {
     const div = document.createElement("div");
     div.style.display = "flex";
@@ -247,7 +249,7 @@ class Chat {
     button.style.minWidth = "100px";
     user.button = button;
     let username = user.name || user.username;
-    button.innerText = username;
+    button.innerText = channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
     button.id = `chatButton_${username}`
     button.setAttribute("user", "create")
     if (user.id) button.style.backgroundColor = "lightblue"
@@ -288,7 +290,7 @@ class Chat {
 
     for (const user of channel.user) {
       if (user.id != window.user.id)
-      this.createUsersButtonsOnChat(user);
+      this.createUsersButtonsOnChat(user, channel);
     }
 
     // this.sendBasicInfo(length);
