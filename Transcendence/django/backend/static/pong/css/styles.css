@@ -286,7 +286,7 @@ body {
     }
 
     .chat-sidebar {
-      width: -webkit-fill-available;
+      width: 100%;
       background-color: #343a40;
       color: white;
       display: flex;

@@ -141,6 +141,7 @@ export async function updateUserProfile(updatedFields) {
             throw new Error(`Backend error: ${response.status}`);
         }
 
+		console.log("respone === ", response);
 		const data = await response.json(); // Parse the JSON response
 		window.user = data.user;
 		console.log("data user === ", data.user);

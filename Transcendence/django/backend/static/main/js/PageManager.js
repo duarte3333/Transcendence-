@@ -110,7 +110,8 @@ export class PageManager {
         // console.log("trying to load =", name);
         await loginPage();
         const nameOrigin = name;
-        const urlParams = new URLSearchParams(name.split("?")[1]);
+        const urlvariables = name.split("?")[1] || window.location.search;
+        const urlParams = new URLSearchParams(urlvariables);
         name =  name.split("?")[0];
         //Para users nao estando logged in conseguirem ir po resto
         if (name != "/" && window.user == undefined)

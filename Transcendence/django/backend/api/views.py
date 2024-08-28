@@ -16,6 +16,7 @@ from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.contrib.auth.password_validation import validate_password, ValidationError
 from datetime import timedelta
+from django.contrib.auth import authenticate, login, logout
 
 logger = logging.getLogger(__name__)
 
@@ -286,6 +287,8 @@ def update_profile(request):
 
         # Save the user after all updates are applied
         user.save()
+        if user is not None:
+            login(request, user)
 
         return JsonResponse({'status': 'success', 'message': 'Profile updated successfully.', 'user': updated_user.to_dict()})
 

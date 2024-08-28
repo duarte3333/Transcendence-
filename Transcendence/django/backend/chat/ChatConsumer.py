@@ -124,6 +124,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'action': 'chat_message',
             'message': event.get('message'),
             'userId': event.get('userId'),
+            'display_name': event.get('display_name'),
             'channelId': self.channelId,
             'block': event.get('block')
         })
@@ -154,7 +155,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 'message': event.get('message'),
                 'userId': event.get('userId'),
                 'channelId': self.channelId,
-                'block': channel.block
+                'block': channel.block,
+                'display_name': event.get('display_name'),
             }
         )
         
@@ -162,7 +164,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             channel.mensagens.append({
                 'message': event.get('message'),
                 'userId': user_id,
-                'createdAt': datetime.now().isoformat()
+                'createdAt': datetime.now().isoformat(),
+                'display_name': event.get('display_name'),
             })
             await sync_to_async(channel.save)(update_fields=['mensagens'])
      

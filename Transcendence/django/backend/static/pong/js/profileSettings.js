@@ -140,7 +140,7 @@ async function completeChange(oldParent, div, type, inputID, buttonID) {
 		// Wait for the profile update to complete
 		const response = await updateUserProfile(data);
 		console.log('Profile updated successfully:', response);
-		
+		 
 		
 		// Show old elements, hide new ones after successful update
 		oldParent.style.setProperty('display', 'flex', 'important');

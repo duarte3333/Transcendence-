@@ -138,6 +138,7 @@ class Chat {
     if (this.backUserButton)
       this.backUserButton.addEventListener('click', () => {
         this.fetchAndProcessData();
+        this.chatSideBar.style.width = "100%";
       });
     if (this.porfileButton) {
       this.porfileButton.addEventListener('click', () => this.goToProfile());
@@ -146,7 +147,7 @@ class Chat {
   }
 
   goToProfile() {
-    console.log("aqui")
+    // console.log("aqui")
     const chatHeader = document.getElementById('chatHeader');
     const name = chatHeader.innerHTML.split('Chat - ')[1];
     console.log("name = ", name);
@@ -235,6 +236,7 @@ class Chat {
       } else {
         this.joinChannel(channel)
       }
+      this.chatSideBar.style.width = "40%";
     };
     this.chatSideBar.appendChild(button);
   }
@@ -320,6 +322,7 @@ class Chat {
           'action': 'chat_message',
           'message': message,
           'userId': window.user.id,
+          'display_name': window.user.display_name,
         }));
         this.chatInput.value = '';
       }
@@ -429,10 +432,10 @@ class Chat {
       chatBodyChildren.innerHTML = '';
     else 
     { 
-      const { message, userId} = data;
+      const { message, display_name} = data;
 
       // console.log("handleWebchatSocketData() Message received from server:", data);
-      const fullMessage = `${userId}: ${message}`;
+      const fullMessage = `${display_name}: ${message}`;
       const chatBodyChildren = document.getElementById(`chatBodyChildren`);
       chatBodyChildren.innerHTML += `<p>${fullMessage}</p>`;
       // console.log("handleWebchatSocketData() ", fullMessage);
@@ -444,12 +447,15 @@ class Chat {
 views.setElement("/chat", (state) => {
   document.getElementById("chatContainer").style.display = state;
   if ("block") {
-    window.chat = new Chat();
+    if (window.chat == undefined)
+      window.chat = new Chat();
+    const chatbutton = document.getElementById("chatButton");
+    chatbutton.className="btn btn-primary";
   }
   else {
     //Supostamente, tenho de destruir a chatSocket
     //remover eventListeners, 
-    window.chat = undefined;
+    // window.chat = undefined;
   }
 })
 .setEvents();

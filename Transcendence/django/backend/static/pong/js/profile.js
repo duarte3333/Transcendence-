@@ -41,6 +41,7 @@ async function loadProfile() {
 	matchHistory.innerHTML = ``;
 	matchHistory.setAttribute("style", "display: none !important;");
 
+	console.log("display =", views.props.display_name);
 	user =  await getUser(views.props.display_name);
 	if (user == undefined)
 		views.urlLoad("/home");
