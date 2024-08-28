@@ -138,7 +138,7 @@ function onlineMatch() {
 	// button_2.removeEventListener("click", playOnlineTournament());
 
 	button_1.addEventListener("click", (event) => {
-		playOnlineMatch(event, "Normal", 2);
+		playOnlineMatch("Normal", 2);
 	});
 	button_2.addEventListener("click", (event) => {
 		funForm(event, "Fun");
@@ -177,8 +177,7 @@ function funForm(event, type) {
 	row.appendChild(confirm);
 }
 
-function playOnlineMatch(event, type, numberPlayers = 2) {
-
+export function playOnlineMatch(type, numberPlayers = 2) {
 	const data = JSON.stringify({
 		"players": [ window.user.id ],
 		"type": type,

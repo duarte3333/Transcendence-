@@ -3,6 +3,7 @@ import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
 from datetime import datetime
+from channels.db import database_sync_to_async
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
+
+    @database_sync_to_async
+    def get_channel(self):
+        from chat.models import Chat
+        return Chat.objects.get(id=self.channelId)
+
     async def update_model(self, text_data):
         try:
             user_id = text_data.get('userId')
@@ -61,6 +68,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.join_chat(text_data)
         elif action == 'chat_message' and (not self.channelName == None):
             await self.chat_messages(text_data)
+        elif action == 'invite_message':
+            await self.invite_messages(text_data)
         elif action == 'block':
             await self.block_users(text_data)
         elif action == 'unblock':
@@ -68,7 +77,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.unblock_users(text_data)
         else:
             logger.warning(f'Unknown action received: {action}')
-        
+    
     async def join_chat(self, event):
         from chat.models import Chat
         logger.info(f'join_chat==================== {event}')
@@ -104,6 +113,41 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     'channelId': self.channelId
                 }
             )
+    # async def join_chat(self, event):
+    #     from chat.models import Chat
+    #     logger.info(f'join_chat==================== {event}')
+    #     channel = await sync_to_async(Chat.objects.get)(id=event.get('channelId'))
+    #     self.channelId = channel.id
+        
+    #     if channel:
+    #         if self.channelName is not None:
+    #             await self.channel_layer.group_discard(
+    #                 self.channelName,
+    #                 self.channel_name
+    #             )
+    #         self.channelName = 'chat_' + str(channel.id)
+            
+    #         await self.channel_layer.group_add(
+    #             self.channelName,
+    #             self.channel_name
+    #         )
+            
+    #         await self.send_json({
+    #             'type': 'join_message',
+    #             'action': 'join',
+    #             'message': channel.mensagens,
+    #             'channelId': channel.id,
+    #         })
+            
+    #         await self.channel_layer.group_send(
+    #             self.group_name,
+    #             {
+    #                 'type': 'alertChannelCreated',
+    #                 'action': 'alertChannelCreated',
+    #                 'user': channel.user,
+    #                 'channelId': self.channelId
+    #             }
+    #         )
 
     async def alertChannelCreated(self, event):
         await self.send_json(
@@ -128,6 +172,74 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'channelId': self.channelId,
             'block': event.get('block')
         })
+
+    async def invite_message(self, event):
+        # Enviar a mensagem apenas para o WebSocket, não para o grupo
+        await self.send_json({
+            'type': 'message',
+            'action': 'invite_message',
+            'message': event.get('message'),
+            'userId': event.get('userId'),
+            'display_name': event.get('display_name'),
+            'channelId': self.channelId,
+            'block': event.get('block')
+        })
+
+
+    async def invite_messages(self, event):
+        from chat.models import Chat
+        from api.models import Game
+        logger.info(f'the message {event}')
+        
+        channel = await self.get_channel()
+        user_id = event.get('userId')
+        users = [user['id'] for user in channel.user]
+        
+        if users is None:
+            logger.info(f'Error: Users were not created')
+            return
+
+        # Wrap the Game creation in sync_to_async
+        try:
+            game = await sync_to_async(Game.objects.create)(
+                player=users,
+                game_type='Normal',
+                playerHost=users[0],
+                numberPlayers=len(users)
+            )
+
+            if game is None:
+                logger.info(f'Error: Game was not created')
+                return
+            
+            await self.channel_layer.group_send(
+                self.channelName,
+                {
+                    'type': 'invite_message',
+                    'action': 'invite_message',
+                    'message': event.get('message'),
+                    'userId': event.get('userId'),
+                    'channelId': self.channelId,
+                    'block': channel.block,
+                    'display_name': event.get('display_name'),
+                    'id': game.id
+                }
+            )
+
+            # Add message to channel's messages
+            if channel:
+                channel.mensagens.append({
+                    'message': event.get('message'),
+                    'userId': user_id,
+                    'createdAt': datetime.now().isoformat(),
+                    'display_name': event.get('display_name'),
+                    'id': game.id
+                })
+                await sync_to_async(channel.save)(update_fields=['mensagens'])
+
+        except Exception as e:
+            logger.error(f'Error during game creation or message handling: {e}')
+
 
     async def chat_messages(self, event):
         from chat.models import Chat
