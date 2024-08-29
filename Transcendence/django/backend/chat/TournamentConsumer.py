@@ -47,7 +47,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             await self.join_chat(text_data)
         elif action == 'tournament_call':
             await self.tournament_calls(text_data)
-        elif action == 'tournament_join':
+        elif action == 'tournamentJoin':
             await self.tournament_joins(text_data)
         else:
             logger.warning(f'Unknown action received: {action}')
@@ -66,8 +66,8 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def tournament_join(self, event):
         await self.send_json({
-            'type': 'tournament_join',
-            'action': 'tournament_join',
+            'type': 'tournamentJoin',
+            'action': 'tournamentJoin',
             'message': self.messages,
             'channelId': self.channelId,
         })
@@ -78,6 +78,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         # channel = await sync_to_async(Chat.objects.get)(id=event.get('channelId'))
         self.userId = event.get('userId')
         self.channelId = event.get('channelId')
+        
 
         logger.info(f'tournment joined {self.userId}')
         
@@ -103,5 +104,4 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     'channelId': self.channelId
                 }
             )
-
             

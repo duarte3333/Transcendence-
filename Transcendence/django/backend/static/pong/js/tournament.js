@@ -83,7 +83,6 @@ export class Tournament {
         button.setAttribute("channel", "create")
         if (this.channelId) button.style.backgroundColor = "lightblue"
         button.onclick = () => {
-            this.createChannelTournament();
             if (this.channelId == undefined) {  
                 this.createChannelTournament();
             } 
@@ -121,8 +120,8 @@ export class Tournament {
 
     joinChannelTournament(){
         const data = JSON.stringify({
-          'action': 'tournament_join',
-          'type': 'tournament_join',
+          'action': 'tournamentJoin',
+          'type': 'tournamentJoin',
           'channelId': this.channelId,
           'userId': window.user.id,
         });
@@ -136,8 +135,7 @@ export class Tournament {
     }
 
     sendTournamentMessage(player1, player2) {
-        const message = `"=====Game Between===== ", ${player1, player2}`;
-        console.log("sendTournamentMessage ", message);
+        const message = `"=====Game Between===== ", ${player1} e ${player2}`;
         if (message && this.socket) {
             this.socket.send(JSON.stringify({
             'type': 'tournament_call',
