@@ -62,14 +62,14 @@ export class PageManager {
         }
     }
 
-    #domLoad(element) {
+    async #domLoad(element) {
         if (document.querySelector(`[page="${element}"]`)) {
             return;
         }
     
         let page = this.get(element);
     
-        if (!page.getHtml()) {
+        if (!page.getHtml()) { // && !(await AppControl.fetchApp(element))
             console.log("trying to load not existing html " + element);
         } else {
             const htmlElement = page.getHtml();
@@ -110,9 +110,11 @@ export class PageManager {
         // console.log("trying to load =", name);
         await loginPage();
         const nameOrigin = name;
+        // console.log("url load ORI name=", nameOrigin);
         const urlvariables = name.split("?")[1] || window.location.search;
         const urlParams = new URLSearchParams(urlvariables);
         name =  name.split("?")[0];
+        // console.log("url load name=", name);
         //Para users nao estando logged in conseguirem ir po resto
         if (name != "/" && window.user == undefined)
         {
@@ -130,6 +132,13 @@ export class PageManager {
         }
         this.#onScreen.clear();
     
+        // console.log("page map ===", this.#pageMap.get(name))
+        if (this.#pageMap.get(name) && !this.#pageMap.get(name).getHtml()) {
+            await AppControl.fetchApp(name)
+        }
+
+
+
         let child;
         let familyTree = [name];
         while (child = familyTree.pop()) {

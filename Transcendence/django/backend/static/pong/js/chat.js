@@ -28,6 +28,8 @@ class Chat {
     this.setupEventListeners();
     this.chatWindow.style.display = "none";
     this.fetchAndProcessData();
+    if (!this.socket)
+      this.InitializeWebSocket();
   }
 
   async fetchAndProcessData() {
@@ -333,14 +335,12 @@ class Chat {
   }
 
   toggleChatWindow() {
-    if (!this.socket)
-      this.InitializeWebSocket();
     this.open ? this.chatWindow.style.display = "none" : this.chatWindow.style.display = "flex";
     this.open = !this.open;
   }
 
   makeInvite() {
-    const message = `INVITE: Player ${window.user.display_name} has invited you to play!`;
+    const message = `INVITE: Player ${window.user.display_name} has invited you to play, click HERE to join the game!`;
     if (message && this.socket) {
       if (message && this.socket) {
         this.socket.send(JSON.stringify({
@@ -495,13 +495,18 @@ class Chat {
     else 
     { 
       const { message, id} = data;
+      console.log("invite data =>", data);
 
       const fullMessage = `${message}`;
       const chatBodyChildren = document.getElementById(`chatBodyChildren`);
       chatBodyChildren.innerHTML += `<p id=invite${id}>${fullMessage}</p>`;
       const invite = document.getElementById(`invite${id}`);
+      invite.style.color = "blue";
       invite.addEventListener('click', () => {
-        views.urlLoad(`/game?id=${id}&type=online&fun=false}`);
+        const invite = document.getElementById(`invite${id}`);
+        invite.removeEventListener('click', this);
+        views.urlLoad(`/game?id=${id}&type=online&fun=false`);
+        this.toggleChatWindow();
       })
     }
 
@@ -511,7 +516,7 @@ class Chat {
 views.setElement("/chat", (state) => {
   // document.getElementById("chatContainer").style.display = state;
   if ("block") {
-    if (window.chat == undefined)
+    if (window.chat == undefined) 
       window.chat = new Chat();
     const chatbutton = document.getElementById("chatButton");
     if (chatbutton)

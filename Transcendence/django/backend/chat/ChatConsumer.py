@@ -8,6 +8,8 @@ from channels.db import database_sync_to_async
 logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
+    gameId = None
+
     async def connect(self):
         logger.info(f'WebSocket connected: {self.channel_name}')
         self.user_id = self.scope['url_route']['kwargs']['user_id']
@@ -174,6 +176,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def invite_message(self, event):
+        channel = await self.get_channel()
+        users = [user['id'] for user in channel.user]
+        game = await self.get_pending_game(users)
+        if game is not None:
+            gameId = game.id
+        else:
+            logger.info(f'DEU MERDA AQUI')
         # Enviar a mensagem apenas para o WebSocket, não para o grupo
         await self.send_json({
             'type': 'message',
@@ -182,9 +191,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'userId': event.get('userId'),
             'display_name': event.get('display_name'),
             'channelId': self.channelId,
-            'block': event.get('block')
+            'block': event.get('block'),
+            'id': gameId
         })
 
+
+    @staticmethod
+    @database_sync_to_async
+    def get_pending_game(users):
+        from api.models import Game
+        return Game.objects.filter(player=users, status='pending').first()
 
     async def invite_messages(self, event):
         from chat.models import Chat
@@ -201,17 +217,20 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         # Wrap the Game creation in sync_to_async
         try:
-            game = await sync_to_async(Game.objects.create)(
-                player=users,
-                game_type='Normal',
-                playerHost=users[0],
-                numberPlayers=len(users)
-            )
+            game = await self.get_pending_game(users)
+            if game is None:
+                logger.info(f'Creatgin game!!')
+                game = await sync_to_async(Game.objects.create)(
+                    player=users,
+                    game_type='Normal',
+                    playerHost=users[0],
+                    numberPlayers=len(users)
+                )
 
             if game is None:
                 logger.info(f'Error: Game was not created')
                 return
-            
+
             await self.channel_layer.group_send(
                 self.channelName,
                 {

@@ -2,11 +2,22 @@ import { Tournament } from './tournament.js';
 import { views } from "../../main/js/main.js";
 import { Match } from './match.js';
 
+let match;
+let tournament;
+let submitEvent;
+
 views.setElement('/namesForm', (state) => {
-	views.get("/navbar").display(state);
-    document.getElementById('tournamentBody').style.display = state;
+	document.getElementById('tournamentBody').style.display = state;
+	if (state == 'block') {
+		document.getElementById('nameForm').style.display = 'block';
+		loadNamesForm();
+	} else {
+		unloadNamesForm();
+		if (match)
+			match.destroyGame();
+	}
+ 	views.get("/navbar").display(state);
 	views.get("/footer").display(state);
-	loadNamesForm();
 })
 .setChilds(["/navbar", "/footer", "/chat"])
 .setEvents(
@@ -39,7 +50,8 @@ function generateInputFields() {
 
 function loadNamesForm() {
 	const submitNames = document.getElementById("submitNames");
-	submitNames.addEventListener('click', async function() {
+	console.log("EVENT LIST => ", submitNames.event);
+	submitEvent = async function() {
 		var names = [];
         var number = document.getElementById('numberOfPlayers').value;
         for (var i = 0; i < number; i++) {
@@ -53,13 +65,23 @@ function loadNamesForm() {
 		document.getElementById('nameForm').style.display = 'none';
 		document.getElementById('gameForm').style.display = 'block';
 		
-		let tournament;
-		if (views.props.tournament == "true")
+		if (views.props.tournament == "true" && tournament == undefined) {
 			tournament =  new Tournament(number, names); // Using Singleton pattern
+			tournament = undefined;
+		}
 		else {
-            const match = new Match("local", "normal", number, names, player1);
+			if (match == undefined)
+            	match = new Match("local", "normal", number, names, player1);
 			await match.startLocalMatch();
+			match = undefined;
             views.urlLoad("/home");
 		}
-    });
+    }
+
+	submitNames.addEventListener('click', submitEvent);
+}
+
+function unloadNamesForm() {
+	const submitNames = document.getElementById("submitNames");
+	submitNames.removeEventListener('click', submitEvent);
 }

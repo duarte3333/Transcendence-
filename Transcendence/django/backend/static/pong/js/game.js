@@ -38,6 +38,8 @@ export class Game {
     this.numCandies = 1;
     this.numberOfPlayers = numPlayers;
     this.pause = false;
+    if (views.props.type == "online")
+      this.pause = true;
     this.speed = 2.5;
     this.events = new events();
     this.candies = [];
@@ -80,7 +82,6 @@ export class Game {
       row.style.display = "flex";
       this.setupGame(controlsList);
     }
-
   }
 
   handleKeyDown(event) {
@@ -474,6 +475,7 @@ export class Game {
 			</div>
 			<div class="col-sm-12 col-md-3 col-xl-3 justify-content-top" id="scoreBoard"></div>
       `;
+    row.style.display = "none";
     window.removeEventListener('resize', this.resizeCanvasEvent);
     clearInterval(this.gameLoop);
   }
@@ -485,7 +487,7 @@ const  initializeWebSocket = (id, playerId) =>
     `wss://${window.location.host}/wss/game/${id}/`
   );
 
-  // console.log("socket == ", socketGame);
+  console.log("socket == ", socketGame);
 
   socketGame.onmessage = (e) => {
       try {
@@ -493,7 +495,7 @@ const  initializeWebSocket = (id, playerId) =>
         
         // console.log("dta socket == ", data);
         if (data.type == "error") {
-          console.log("resting you home, can't join that game");
+          console.log("reseting you home, can't join that game");
           views.urlLoad("/home");
         }
         if (gameData.game && window.user.id != gameData.game.playerHost)
@@ -555,21 +557,23 @@ const  initializeWebSocket = (id, playerId) =>
             gameData.game.pause = false;
             gameData.game.setupGame(data2);
         }
-        else if (data.type == 'move') 
-          gameData.game.handlePlayerMove(data);
-        else if (data.action == "game_end")
-        {
-          views.urlLoad("/home");
-        }
-        else if (data.action == 'pause_game')
-        {
-          // console.log("received pause flag =", data.flag);
-          gameData.game.pause = data.flag;
-        }
-        else if (data.action == "disconnect")
-        {
-          console.log(data.playerId, "disconnected");
-          gameData.game.disconnect(data.playerId);
+        else if (gameData.game != undefined) {
+          if (data.type == 'move') 
+            gameData.game.handlePlayerMove(data);
+          else if (data.action == "game_end")
+          {
+            views.urlLoad("/home");
+          }
+          else if (data.action == 'pause_game')
+          {
+            // console.log("received pause flag =", data.flag);
+            gameData.game.pause = data.flag;
+          }
+          else if (data.action == "disconnect")
+          {
+            console.log(data.playerId, "disconnected");
+            gameData.game.disconnect(data.playerId);
+          }
         }
         // else
         //   console.log("action unkown =", data.action);
@@ -586,6 +590,7 @@ const  initializeWebSocket = (id, playerId) =>
 
   // Enviar uma mensagem
   socketGame.onopen = () =>  {
+    console.log("joining game");
     socketGame.send(JSON.stringify({
       'playerId': playerId,
       'action': 'join'
@@ -610,11 +615,8 @@ views.setElement('/game', (state) => {
   { 
     if (views.props.type == 'online' && socketGame == undefined)
       socketGame =  initializeWebSocket(views.props.id, window.user.id);
-    else if (views.props.type != 'online') {
-      const matchmaking = document.getElementById("matchmaking");
-      matchmaking.style.display = "none";
-      const row = document.getElementById("game");
-      row.style.display = "flex";
+    else if (views.props.type == undefined) {
+      views.urlLoad("/home");
     }
   }
   // console.log("game: ", data)
@@ -630,7 +632,7 @@ views.setElement('/game', (state) => {
     //   gameData.game.disconnecting();
     gameData.game?.destroyer();
     gameData.game = undefined;
-    if (socketGame.readyState === WebSocket.OPEN || socketGame.readyState === WebSocket.CONNECTING)
+    if (socketGame != undefined && (socketGame.readyState === WebSocket.OPEN || socketGame.readyState === WebSocket.CONNECTING))
       socketGame.close();
     socketGame =  undefined;
   } 

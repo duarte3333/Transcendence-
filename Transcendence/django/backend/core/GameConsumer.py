@@ -6,10 +6,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
+    playerId = None
     async def connect(self):
         # Adiciona o usuário ao grupo de uma sala de chat específica
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f"game_{self.room_name}"
+        # logger.info(f'self room name = {self.room_name}')
 
         # Entra na sala do grupo
         await self.channel_layer.group_add(
@@ -232,10 +234,15 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             from api.models import Game
 
             self.game = await sync_to_async(Game.objects.get)(id=self.room_name)
+            logger.info(f'self game = {self.game}')
             player_id = event.get('playerId')
+            self.playerId = player_id
+            logger.info(f'self player id = {self.playerId}')
+            max_players = len(self.game.player)
+            logger.info(f'entered player joined, Pid= {self.playerId}, Game id = {self.game.id}')
             if self.game and player_id not in self.game.player and self.game.status == "pending":
+                logger.info(f'Bateu na 1')
                 self.game.player.append(player_id)
-                self.playerId = player_id
                 # logger.info(f'\n>>>>>>game players after append: {self.game.player}\n')
                 max_players = len(self.game.player)
                 if max_players == self.game.numberPlayers:
@@ -247,6 +254,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                         }
                     )
                 elif max_players > self.game.numberPlayers:
+                    logger.info(f'Bateu na 2')
                     await self.send_json({
                         'type': 'player_joined',
                         'playerId': player_id,
@@ -254,23 +262,35 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                         'room_name': int(self.room_name)
                     })
                 await sync_to_async(self.game.save)()
+            elif self.game and player_id in self.game.player and self.game.status == "pending" and self.game.numberPlayers == max_players:
+                self.gameId = self.game.id
+                self.game.status = "running"
+                await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'player_running',
+                        }
+                    )
+                await sync_to_async(self.game.save)()
             elif self.game and player_id in self.game.player and not self.game.status == "finished":
-                self.playerId = player_id
+                logger.info(f'Bateu na 3')
                 self.gameId = self.game.id
                 if (self.game.status == "running"):
                     await self.player_running()
                 return
             else:
+                logger.info(f'Bateu na 4')
                 await self.send_json({
                 'type': 'error',
                 'message': "unknown error"
                 })
                 return
-        except:
+        except Exception as e:
+            logger.error(f"Error in player_joined: {str(e)}")
             await self.send_json({
-                'type': 'player_running',
-                'action': 'running',
-            })
+                'type': 'error',
+                'message': str(e)
+                })
 
     async def chat_message(self, event):
         message = event['message']

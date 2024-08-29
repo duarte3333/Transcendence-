@@ -78,6 +78,7 @@ export class AppControl {
 
             if (!response.ok)
                 throw new Error('Network response was not ok: ' + response.statusText);
+            // console.log("appcontrol response =", response);
             const appHtml = await response.text();
             const element = document.querySelector(`[page="${name}"]`);
             
@@ -98,6 +99,7 @@ export class AppControl {
             return (views.get(name));
         } catch (error) {
             console.error('Error:', error);
+            views.urlLoad("/home");
             return (false);
         }
     }
