@@ -240,7 +240,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             logger.info(f'self player id = {self.playerId}')
             max_players = len(self.game.player)
             logger.info(f'entered player joined, Pid= {self.playerId}, Game id = {self.game.id}')
-            if self.game and player_id not in self.game.player and self.game.status == "pending":
+            if self.game and player_id not in self.game.player and (self.game.status == "pending" or self.game.status == "invite"):
                 logger.info(f'Bateu na 1')
                 self.game.player.append(player_id)
                 # logger.info(f'\n>>>>>>game players after append: {self.game.player}\n')
@@ -262,16 +262,16 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                         'room_name': int(self.room_name)
                     })
                 await sync_to_async(self.game.save)()
-            elif self.game and player_id in self.game.player and self.game.status == "pending" and self.game.numberPlayers == max_players:
-                self.gameId = self.game.id
-                self.game.status = "running"
-                await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'player_running',
-                        }
-                    )
-                await sync_to_async(self.game.save)()
+            # elif self.game and player_id in self.game.player and self.game.status == "invite" and self.game.numberPlayers == max_players:
+            #     self.gameId = self.game.id
+            #     self.game.status = "running"
+            #     await self.channel_layer.group_send(
+            #             self.room_group_name,
+            #             {
+            #                 'type': 'player_running',
+            #             }
+            #         )
+            #     await sync_to_async(self.game.save)()
             elif self.game and player_id in self.game.player and not self.game.status == "finished":
                 logger.info(f'Bateu na 3')
                 self.gameId = self.game.id

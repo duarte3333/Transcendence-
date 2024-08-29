@@ -487,7 +487,7 @@ const  initializeWebSocket = (id, playerId) =>
     `wss://${window.location.host}/wss/game/${id}/`
   );
 
-  console.log("socket == ", socketGame);
+  // console.log("socket == ", socketGame);
 
   socketGame.onmessage = (e) => {
       try {

@@ -181,7 +181,7 @@ export function playOnlineMatch(type, numberPlayers = 2) {
 	const data = JSON.stringify({
 		"players": [ window.user.id ],
 		"type": type,
-		"number_of_players": numberPlayers
+		"number_of_players": numberPlayers,
 	});
 	
 	fetch(window.hostUrl + '/api/game/match', {

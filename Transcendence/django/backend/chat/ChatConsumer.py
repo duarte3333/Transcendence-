@@ -176,13 +176,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def invite_message(self, event):
-        channel = await self.get_channel()
-        users = [user['id'] for user in channel.user]
-        game = await self.get_pending_game(users)
-        if game is not None:
-            gameId = game.id
-        else:
-            logger.info(f'DEU MERDA AQUI')
+        # channel = await self.get_channel()
+        # users = [user['id'] for user in channel.user]
+        # game = await self.get_pending_game(users)
+        # if game is not None:
+        #     gameId = game.id
+        # else:
+        #     logger.info(f'DEU MERDA AQUI')
         # Enviar a mensagem apenas para o WebSocket, não para o grupo
         await self.send_json({
             'type': 'message',
@@ -192,7 +192,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'display_name': event.get('display_name'),
             'channelId': self.channelId,
             'block': event.get('block'),
-            'id': gameId
+            'id': event.get('id')
         })
 
 
@@ -200,7 +200,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def get_pending_game(users):
         from api.models import Game
-        return Game.objects.filter(player=users, status='pending').first()
+        return Game.objects.filter(player=users, status='invite').first()
 
     async def invite_messages(self, event):
         from chat.models import Chat
@@ -219,9 +219,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         try:
             game = await self.get_pending_game(users)
             if game is None:
-                logger.info(f'Creatgin game!!')
                 game = await sync_to_async(Game.objects.create)(
-                    player=users,
+                    player=[],
+                    status='invite',
                     game_type='Normal',
                     playerHost=users[0],
                     numberPlayers=len(users)
