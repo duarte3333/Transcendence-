@@ -23,9 +23,10 @@ class Game(models.Model):
     playerHost = models.CharField(max_length=255)
     numberPlayers = models.IntegerField(default=2)
 
-    def create(self, players, playerHost, game_type, **extra_fields):
+    def create(self, players, status, playerHost, game_type, **extra_fields):
         game = Game(
             player=players,
+            status=status,
             playerHost=playerHost,
             game_type=game_type,
             **extra_fields

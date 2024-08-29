@@ -56,7 +56,8 @@ def match_game(request):
                     players = data.get('players', [request.user.id]),
                     game_type = data.get('type'),
                     playerHost = request.user.id,
-                    numberPlayers =  data.get('number_of_players')
+                    numberPlayers =  data.get('number_of_players'),
+                    status = 'pending'
                 )
                 data["id"] = game.id
             else:

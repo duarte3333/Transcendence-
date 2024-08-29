@@ -1,6 +1,7 @@
 // import { chatSocket, channel_name } from "./myWebchatSocket.js";
 import { views } from "../../main/js/main.js";
 import { getCookie } from "./auxFts.js";
+import { playOnlineMatch } from "./home.js";
 
 class Chat {
   constructor() {
@@ -12,6 +13,8 @@ class Chat {
     this.blockUserButton = document.getElementById('blockUserButton');
     this.backUserButton = document.getElementById('backUserButton');
     this.porfileButton = document.getElementById('profileButtonChat');
+    this.inviteButton = document.getElementById('inviteButtonChat');
+
     this.unblockUserButton = document.getElementById('unblockUserButton');
 
     this.SelectedPlayer = null;
@@ -25,6 +28,8 @@ class Chat {
     this.setupEventListeners();
     this.chatWindow.style.display = "none";
     this.fetchAndProcessData();
+    if (!this.socket)
+      this.InitializeWebSocket();
   }
 
   async fetchAndProcessData() {
@@ -142,6 +147,8 @@ class Chat {
     if (this.porfileButton) {
       this.porfileButton.addEventListener('click', () => this.goToProfile());
     }
+    if (this.inviteButton)
+      this.inviteButton.addEventListener('click', () => this.makeInvite());
     this.setup();
   }
 
@@ -286,8 +293,6 @@ class Chat {
 				this.chatSideBar.style.width = "100%";
 			}
 
-    console.log("channels ==> ", channels);
-    console.log("id ==> ", id);
     for (const channel of channels) {
       if (channel.user.some(user => user.id === id)) {
         console.log("ENTROU")
@@ -333,10 +338,25 @@ class Chat {
   }
 
   toggleChatWindow() {
-    if (!this.socket)
-      this.InitializeWebSocket();
     this.open ? this.chatWindow.style.display = "none" : this.chatWindow.style.display = "flex";
     this.open = !this.open;
+  }
+
+  makeInvite() {
+    const message = `INVITE: Player ${window.user.display_name} has invited you to play, click HERE to join the game!`;
+    if (message && this.socket) {
+      if (message && this.socket) {
+        this.socket.send(JSON.stringify({
+          'type': 'invite_message',
+          'action': 'invite_message',
+          'message': message,
+          'userId': window.user.id,
+          'display_name': window.user.display_name,
+        }));
+      }
+    } else {
+      console.error("sendChatMessage() Message not sent: invalid conditions.");
+    }
   }
 
   sendChatMessage() {
@@ -429,6 +449,9 @@ class Chat {
 
           console.log("User Status: ", this.blockedStatus);
         }
+        else if (data.action == "invite_message") {
+          this.handleInvite(data);
+        }
         else if (data.action == "alertChannelCreated")
         {
           const user = data.user;
@@ -492,12 +515,35 @@ class Chat {
     }
 
   }
+
+  handleInvite(data, isClear = false) {
+    if (isClear == true)
+      chatBodyChildren.innerHTML = '';
+    else 
+    { 
+      const { message, id} = data;
+      console.log("invite data =>", data);
+
+      const fullMessage = `${message}`;
+      const chatBodyChildren = document.getElementById(`chatBodyChildren`);
+      chatBodyChildren.innerHTML += `<p id=invite${id}>${fullMessage}</p>`;
+      const invite = document.getElementById(`invite${id}`);
+      invite.style.color = "blue";
+      invite.addEventListener('click', () => {
+        const invite = document.getElementById(`invite${id}`);
+        invite.removeEventListener('click', this);
+        views.urlLoad(`/game?id=${id}&type=online&fun=false`);
+        this.toggleChatWindow();
+      })
+    }
+
+  }
 }
 
 views.setElement("/chat", (state) => {
   // document.getElementById("chatContainer").style.display = state;
   if ("block") {
-    if (window.chat == undefined)
+    if (window.chat == undefined) 
       window.chat = new Chat();
     const chatbutton = document.getElementById("chatButton");
     if (chatbutton)
