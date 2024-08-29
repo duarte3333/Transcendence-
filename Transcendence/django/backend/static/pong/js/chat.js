@@ -392,7 +392,7 @@ class Chat {
   
     this.socket = new WebSocket(wsUrl);
     if (this.socket) {
-        // console.log("this.socket object" + this.socket.readyState + " this.socket url " + this.socket.url);
+        console.log("this.socket object", this.socket);
         window.chatchatSocket = this.socket;
     }
   
@@ -541,10 +541,18 @@ class Chat {
 }
 
 views.setElement("/chat", (state) => {
+  console.log("name forms");
   // document.getElementById("chatContainer").style.display = state;
-  if ("block") {
-    if (window.chat == undefined) 
+  if (state == "block") {
+    console.log("chat ==>>", window.chat)
+    if (window.chat == undefined) {
       window.chat = new Chat();
+      console.log("set chat block state!!")
+    }
+    if (window.chatchatsocket != undefined) {
+      window.chatchatSocket.close();
+      window.chatchatSocket = undefined;
+    }
     const chatbutton = document.getElementById("chatButton");
     if (chatbutton)
       chatbutton.className="btn btn-primary";

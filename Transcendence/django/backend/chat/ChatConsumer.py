@@ -76,6 +76,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.block_users(text_data)
         elif action == 'unblock':
             await self.unblock_users(text_data)
+        elif action == 'tournament_join':
+            pass
         else:
             logger.warning(f'Unknown action received: {action}')
     
@@ -339,7 +341,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             unblocked = event.get('unblocked')
 
             block_to_remove = next((block for block in chat.block if block['userId'] == unblocker and block['blocked']['id'] == unblocked), None)
-            logger.info(f'sfgsdfgsdgsdgdsgdsgdsgfsdg\n\n\n\Seraaaaa block_to_remove {block_to_remove}\n unblocker{unblocker}\n unblocked{unblocked}')
+            # logger.info(f'sfgsdfgsdgsdgdsgdsgdsgfsdg\n\n\n\Seraaaaa block_to_remove {block_to_remove}\n unblocker{unblocker}\n unblocked{unblocked}')
 
             if block_to_remove:
                 chat.block.remove(block_to_remove)

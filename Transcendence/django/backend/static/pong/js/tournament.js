@@ -72,11 +72,13 @@ export class Tournament {
 		document.getElementById('game').style.display = 'none';
         // console.log(this.playerNames)
         this.showLeaderBoard();
+        this.socket.close();
     }
 
     createButtonsTournament() 
     {
         this.chatSideBar.innerHTML = '';
+        document.getElementById('chatBodyChildren').innerHTML = '';
         const button = document.createElement("button");
         button.innerText =  "Tournament Channel";
         button.id = `tournament`
@@ -120,8 +122,8 @@ export class Tournament {
 
     joinChannelTournament(){
         const data = JSON.stringify({
-          'action': 'tournamentJoin',
-          'type': 'tournamentJoin',
+          'action': 'tournament_join',
+          'type': 'tournament_join',
           'channelId': this.channelId,
           'userId': window.user.id,
         });
@@ -175,8 +177,12 @@ export class Tournament {
         const wsUrl = `wss://${window.location.host}/wss/tournament/${window.user.id}/`;
       
         this.socket = new WebSocket(wsUrl);
+        // console.log('socker ==> ', this.socket);
+        
         if (this.socket) {
             window.chatchatSocket = this.socket;
+            if (window.chat)
+                window.chat.socket.close();
         }
       
         this.socket.onopen = () => {
@@ -230,6 +236,7 @@ export class Tournament {
         const container = document.getElementById("tournamentBody");
         const leaderboardDiv = document.createElement('div');
         leaderboardDiv.className = 'container mt-4';
+        leaderboardDiv.id = 'leaderboardDiv';
 
         // Add a title
         const title = document.createElement('h2');

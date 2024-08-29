@@ -15,8 +15,11 @@ views.setElement('/namesForm', (state) => {
 		unloadNamesForm();
 		if (match)
 			match.destroyGame();
+			if (tournament)
+				tournament.socket.close();
 	}
  	views.get("/navbar").display(state);
+ 	views.get("/chat").display(state);
 	views.get("/footer").display(state);
 })
 .setChilds(["/navbar", "/footer", "/chat"])
@@ -35,6 +38,10 @@ views.setElement('/namesForm', (state) => {
 
 function generateInputFields() {
 	var number = document.getElementById('numberOfPlayers').value;
+	if (number < 2) {
+		alert('number has to be bigger that 2');
+		return ;
+	}
 	var container = document.getElementById('inputContainer');
 	container.innerHTML = ''; // Clear previous inputs
 
@@ -54,8 +61,19 @@ function loadNamesForm() {
 	submitEvent = async function() {
 		var names = [];
         var number = document.getElementById('numberOfPlayers').value;
+		if (number < 2) {
+			alert('number has to be bigger that 2');
+			return ;
+		}
         for (var i = 0; i < number; i++) {
-			    names.push(document.getElementById(`player${i + 1}`).value);
+			let newName;
+			newName = document.getElementById(`player${i + 1}`).value;
+			newName = newName.split(' ')[0];
+			if (!newName) {
+				alert('name cant be empty you sweatheart');
+				return ;
+			}	
+			names.push(newName);	
 		}
 		var unique = names.filter((v, i, a) => a.indexOf(v) === i);
 		if (unique.length !== names.length) {
@@ -67,7 +85,6 @@ function loadNamesForm() {
 		
 		if (views.props.tournament == "true" && tournament == undefined) {
 			tournament =  new Tournament(number, names); // Using Singleton pattern
-			tournament = undefined;
 		}
 		else {
 			if (match == undefined)
@@ -84,4 +101,11 @@ function loadNamesForm() {
 function unloadNamesForm() {
 	const submitNames = document.getElementById("submitNames");
 	submitNames.removeEventListener('click', submitEvent);
+
+	const gameForm = document.getElementById("gameForm");
+	gameForm.style.display = 'none';
+
+	const leaderboardDiv = document.getElementById("leaderboardDiv");
+	if (leaderboardDiv)
+		leaderboardDiv.remove();
 }
