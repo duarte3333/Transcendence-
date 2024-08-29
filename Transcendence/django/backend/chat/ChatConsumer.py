@@ -75,7 +75,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         elif action == 'block':
             await self.block_users(text_data)
         elif action == 'unblock':
-            # logger.info(f'aaaaaaaaaaaaaaaaaaaaaaa\n\n\n\nChegueiii')
             await self.unblock_users(text_data)
         else:
             logger.warning(f'Unknown action received: {action}')
@@ -360,3 +359,4 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 'action': 'unblock',
                 'message': 'Chat does not exist',
             })
+

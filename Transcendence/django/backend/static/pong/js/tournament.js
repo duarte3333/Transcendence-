@@ -1,19 +1,45 @@
 import { Match } from "./match.js";
+import { getCookie } from "./auxFts.js";
 
 export class Tournament {
     numPlayers = 2;
     playerNames = [];
     winners = [];
     leaderBoard = [];
+    tournamentButton = null;
+    socket = null;
 
     constructor(number, names) {
         if (!number || !names)
             console.log("Error") 
+        this.chatSideBar = document.getElementById('chatSideBar');
+        this.chatWindow = document.getElementById('chatWindow');
+        this.porfileButton = document.getElementById('profileButtonChat');
+        this.backUserButton = document.getElementById('backUserButton');
+
         this.numPlayers = number;
         this.playerNames = names;
+        this.channelId = undefined;
         // console.log("Tournament::Entrei no torneio " + this.playerNames);
         // console.log(this.playerNames);
-        this.startTournament();
+
+        this.InitializeWebSocket();
+        // this.setup();
+        // this.startTournament();
+        // this.createButtonsTournament();
+        // this.chatWindow.style.display = "flex";
+        // this.porfileButton.style.display = "none";
+        // document.getElementById('inviteButtonChat').style.display = "none";
+        // document.getElementById("chatMain").style.display = "none";
+
+        this.setup().then(() => {
+            this.startTournament();
+            this.createButtonsTournament();
+            this.chatWindow.style.display = "flex";
+            this.porfileButton.style.display = "none";
+            document.getElementById('inviteButtonChat').style.display = "none";
+            document.getElementById("chatMain").style.display = "none";
+        });
     }
 
     shuffleNames() {
@@ -24,6 +50,12 @@ export class Tournament {
             currentIndex--;
 
             [this.playerNames[currentIndex], this.playerNames[randomIndex]] = [this.playerNames[randomIndex], this.playerNames[currentIndex]];
+        }
+    }
+
+    async setup() {
+        while (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+          await new Promise(resolve => setTimeout(resolve, 10));
         }
     }
 
@@ -40,7 +72,78 @@ export class Tournament {
 		document.getElementById('game').style.display = 'none';
         // console.log(this.playerNames)
         this.showLeaderBoard();
+    }
 
+    createButtonsTournament() 
+    {
+        this.chatSideBar.innerHTML = '';
+        const button = document.createElement("button");
+        button.innerText =  "Tournament Channel";
+        button.id = `tournament`
+        button.setAttribute("channel", "create")
+        if (this.channelId) button.style.backgroundColor = "lightblue"
+        button.onclick = () => {
+            if (this.channelId == undefined) {  
+                this.createChannelTournament();
+            } 
+            else {
+                this.joinChannelTournament()
+            }
+            this.chatSideBar.style.width = "40%";
+        };
+        this.tournamentButton = button;
+        this.chatSideBar.appendChild(button);
+    }
+
+    createChannelTournament() {
+        const data = JSON.stringify({
+            "userId": window.user.id,
+            "status": "active",
+            "messages": "starting tournament",
+        });
+        fetch(window.hostUrl + "/api/chat/create", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body:data
+        }).then(async (result) => {
+            const { chat } = await result.json()
+
+            this.channelId = chat.id
+            console.log("this.channelId ", chat);
+            if (this.channelId) this.tournamentButton.style.backgroundColor = "blue"
+            this.joinChannelTournament();
+        })
+    }
+
+    joinChannelTournament(){
+        const data = JSON.stringify({
+          'action': 'tournamentJoin',
+          'type': 'tournamentJoin',
+          'channelId': this.channelId,
+          'userId': window.user.id,
+        });
+        this.socket.send(data);
+        document.getElementById("chatMain").style.display = "flex";
+        this.backUserButton.style.display = "flex";
+        document.getElementById("chatHeader").innerText = `Chat - Tournament`;
+        // if (this.unblockUserButton.style.display != 'flex')
+        //   this.blockUserButton.style.display = 'flex';
+        // this.generateUsersButtons(channel);
+    }
+
+    sendTournamentMessage(player1, player2) {
+        const message = `"=====Game Between===== ", ${player1} e ${player2}`;
+        if (message && this.socket) {
+            this.socket.send(JSON.stringify({
+            'type': 'tournament_call',
+            'action': 'tournament_call',
+            'message': message,
+            'userId': window.user.id,
+            }));
+        }
     }
 
     async scheduleNextRound() {
@@ -50,6 +153,7 @@ export class Tournament {
             const player1 = this.playerNames.shift();
             const player2 = this.playerNames.shift();
             console.log("=====Game Between===== ", [player1, player2])
+            this.sendTournamentMessage(player1, player2);
             const match = new Match("local", "tournament", 2, [player1, player2], player1);
             let winner =  await match.startLocalMatch();
             // console.log("Tournament::winner", winner);
@@ -65,6 +169,61 @@ export class Tournament {
 
         // Set up for the next round
         this.playerNames = await nextRoundPlayers;
+    }
+
+    InitializeWebSocket() {
+        const wsUrl = `wss://${window.location.host}/wss/tournament/${window.user.id}/`;
+      
+        this.socket = new WebSocket(wsUrl);
+        if (this.socket) {
+            window.chatchatSocket = this.socket;
+        }
+      
+        this.socket.onopen = () => {
+            console.log("WebSocket connection established.");
+        }
+    
+    
+        this.socket.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            console.log("Received message data = ", data);
+    
+            if (data.action === 'chat_message') {
+              this.handleWebchatSocketData(data);
+            }
+            else if (data.action === 'tournament_join') {
+              this.handleWebchatSocketDataTournament(data);
+            }
+            else if (data.action === 'tournament_call') {
+                this.handleWebchatSocketDataTournament(data);
+            }
+        }
+      
+        this.socket.onclose = function(e) {
+            console.log("WebchatSocket connection closed");
+        }
+      
+        this.socket.onerror = function(e) {
+            console.log("WebchatSocket error: ", e);
+        }
+      
+        window.addEventListener('beforeunload', () => {
+            if (this.socket) {
+                this.socket.close();
+            }
+        })
+    }
+
+    handleWebchatSocketDataTournament(data, isClear = false) {
+        if (isClear == true)
+            chatBodyChildren.innerHTML = '';
+          else 
+          { 
+            const { message } = data;     
+            const fullMessage = `${message}`;
+            const chatBodyChildren = document.getElementById(`chatBodyChildren`);
+            chatBodyChildren.innerHTML += `<p>${fullMessage}</p>`;
+        }
     }
 
     showLeaderBoard() {

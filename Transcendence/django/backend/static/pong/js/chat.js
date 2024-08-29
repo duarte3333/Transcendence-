@@ -196,7 +196,6 @@ class Chat {
       "status": "active",
       "mensagens": []
     });
-    
     fetch(window.hostUrl + "/api/chat/create", {
       method: 'POST',
       headers: {
@@ -257,7 +256,10 @@ class Chat {
     button.style.minWidth = "100px";
     user.button = button;
     let username = user.name || user.username;
-    button.innerText = channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
+    button.innerText = channel.user
+      .filter(e => e.id != window.user.id)
+      .map(e =>  e.display_name)
+      .join(', ') || "Empty display name";
     button.id = `chatButton_${channel.id}`
     button.setAttribute("user", "create")
     if (user.id) button.style.backgroundColor = "lightblue"
@@ -325,6 +327,7 @@ class Chat {
 
     // this.sendBasicInfo(length);
   }
+
   selectChannel(channel) {
     this.blockUserButton.style.display = 'flex';
     
@@ -381,6 +384,8 @@ class Chat {
     const chatBodyChildren = document.getElementById(`chatBodyChildren`);
     chatBodyChildren.innerHTML = "";
   }
+
+
 
   InitializeWebSocket() {
     const wsUrl = `wss://${window.location.host}/wss/chat/${window.user.id}/`;
@@ -440,6 +445,13 @@ class Chat {
         else if (data.action == "invite_message") {
           this.handleInvite(data);
         }
+        else if (data.action == 'tournament_join') {
+          this.handleWebchatSocketDataTournamentJoin(data);
+          // this.unblockUserButton.style.display = 'none';
+          // this.blockUserButton.style.display = 'flex';
+
+          console.log("User Status: ", this.blockedStatus);
+        }
         else if (data.action == "alertChannelCreated")
         {
           const user = data.user;
@@ -472,6 +484,21 @@ class Chat {
         }
     })
   }
+
+  handleWebchatSocketDataTournamentJoin(data, isClear = false) {
+    if (isClear == true)
+      chatBodyChildren.innerHTML = '';
+    else 
+    { 
+      const { message, display_name} = data;
+
+      const fullMessage = `${message}`;
+      const chatBodyChildren = document.getElementById(`chatBodyChildren`);
+      chatBodyChildren.innerHTML += `<p>${fullMessage}</p>`;
+    }
+
+  }
+  
 
   handleWebchatSocketData(data, isClear = false) {
     if (isClear == true)
