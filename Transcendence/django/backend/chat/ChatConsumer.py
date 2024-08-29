@@ -65,8 +65,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.block_users(text_data)
         elif action == 'unblock':
             await self.unblock_users(text_data)
-        elif action == 'tournament_join':
-            await self.tournament_join(text_data)
         else:
             logger.warning(f'Unknown action received: {action}')
         
@@ -231,41 +229,3 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 'message': 'Chat does not exist',
             })
 
-    async def tournament_join(self, event):
-        # from chat.models import Chat
-        # logger.info(f'join_chat==================== {event}')
-        # channel = await sync_to_async(Chat.objects.get)(id=event.get('channelId'))
-        self.userId = event.get('userId')
-        self.channelId = event.get('channelId')
-
-        logger.info(f'tournment joined {self.userId}')
-        
-        if self.channelId:
-            if self.channelName is not None:
-                await self.channel_layer.group_discard(
-                    self.channelName,
-                    self.channel_name
-                )
-            self.channelName = 'tournament_' + str(self.channelId)
-            
-            await self.channel_layer.group_add(
-                self.channelName,
-                self.channel_name
-            )
-            
-            await self.send_json({
-                'type': 'tournament_join',
-                'action': 'tournament_join',
-                'message': self.messages,
-                'channelId': self.channelId,
-            })
-            
-            await self.channel_layer.group_send(
-                self.group_name,
-                {
-                    'type': 'alertChannelCreated',
-                    'action': 'alertChannelCreated',
-                    'user': self.userId,
-                    'channelId': self.channelId
-                }
-            )
