@@ -11,7 +11,7 @@ import { socket } from "./myWebSocket.js";
 import { views } from "../../main/js/main.js";
 // import { AppControl } from "../../main/js/AppControl.js";
 
-const gameData = {game:undefined};
+window.gameData  = {game:undefined};
 let socketGame = undefined;
 
 function resizeCanvas() {
@@ -44,7 +44,7 @@ export class Game {
     this.events = new events();
     this.candies = [];
     this.fps = 0;
-    this.maxScore = 1;
+    this.maxScore = 5;
     this.ball = new Ball();
     this.finish = false;
     this.winner = undefined;
@@ -190,7 +190,7 @@ export class Game {
       this.objects.set(`candy_${i}`, candy);
       if (window.user.id == this.playerHost && views.props.type == "online") {
         // console.log("inside if");
-        candy.sendCandy(gameData.game);
+        candy.sendCandy(window.gameData.game);
       }
     }
   }
@@ -498,27 +498,27 @@ const  initializeWebSocket = (id, playerId) =>
           console.log("reseting you home, can't join that game");
           views.urlLoad("/home");
         }
-        if (gameData.game && window.user.id != gameData.game.playerHost)
+        if (window.gameData.game && window.user.id != window.gameData.game.playerHost)
         {
           // console.log("action ==> ", action);
           if (data.action === 'ball') {
             // console.log("ball action = ", data.action);
-            gameData.game.ball.setPostion(data.x, data.y, data.visibility);
+            window.gameData.game.ball.setPostion(data.x, data.y, data.visibility);
           }
           else if (data.action === "candy")
             // console.log("candy action = ", data.action);
-            gameData.game.setCandy(data);
+            window.gameData.game.setCandy(data);
           else if (data.type == 'move') 
-            gameData.game.handlePlayerMove(data);
+            window.gameData.game.handlePlayerMove(data);
           else if (data.action == 'candy_powerup') 
-            gameData.game.activateCandy(data);
+            window.gameData.game.activateCandy(data);
           else if (data.action == 'score_update') {
-            gameData.game.score.set(data.display_name, data.score);
-            atualizeScore(gameData.game)
+            window.gameData.game.score.set(data.display_name, data.score);
+            atualizeScore(window.gameData.game)
           }
           else if (data.action == 'pause_game')
           {
-            gameData.game.pause = data.flag;
+            window.gameData.game.pause = data.flag;
           }
           else if (data.action == "game_end")
           {
@@ -527,12 +527,12 @@ const  initializeWebSocket = (id, playerId) =>
           else if (data.action == "disconnect")
           {
             console.log(data.playerId, "disconnected");
-            gameData.game.disconnect(data.playerId);
+            window.gameData.game.disconnect(data.playerId);
           }
           // else
           //   console.log("action unkown =", data.action);
         }
-        else if (data.action === 'running' && gameData.game == undefined)
+        else if (data.action === 'running' && window.gameData.game == undefined)
         {    
           console.log("data == ", data);
 
@@ -552,14 +552,14 @@ const  initializeWebSocket = (id, playerId) =>
             ]
           }
             console.log("data2 == ", data2);
-            gameData.game = new Game(data.players.length, data2, data.playerHost);
-            gameData.game.socket = socketGame;
-            gameData.game.pause = false;
-            gameData.game.setupGame(data2);
+            window.gameData.game = new Game(data.players.length, data2, data.playerHost);
+            window.gameData.game.socket = socketGame;
+            window.gameData.game.pause = false;
+            window.gameData.game.setupGame(data2);
         }
-        else if (gameData.game != undefined) {
+        else if (window.gameData.game != undefined) {
           if (data.type == 'move') 
-            gameData.game.handlePlayerMove(data);
+            window.gameData.game.handlePlayerMove(data);
           else if (data.action == "game_end")
           {
             views.urlLoad("/home");
@@ -567,12 +567,12 @@ const  initializeWebSocket = (id, playerId) =>
           else if (data.action == 'pause_game')
           {
             // console.log("received pause flag =", data.flag);
-            gameData.game.pause = data.flag;
+            window.gameData.game.pause = data.flag;
           }
           else if (data.action == "disconnect")
           {
             console.log(data.playerId, "disconnected");
-            gameData.game.disconnect(data.playerId);
+            window.gameData.game.disconnect(data.playerId);
           }
         }
         // else
@@ -643,4 +643,65 @@ views.setElement('/game', (state) => {
 .setChilds(["/navbar", "/footer", "/chat"])
 .setEvents();
 
+
+function simulateKeyPressUp() {
+  const key = window.user.up_key.toUpperCase();
+  const wKeyEvent = new KeyboardEvent('keydown', {
+    key: key,
+    code: `Key${key}`,
+    keyCode: key.charCodeAt(0),
+    which: key.charCodeAt(0),
+    bubbles: true
+  });
+
+  document.dispatchEvent(wKeyEvent);
+  setTimeout(() => {
+    const keyUp = new KeyboardEvent('keyup', {
+      key: key,
+      code: `Key${key}`,
+      keyCode: key.charCodeAt(0),
+      which: key.charCodeAt(0),
+      bubbles: true
+    });
+  
+    document.dispatchEvent(keyUp);
+  }, 1000);
+  
+}
+
+function simulateKeyPressDown() {
+  const key = window.user.down_key.toUpperCase();
+  const wKeyEvent = new KeyboardEvent('keydown', {
+    key: key,
+    code: `Key${key}`,
+    keyCode: key.charCodeAt(0),
+    which: key.charCodeAt(0),
+    bubbles: true
+  });
+
+  document.dispatchEvent(wKeyEvent);
+  setTimeout(() => {
+    const keyUp = new KeyboardEvent('keyup', {
+      key: key,
+      code: `Key${key}`,
+      keyCode: key.charCodeAt(0),
+      which: key.charCodeAt(0),
+      bubbles: true
+    });
+  
+    document.dispatchEvent(keyUp);
+  }, 1000);
+}
+
+function getKeyCode(key) {
+  return key.charCodeAt(0);
+}
+
+// Call this function by typing 'up' in the console
+window.up = () => {
+  simulateKeyPressUp();
+}
+window.down = () => {
+  simulateKeyPressDown();
+}
 

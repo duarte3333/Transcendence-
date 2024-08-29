@@ -20,8 +20,8 @@ from django.contrib.auth import authenticate, login, logout
 
 logger = logging.getLogger(__name__)
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def create_game(request):
     if request.method == 'POST':
         try:
@@ -40,8 +40,8 @@ def create_game(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def match_game(request):
     if request.method == 'POST':
         try:
@@ -68,8 +68,8 @@ def match_game(request):
 
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def list_game(request):
     if request.method == 'POST':
         try:
@@ -98,8 +98,8 @@ def list_game_losses(player_id=None):
 
     return 0
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def update_game(request):
     if request.method == 'POST':
         try:
@@ -136,8 +136,8 @@ def update_game(request):
 
 
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def deleted_game(request):
     if request.method == 'POST':
         try:
@@ -312,8 +312,8 @@ def serialize_pong_user(user):
     }
     return user_dict
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def list_users(request):
     try:
         result = PongUser.objects.all()

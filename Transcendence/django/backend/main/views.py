@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+
 
 # from .forms import RegisterForm
-
+# @login_required
 def main_view(request):
     return (render(request, 'main_index.html'))
     # if request.method == 'POST':

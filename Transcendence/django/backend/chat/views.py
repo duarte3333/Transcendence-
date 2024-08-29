@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 import json
 from .models import Chat
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def create_chat(request):
     if request.method == 'POST':
         try:
@@ -24,8 +24,8 @@ def create_chat(request):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid method'}, status=400)
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def list_chats(request):
     if request.method == 'POST':
         try:
@@ -39,8 +39,8 @@ def list_chats(request):
         return JsonResponse({'success': True, 'chat': result}, status=201)
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def update_chat(request):
     if request.method == 'POST':
         try:
@@ -59,8 +59,8 @@ def update_chat(request):
             data = []
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+# @csrf_exempt
 @login_required
-@csrf_exempt
 def deleted_chat(request):
     if request.method == 'POST':
         try:
