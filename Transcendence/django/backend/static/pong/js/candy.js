@@ -1,4 +1,5 @@
 import { Animation } from "./animation.js";
+import { views } from "../../main/js/main.js";
 
 
 const candyImage = new Image();
@@ -75,7 +76,9 @@ class Candy {
   }
 
   sendCandy(game) {
-    // console.log("sending candy");
+    if (views.props.type != 'online')
+      return ;
+    // console.log("sending candy, ", this.visible);
     game.socket.send(JSON.stringify({
       'type': 'candy',
       'action': 'candy',
@@ -161,7 +164,7 @@ export function attackPowerUp(player, game) {
 
 export function speedPowerUp(player, game) {
   player.speed *= 2;
-  player.color = "yellow";
+  player.color = "#c1c100";
   setTimeout(() => {
     player.speed /= 2;
     player.color = "black";
@@ -169,6 +172,8 @@ export function speedPowerUp(player, game) {
 }
 
 function sendPowerUp(game, player, type) {
+  if (views.props.type != 'online')
+      return ;
   game.socket.send(JSON.stringify({
     'type': 'candy_powerup',
     'action': 'candy_powerup',

@@ -69,9 +69,9 @@ export class Game {
 
     this.context = this.canvas.getContext("2d");
 
-    // console.log("fun =", views.props.fun)
     if (views.props.fun == "false") {
-      this.candies = 0;
+      console.log("fun =", views.props.fun)
+      this.numCandies = 0;
     }
 
     if (views.props.type == "local") {
@@ -181,7 +181,7 @@ export class Game {
   }
 
   addCandies() {
-    if (this.candies <= 0)
+    if (this.numCandies <= 0)
       return ;
     const map = this.objects.get("map");
     for (let i = 1; i <= this.numCandies; i++) {
@@ -230,7 +230,7 @@ export class Game {
 
     if (views.props.type != "online" || window.user.id ==  this.playerHost) {
       ball.move(this);
-      if (this.candies > 0 && views.props.type == "online") {
+      if (this.numCandies > 0 && views.props.type == "online") {
         this.candies.forEach( (candy) => {
           candy.sendCandy(this);
         })
@@ -484,7 +484,7 @@ export class Game {
 const  initializeWebSocket = (id, playerId) =>
 {
   socketGame = new WebSocket(
-    `wss://${window.location.host}/wss/game/${id}/`
+  `wss://${window.location.host}/wss/game/${id}/${playerId}/`
   );
 
   // console.log("socket == ", socketGame);
@@ -583,7 +583,7 @@ const  initializeWebSocket = (id, playerId) =>
   }
 
   socketGame.onclose = (e) => {
-    console.error('Socket closed unexpectedly');
+    console.error('Socket closed');
   }
 
   // const s = socketGame;
@@ -632,9 +632,10 @@ views.setElement('/game', (state) => {
     //   gameData.game.disconnecting();
     gameData.game?.destroyer();
     gameData.game = undefined;
-    if (socketGame != undefined && (socketGame.readyState === WebSocket.OPEN || socketGame.readyState === WebSocket.CONNECTING))
+    if (socketGame != undefined && (socketGame.readyState === WebSocket.OPEN || socketGame.readyState === WebSocket.CONNECTING)) {
       socketGame.close();
-    socketGame =  undefined;
+      socketGame =  undefined;
+    }
   } 
   views.get("/footer").display(state);
 	views.get("/navbar").display(state);

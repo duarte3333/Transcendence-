@@ -4,9 +4,6 @@ services:
 
     build: ./django
 
-    ports:
-      - "8000:8000"
-
     volumes:
       - ./django/backend/static:/app/static
       - ./django/backend:/app
@@ -41,9 +38,6 @@ services:
     container_name: redis
 
     image: redis:alpine
-
-    ports:
-      - "6379:6379"
     
     networks:
       - backend
@@ -54,9 +48,7 @@ services:
     build: ./nginx
 
     ports:
-      - "8080:80"    # Alterar porta HTTPS
-      - "443:443"   # Alterar porta HTTPS
-      # - "443:443"
+      - "6555:443"   # Alterar porta HTTPS
 
     volumes:
       - ./django/backend/static:/static

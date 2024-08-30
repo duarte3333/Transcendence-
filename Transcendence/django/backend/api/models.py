@@ -34,10 +34,14 @@ class Game(models.Model):
         game.save(using=self._state.db)
         return game
     
-    def list(self, status=None, playerId=None):
+    def list(self, status=None, playerId=None, numberPlayers=None):
         games = Game.objects.exclude(status='deleted')
         if status:
             games = games.filter(status=status)
+        else:
+            games = games.all()
+        if numberPlayers:
+            games = games.filter(numberPlayers=numberPlayers)
         else:
             games = games.all()
         if playerId and not playerId == "0":

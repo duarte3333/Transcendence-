@@ -8,6 +8,8 @@ class PongUser(AbstractUser):
     username = models.CharField(
         max_length=150,
         unique=True,
+        blank=False,
+        null=False,
         validators=[RegexValidator(
             regex=r'^[\w.@+-]+$',
             message='Username must be 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
@@ -17,7 +19,7 @@ class PongUser(AbstractUser):
             'unique': "A user with that username already exists.",
         },
     )
-    display_name = models.CharField(max_length=255, blank=False, null=True)
+    display_name = models.CharField(max_length=255, blank=False, null=False)
     profile_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="static/pong/img/p1.png")
     banner_picture = models.ImageField(upload_to='static/userImages/', blank=True, null=True, default="static/pong/img/banner.jpeg")
     down_key = models.CharField(max_length=255, blank=True, null=True, default='s')

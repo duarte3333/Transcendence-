@@ -10,6 +10,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         # Adiciona o usuário ao grupo de uma sala de chat específica
         self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.playerId = self.scope['url_route']['kwargs']['playerId']
         self.room_group_name = f"game_{self.room_name}"
         # logger.info(f'self room name = {self.room_name}')
 
@@ -22,13 +23,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        # logger.info(f'\ndisconnect called\n')
+        logger.info(f'\ndisconnect called code ={self.playerId} \n')
         # Sai da sala do grupo
         await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                      'type': 'sendDisconnect',
                      'action': 'disconnect',
+                     'playerId': self.playerId,
                     }
                 )
         await self.channel_layer.group_discard(
@@ -37,10 +39,12 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def sendDisconnect(self, event):
+        logger.info(f'send disconnect event = {event}')
+        logger.info(f'self player id >>>>>>> {self.playerId}')
         await self.send_json({
             'type': 'sendDisconnect',
             'action': 'disconnect',
-            'playerId': self.playerId
+            'playerId': event.get('playerId'),
         })
         return
 
@@ -236,7 +240,9 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             self.game = await sync_to_async(Game.objects.get)(id=self.room_name)
             logger.info(f'self game = {self.game}')
             player_id = event.get('playerId')
-            self.playerId = player_id
+            logger.info(f'self playerId = {self.playerId}')
+            # if self.playerId is None:
+            #     self.playerId = player_id
             logger.info(f'self player id = {self.playerId}')
             max_players = len(self.game.player)
             logger.info(f'entered player joined, Pid= {self.playerId}, Game id = {self.game.id}')

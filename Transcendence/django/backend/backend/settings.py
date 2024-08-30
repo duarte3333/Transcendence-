@@ -33,14 +33,11 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*', "10.19.248.132"]
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://172.20.10.15',
-    'http://10.19.248.132:8080',
-    'http://localhost:8080',
-    'http://0.0.0.0:8080'
-    'http://10.19.248.132:8080'
+    'https://localhost:6555',
+    'https://10.12.3.9:6555',
 ]
 
 # Application definition
@@ -87,11 +84,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://172.20.10.15',
-    'http://localhost:8080',
-    'http://0.0.0.0:8080',
-    "http://127.0.0.1:8000",
-    "http://10.19.248.132:8080",
+    'https://localhost:6555',
+    'https://10.12.3.9:6555',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

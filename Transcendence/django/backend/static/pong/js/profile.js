@@ -44,8 +44,10 @@ async function loadProfile() {
 
 	console.log("display =", views.props.display_name);
 	user =  await getUser(views.props.display_name);
-	if (user == undefined)
+	if (user == undefined) {
 		views.urlLoad("/home");
+		return ;
+	}
 	userMatchHistory =  await getMatchHistory(user.id);
 	userMatchHistory.sort((a, b) => b.id - a.id);
 
@@ -107,7 +109,8 @@ async function showMatchHistory(event){
 				const row = document.createElement('div');
 				row.className = "row row-matchHistory text-center";
 				row.style.width = "100%";
-				if (displayMap.get(parseInt(match.winner)) != user.display_name && match.winner != "disconnect")
+				if ((displayMap.get(parseInt(match.winner)) != user.display_name && match.winner != "disconnect") ||
+					(match.winner == "disconnect" && match.scoreList.find(item => parseInt(item.id) === user.id).score == 'disconnect'))
 					row.style.backgroundColor = "rgba(255, 3, 3, 0.6)";
 				else if (match.winner != "disconnect")
 					row.style.backgroundColor = "rgba(36, 135, 0, 0.6)";

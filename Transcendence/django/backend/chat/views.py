@@ -35,7 +35,7 @@ def list_chats(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         
-        result = Chat().list(status=data.get('status'), user_id=data.get('userId'))
+        result = Chat().list(status=data.get('status'), user_id=data.get('userId'), name=data.get('name'))
         return JsonResponse({'success': True, 'chat': result}, status=201)
     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 

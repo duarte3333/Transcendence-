@@ -2,9 +2,9 @@ import { Tournament } from './tournament.js';
 import { views } from "../../main/js/main.js";
 import { Match } from './match.js';
 
-let match;
-let tournament;
-let submitEvent;
+let match = undefined;
+let tournament = undefined;
+let submitEvent = undefined;
 
 views.setElement('/namesForm', (state) => {
 	document.getElementById('tournamentBody').style.display = state;
@@ -13,10 +13,22 @@ views.setElement('/namesForm', (state) => {
 		loadNamesForm();
 	} else {
 		unloadNamesForm();
-		if (match)
+		console.log("UNLOAD NAMES FORM")
+		if (match != undefined) {
+			console.log("DESTROYING GAME")
 			match.destroyGame();
-			if (tournament)
-				tournament.socket.close();
+			match = undefined;
+		}
+		if (tournament) {
+			tournament.destroyTournament();
+			tournament = undefined
+		}
+		// const button1 = document.getElementById('profileButtonChat');
+		// if (button1)
+		// 	button1.style.display = 'block';
+		// const button2 = document.getElementById('inviteButtonChat');
+		// if (button2)
+		// 	button2.style.display = 'block';
 	}
  	views.get("/navbar").display(state);
  	views.get("/chat").display(state);
@@ -57,7 +69,6 @@ function generateInputFields() {
 
 function loadNamesForm() {
 	const submitNames = document.getElementById("submitNames");
-	console.log("EVENT LIST => ", submitNames.event);
 	submitEvent = async function() {
 		var names = [];
         var number = document.getElementById('numberOfPlayers').value;

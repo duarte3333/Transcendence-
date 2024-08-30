@@ -231,7 +231,7 @@ class Chat {
     const button = document.createElement("button");
     channel.button = button;
     let username = channel.name;
-    button.innerText =  channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
+    button.innerText = channel.name ||  channel.user.filter(e => e.id != window.user.id).map(e =>  e.display_name);
     button.id = `chatButton_${channel.id}`
     button.setAttribute("channel", "create")
     if (channel.id) button.style.backgroundColor = "lightblue"
@@ -359,16 +359,18 @@ class Chat {
     }
   }
 
-  sendChatMessage() {
-    const message = this.chatInput.value;
+  sendChatMessage(messages = undefined, display_name = undefined) {
+    const message = messages || this.chatInput.value;
+
     if (message && this.socket) {
-      if (message && this.socket) {
+      if (message && this.socket) {  
+         console.log("MESSAGE == ", message)
         this.socket.send(JSON.stringify({
           'type': 'chat_message',
           'action': 'chat_message',
           'message': message,
           'userId': window.user.id,
-          'display_name': window.user.display_name,
+          'display_name': display_name || window.user.display_name,
         }));
         this.chatInput.value = '';
       }
@@ -541,7 +543,6 @@ class Chat {
 }
 
 views.setElement("/chat", (state) => {
-  console.log("name forms");
   // document.getElementById("chatContainer").style.display = state;
   if (state == "block") {
     console.log("chat ==>>", window.chat)

@@ -27,7 +27,7 @@ export class Ball {
         this.speedX = -1;
         this.speedY = 0;
         this.speed = 2.5;
-        this.speedLimit = 12;
+        this.speedLimit = 20;
         this.color = "black";
         this.name = "ball"; 
         this.last_hit = "";

@@ -51,7 +51,10 @@ def register(request):
             display_name = data.get('displayName')
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
+        if ' ' in username:
+            return JsonResponse({'error': 'Username cant have spaces.'}, status=400)
+        if ' ' in display_name:
+            return JsonResponse({'error': 'Display name cant have spaces.'}, status=400)
         if not username or not password or not display_name:
             return JsonResponse({'error': 'All fields are required.'}, status=400)
 
@@ -70,8 +73,9 @@ def register(request):
             return JsonResponse({'error': e.messages}, status=400)
 
         # Create a new user
-        user = PongUser.objects.create_user(username=username, password=password)
-        user.display_name = display_name  # Use the display name as desired
+        user = PongUser.objects.create_user(username=username, display_name=display_name, password=password)
+        
+        # user.display_name = display_name  # Use the display name as desired
         user.save()
 
         # Adiciona o novo usuário ao chat "geral"

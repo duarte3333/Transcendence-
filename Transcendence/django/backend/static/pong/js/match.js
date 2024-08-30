@@ -47,7 +47,21 @@ export class Match {
 
   destroyGame() {
     console.log("match ended early")
-    this.game.destroyer()
+    if (this.game != undefined)
+      this.game.destroyer()
     this.game = undefined;
+    // const gameForm = document.getElementById("gameForm");
+    // if (gameForm)
+    //   gameForm.innerHTML = `<h1 class="display-1" style="font-size: 3rem;" >Configure Players</h1>
+		// 	<form id="playerForm"> 
+		// 		<!-- <p>Choose the number of players bellow</p> -->
+		// 		<!-- <input type="number" id="numPlayers" name="numPlayers" min="0" max="20" autocomplete="off" required> -->
+		// 		<!-- <input class="display-1" style="font-size: 1rem;" id="numPlayers"></input> -->
+		// 		<div class="display-1" style="font-size: 1rem;" id="playerControls"></div>
+		// 		<!-- <input type="hidden" id="playerData" name="playerData"> -->
+		// 		<!-- <div class="row d-flex justify-content-center"> -->
+		// 		<button class="btn btn-outline-dark bodyBtns" id="controlsButton" type="button">Save Configuration</button>
+		// 		<!-- </div> -->
+		// 	</form>`
   }
 }

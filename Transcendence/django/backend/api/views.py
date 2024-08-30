@@ -46,10 +46,10 @@ def match_game(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            result = Game().list(status = 'running', playerId=request.user.id)
+            result = Game().list(status = 'running', playerId=request.user.id, numberPlayers = int(data.get('number_of_players')))
             if (len(result) == 1):
                 return JsonResponse({'success': True, 'game': result[0]}, status=201)
-            result = Game().list(status = 'pending')
+            result = Game().list(status = 'pending', numberPlayers = int(data.get('number_of_players')))
             logger.info(f'Match_game result: ${result}')
             if (len(result) == 0):
                 game = Game().create(
@@ -92,11 +92,16 @@ def list_game_losses(player_id=None):
     if player_id:
         result = Game().list(status="finished", playerId=player_id)
 
-        result = [game for game in result if game.get('winner') != str(player_id)]
+        result = [
+            game for game in result
+            if (game.get('winner') != str(player_id) and game.get('winner') != 'disconnect') or
+            any(entry['id'] == str(player_id) and entry['score'] == 'disconnect' for entry in game.get('scoreList', []))
+        ]
 
         return len(result)
 
     return 0
+
 
 # @csrf_exempt
 @login_required

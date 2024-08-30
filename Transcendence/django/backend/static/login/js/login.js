@@ -77,7 +77,12 @@ function loginPost() {
                 throw new Error(errorData.error || 'Network response was not ok.');
             });
         }
-        return response.json();
+        if (response.headers.get('Content-Type')?.includes('application/json')) {
+            return response.json();
+        } else {
+            throw new Error('Response is not a valid JSON');
+        }
+        
     })
     .then(async (data) => {
         await loginPage();
@@ -124,8 +129,11 @@ function registerPost() {
                 throw new Error(errorData.error || 'Network response was not ok.');
             });
         }
-        console.log('aqui! =', response);
-        return response.json();
+        if (response.headers.get('Content-Type')?.includes('application/json')) {
+            return response.json();
+        } else {
+            throw new Error('Response is not a valid JSON');
+        }
     })
     .then(data => {
         console.log('Success:', data);

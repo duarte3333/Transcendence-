@@ -168,7 +168,7 @@ function funForm(event, type) {
 	confirm.addEventListener('click',() => {
 		const numPlayers = form.value;
 		if (numPlayers != 0 && numPlayers != 1) {
-			playOnlineMatch(event, "Fun", numPlayers);
+			playOnlineMatch(type, numPlayers);
 		} else {
 			alert("Need to choose one - five players")
 		}
@@ -178,6 +178,7 @@ function funForm(event, type) {
 }
 
 export function playOnlineMatch(type, numberPlayers = 2) {
+	console.log("NumPlayers>>>>", numberPlayers)
 	const data = JSON.stringify({
 		"players": [ window.user.id ],
 		"type": type,

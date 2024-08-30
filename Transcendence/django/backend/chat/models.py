@@ -10,11 +10,11 @@ class Chat(models.Model):
     mensagens = models.JSONField(default=list)
     createDate = models.DateField(default=timezone.now)
 
-    def create(self, users, name="", status='pending', block=False, mensagens=None, **extra_fields):
+    def create(self, users, name="", status='pending', block=None, mensagens=None, **extra_fields):
         chat = Chat(
             user=users,
             status=status,
-            block=block,
+            block=block or [],
             name=name,
             mensagens=mensagens or [],
             **extra_fields
@@ -22,10 +22,12 @@ class Chat(models.Model):
         chat.save(using=self._state.db)
         return chat
     
-    def list(self, status=None, user_id=None):
+    def list(self, status=None, user_id=None, name=None):
         chats = Chat.objects.exclude(status='deleted')
         if status:
             chats = chats.filter(status=status)
+        if name:
+            chats = chats.filter(name=name)
         if user_id and user_id != "0":
             user_id = str(user_id)
             chats = [
